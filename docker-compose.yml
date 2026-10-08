@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: medkb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-medkb}
+      POSTGRES_DB: medkb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medkb -d medkb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://medkb:${POSTGRES_PASSWORD:-medkb}@db:5432/medkb
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?Set ADMIN_TOKEN in .env (copy .env.example to .env)}
+      SEED_DEMO_DATA: "true"
+      ARCHIVE_DIR: /app/archives
+    ports:
+      - "8000:8000"
+    volumes:
+      - archives:/app/archives
+
+volumes:
+  pgdata:
+  archives:
