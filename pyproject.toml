@@ -1,0 +1,20 @@
+[project]
+name = "medkb"
+version = "1.0.0"
+description = "Digital medical knowledge base: keyword search, rule-based classification, JSON archiving."
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
