@@ -141,7 +141,12 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
     if (!valid || saving) return
-    const onError = (error: Error) => toast.error(error.message)
+    const onError = (error: Error) =>
+      toast.error(
+        error instanceof ApiError && error.status === 404
+          ? 'Eintrag existiert nicht mehr (Demo wurde zurückgesetzt)'
+          : error.message,
+      )
     if (document) {
       if (!dirty) {
         leaving.current = true

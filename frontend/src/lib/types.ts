@@ -84,8 +84,17 @@ export interface AuditEntry {
   id: number
   timestamp: string
   action: string
+  actor: string | null
   document_id: number | null
   detail: string
+}
+
+export interface UserInfo {
+  id: number
+  username: string
+  display_name: string
+  role: 'admin' | 'doctor' | 'patient'
+  created_at: string
 }
 
 export interface ArchiveInfo {

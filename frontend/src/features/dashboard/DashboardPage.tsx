@@ -2,7 +2,9 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { CountUp } from '@/components/motion/CountUp'
 import { SpecialtyStrip } from '@/components/specialty/SpecialtyStrip'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useAuth } from '@/features/auth/context'
 import { ActivityChart } from '@/features/dashboard/ActivityChart'
+import { ActivityFeed } from '@/features/dashboard/ActivityFeed'
 import { DocTypeBars } from '@/features/dashboard/DocTypeBars'
 import { RecentList } from '@/features/dashboard/RecentList'
 import { useStats } from '@/lib/queries'
@@ -55,6 +57,7 @@ function DashboardSkeleton() {
 
 export function DashboardPage() {
   const { data, error, refetch, isPending } = useStats()
+  const { user } = useAuth()
 
   return (
     <div className="flex flex-col gap-8">
@@ -76,6 +79,7 @@ export function DashboardPage() {
             <DocTypeBars items={data.doc_types} />
           </div>
           <RecentList items={data.recent} />
+          {user?.role === 'admin' && <ActivityFeed />}
         </>
       )}
     </div>

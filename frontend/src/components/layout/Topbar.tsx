@@ -1,9 +1,11 @@
 import { Menu, Plus, Search } from 'lucide-react'
 import { Link } from 'react-router'
 import { openCommandPalette } from '@/components/layout/CommandPalette'
+import { useAuth } from '@/features/auth/context'
 import { Button } from '@/components/ui/button'
 
 export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
+  const { user } = useAuth()
   const isMac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform)
   return (
     <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
@@ -30,6 +32,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
           </kbd>
         </button>
 
+        {user?.role === 'admin' && (
         <Button asChild className="ml-auto shrink-0">
           <Link to="/wissen/neu">
             <Plus aria-hidden />
@@ -37,6 +40,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
             <span className="sr-only sm:hidden">Neuer Eintrag</span>
           </Link>
         </Button>
+        )}
       </div>
     </header>
   )
