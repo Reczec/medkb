@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import secrets
 from collections.abc import AsyncIterator
@@ -12,6 +13,7 @@ from fastapi import FastAPI
 from app import __version__
 from app.config import get_settings
 from app.database import Base, SessionLocal, engine
+from app.demo import demo_reset_loop, reset_demo
 from app.routers import admin, auth, documents, users
 from app.seed import seed_if_empty
 from app.spa import mount_frontend
@@ -33,12 +35,22 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         logger.warning("JWT_SECRET is shorter than 32 characters; use a longer random value.")
     with SessionLocal() as db:
         ensure_users(db, settings)
-    if settings.seed_demo_data:
+    reset_task: asyncio.Task[None] | None = None
+    if settings.demo_mode:
+        with SessionLocal() as db:
+            count = reset_demo(db)
+        logger.info(
+            "Demo mode: %d example entries, reset every %s h.", count, settings.demo_reset_hours
+        )
+        reset_task = asyncio.create_task(demo_reset_loop(settings))
+    elif settings.seed_demo_data:
         with SessionLocal() as db:
             added = seed_if_empty(db)
         if added:
             logger.info("Inserted %d example documents.", added)
     yield
+    if reset_task:
+        reset_task.cancel()
 
 
 app = FastAPI(
