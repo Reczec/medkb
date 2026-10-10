@@ -29,6 +29,11 @@ test('every filing tab shows its full name and the drawer edge shows the share',
   expect(neuro).toBeGreaterThan(hno)
   expect(hno).toBeGreaterThan(derma)
   expect(neuro / derma).toBeCloseTo(3, 0)
+  // The share bar is its own labelled element, not the edge the tabs stand on.
+  const tabsBottom = await strip.getByRole('list').evaluate((el) => el.getBoundingClientRect().bottom)
+  const barTop = await strip.locator('[data-share]').first().evaluate((el) => el.getBoundingClientRect().top)
+  expect(barTop - tabsBottom).toBeGreaterThanOrEqual(8)
+  await expect(strip.getByText('Anteil der Einträge')).toBeVisible()
 })
 
 test('dimmed filing tabs keep readable labels', async ({ page }) => {
