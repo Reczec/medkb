@@ -130,3 +130,29 @@ def test_ensure_users_is_idempotent_and_updates_the_admin_password(db_session, a
     ]
     admin = next(u for u in users if u.username == "admin")
     assert verify_password("neues-passwort-123", admin.password_hash)
+
+
+def test_unknown_users_cost_as_much_as_wrong_passwords(anon_client, monkeypatch):
+    # Otherwise the response time tells which usernames exist.
+    import app.routers.auth as auth_router
+
+    calls = []
+    real = auth_router.verify_password
+    monkeypatch.setattr(
+        auth_router, "verify_password", lambda pw, hashed: calls.append(hashed) or real(pw, hashed)
+    )
+    anon_client.post("/api/auth/login", json={"username": "niemand", "password": "x"})
+    assert len(calls) == 1
+
+
+def test_admin_password_longer_than_bcrypt_limit_works(anon_client, db_session, archive_dir):
+    long_password = "ä" * 60  # 120 bytes
+    ensure_users(db_session, make_settings(archive_dir, admin_password=long_password))
+    response = anon_client.post(
+        "/api/auth/login", json={"username": "admin", "password": long_password}
+    )
+    assert response.status_code == 200
+    wrong = anon_client.post(
+        "/api/auth/login", json={"username": "admin", "password": "ä" * 59 + "a"}
+    )
+    assert wrong.status_code == 401

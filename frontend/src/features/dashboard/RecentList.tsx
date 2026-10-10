@@ -5,11 +5,18 @@ import { formatDate, formatRelative } from '@/lib/format'
 import type { RecentItem } from '@/lib/types'
 
 /** The last edited entries as a row of filed sheets, each under its specialty tab. */
-export function RecentList({ items }: { items: RecentItem[] }) {
+interface RecentListProps {
+  items: RecentItem[]
+  title?: string
+  /** Editorial "geändert …" stamps; off for patients. */
+  showTimes?: boolean
+}
+
+export function RecentList({ items, title = 'Zuletzt bearbeitet', showTimes = true }: RecentListProps) {
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold">Zuletzt bearbeitet</h2>
+        <h2 className="text-base font-semibold">{title}</h2>
         <Link
           to="/wissen"
           className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
@@ -33,13 +40,15 @@ export function RecentList({ items }: { items: RecentItem[] }) {
                 />
                 <span className="flex flex-1 flex-col justify-between gap-3 rounded-xl border bg-card p-4 shadow-sheet transition-shadow duration-200 group-hover:shadow-lift group-focus-visible:ring-2 group-focus-visible:ring-ring">
                   <span className="line-clamp-2 font-medium [overflow-wrap:anywhere]">{item.title}</span>
-                  <time
-                    dateTime={item.updated_at}
-                    title={formatDate(item.updated_at)}
-                    className="text-xs text-muted-foreground"
-                  >
-                    geändert {formatRelative(item.updated_at)}
-                  </time>
+                  {showTimes && (
+                    <time
+                      dateTime={item.updated_at}
+                      title={formatDate(item.updated_at)}
+                      className="text-xs text-muted-foreground"
+                    >
+                      geändert {formatRelative(item.updated_at)}
+                    </time>
+                  )}
                 </span>
               </Link>
             </li>

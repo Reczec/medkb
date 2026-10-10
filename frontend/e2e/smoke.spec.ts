@@ -53,6 +53,22 @@ test('every filing tab shows its full name and the drawer edge shows the share',
   await expect(strip.getByText('Anteil der Einträge')).toBeVisible()
 })
 
+test('filing tab washes keep their specialty hue', async ({ page }) => {
+  await page.goto('/')
+  const tab = page.getByTestId('file-tab').filter({ hasText: 'Allgemeinmedizin' }).first()
+  const [r, g, b] = await tab.evaluate((el) => {
+    const canvas = document.createElement('canvas')
+    canvas.width = canvas.height = 1
+    const ctx = canvas.getContext('2d')!
+    ctx.fillStyle = getComputedStyle(el).backgroundColor
+    ctx.fillRect(0, 0, 1, 1)
+    return Array.from(ctx.getImageData(0, 0, 1, 1).data)
+  })
+  // Allgemeinmedizin is teal: green and blue above red, never a mauve-pink wash.
+  expect(g).toBeGreaterThan(r)
+  expect(b).toBeGreaterThan(r)
+})
+
 test('dimmed filing tabs keep readable labels', async ({ page }) => {
   await page.goto('/wissen?category=Neurologie')
   const strip = page.getByRole('navigation', { name: 'Fachgebiete' })

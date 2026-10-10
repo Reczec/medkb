@@ -38,8 +38,9 @@ export function AuditTable() {
                   </time>
                 </td>
                 <td className="px-3 py-3">
-                  <span className={cn('inline-flex rounded-md px-2 py-0.5 text-xs font-medium', action.className)}>
-                    {action.label}
+                  <span className={cn('inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium', action.className)}>
+                    <action.icon className="size-3.5" aria-hidden />
+                  {action.label}
                   </span>
                 </td>
                 <td className="px-3 py-3 font-mono text-xs whitespace-nowrap">{entry.actor ?? '—'}</td>

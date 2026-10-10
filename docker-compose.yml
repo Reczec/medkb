@@ -21,7 +21,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://medkb:${POSTGRES_PASSWORD:-medkb}@db:5432/medkb
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (copy .env.example to .env)}
-      DEMO_MODE: ${DEMO_MODE:-true}
+      DEMO_MODE: ${DEMO_MODE:-false}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       ARCHIVE_DIR: /app/archives
     ports:

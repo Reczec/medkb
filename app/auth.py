@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any, Literal
 
@@ -23,13 +25,19 @@ ALGORITHM = "HS256"
 _hasher = PasswordHash((BcryptHasher(),))
 
 
+def _prehash(password: str) -> str:
+    # bcrypt only reads 72 bytes and bcrypt 5 rejects longer input; a SHA-256 digest keeps every
+    # character significant and the input short.
+    return base64.b64encode(hashlib.sha256(password.encode()).digest()).decode()
+
+
 def hash_password(password: str) -> str:
-    return _hasher.hash(password)
+    return _hasher.hash(_prehash(password))
 
 
 def verify_password(password: str, hashed: str) -> bool:
     try:
-        return _hasher.verify(password, hashed)
+        return _hasher.verify(_prehash(password), hashed)
     except ValueError:  # malformed hash
         return False
 

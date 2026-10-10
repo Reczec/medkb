@@ -20,8 +20,8 @@ export function FileTab({ name, className, size = 'sm' }: FileTabProps) {
         className,
       )}
       style={{
-        background: `color-mix(in oklch, ${style.color} 16%, var(--card))`,
-        borderColor: `color-mix(in oklch, ${style.color} 35%, var(--border))`,
+        background: `color-mix(in oklab, ${style.color} 16%, var(--card))`,
+        borderColor: `color-mix(in oklab, ${style.color} 35%, var(--border))`,
       }}
     >
       <span className="absolute inset-x-0 top-0 h-[3px]" style={{ background: style.color }} aria-hidden />

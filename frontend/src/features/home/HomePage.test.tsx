@@ -26,6 +26,10 @@ it('greets patients with a search instead of statistics', async () => {
   expect(await screen.findByRole('link', { name: /Migräne/ })).toBeInTheDocument()
   expect(screen.queryByText('Änderungen der letzten 30 Tage')).not.toBeInTheDocument()
   expect(screen.queryByTestId('summary')).not.toBeInTheDocument()
+  expect(screen.queryByText(/Hallo/)).not.toBeInTheDocument()
+  expect(screen.queryByText('Anteil der Einträge')).not.toBeInTheDocument()
+  expect(screen.queryByText(/geändert/)).not.toBeInTheDocument()
+  expect(screen.queryByText(/in Arbeit/)).not.toBeInTheDocument()
 })
 
 it('sends the search to the knowledge base', async () => {
