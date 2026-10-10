@@ -30,7 +30,11 @@ a CI setup.
   control: a manually chosen category is never overwritten.
 - **Archive**: admin-only export of all entries to a JSON file, list of archives, download,
   restore (an automatic "pre-restore" backup is created first)
-- **Traceability**: change log of create / update / delete / archive actions (admin-only)
+- **Roles and login**: admin (everything), doctor (reads in professional depth, sees why an
+  entry was classified), patient (reads, search-first start page, no internal data). JWT login;
+  in demo mode one click per role on the login page, and the example data resets every 24 h
+- **Traceability**: change log of create / update / delete / archive actions with who did it
+  (admin-only)
 - **Dashboard** with a 30-day activity chart, document types and the specialties as colour-coded
   filing tabs; command palette (Ctrl+K), animated transitions, light/dark theme, responsive down
   to phone width, `prefers-reduced-motion` respected
@@ -56,7 +60,9 @@ flowchart LR
 app/
   main.py          FastAPI app, startup
   spa.py           serves the built frontend with a fallback to index.html
-  routers/         documents.py (public API), admin.py (archives, audit; token-protected)
+  auth.py, users.py  password hashing, JWT, role checks; demo and admin accounts
+  demo.py          periodic reset of the example data in demo mode
+  routers/         auth.py (login), documents.py, admin.py (archives, audit), users.py
   services.py      CRUD, search with relevance ranking, statistics, audit log
   classifier.py    rule-based classification and keyword extraction
   archive.py       JSON export / list / restore
@@ -93,31 +99,35 @@ npm run dev
 Open <http://localhost:5173> (Vite forwards `/api` to the backend). Interactive API docs are at
 <http://localhost:8000/docs>. For a production-like run, `npm run build` once; FastAPI then serves
 the built UI itself at <http://localhost:8000>.
-With the default `.env`, the example entries are inserted on first start and the admin
-token is `change-me` (change it in `.env`).
+With the default `.env` (demo mode), the login page offers one-click access as admin, doctor or
+patient, and the example entries are restored on every start. Set `ADMIN_PASSWORD` for a real
+`admin` login.
 
 ### Docker (PostgreSQL)
 
 ```bash
-cp .env.example .env      # set ADMIN_TOKEN
+cp .env.example .env      # set JWT_SECRET
 docker compose up --build
 ```
 
 ## API overview
 
-| Method | Path | Description |
-|---|---|---|
-| GET | `/api/documents` | Search/list: `q`, `category`, `doc_type`, `limit`, `offset` |
-| POST | `/api/documents` | Create (category/keywords are suggested automatically if omitted) |
-| GET / PATCH / DELETE | `/api/documents/{id}` | Read, partial update (`reclassify: true` re-runs the classifier), delete |
-| POST | `/api/classify` | Preview category and keywords without saving |
-| GET | `/api/stats`, `/api/meta` | Dashboard numbers; categories and document types |
-| POST / GET | `/api/archives` | *Admin.* Create an archive / list archives |
-| GET | `/api/archives/{name}` | *Admin.* Download an archive |
-| POST | `/api/archives/{name}/restore` | *Admin.* Replace all entries with an archive |
-| GET | `/api/audit` | *Admin.* Change log |
+| Method | Path | Who | Description |
+|---|---|---|---|
+| POST | `/api/auth/login` | everyone | Username + password → JWT |
+| POST | `/api/auth/demo` | everyone (demo mode) | `{role}` → JWT for the demo account of that role |
+| GET | `/api/auth/me`, `/api/auth/options` | logged in / everyone | Current user; whether demo mode is on |
+| GET | `/api/documents` | logged in | Search/list: `q`, `category`, `doc_type`, `limit`, `offset` |
+| GET | `/api/documents/{id}`, `/api/stats`, `/api/meta` | logged in | Entry; dashboard numbers; categories and types |
+| POST | `/api/classify` | doctor, admin | Preview category and keywords without saving |
+| POST | `/api/documents` | admin | Create (category/keywords are suggested automatically if omitted) |
+| PATCH / DELETE | `/api/documents/{id}` | admin | Partial update (`reclassify: true` re-runs the classifier), delete |
+| POST / GET | `/api/archives` | admin | Create an archive / list archives |
+| GET | `/api/archives/{name}` | admin | Download an archive |
+| POST | `/api/archives/{name}/restore` | admin | Replace all entries with an archive |
+| GET | `/api/audit`, `/api/users` | admin | Change log; login accounts |
 
-Admin endpoints need the header `X-Admin-Token: <ADMIN_TOKEN>`.
+Send the token as `Authorization: Bearer <token>`. Missing or expired token → 401, wrong role → 403.
 
 ## How the classification works
 
@@ -161,8 +171,9 @@ The workflow in `.github/workflows/ci.yml` runs all of it plus a Docker build.
   need a labelled, independent test set.
 - **Search is substring matching**, not PostgreSQL full-text or semantic search. That is fine
   for a prototype; for large data sets use full-text indexes (`tsvector`) or embeddings.
-- **No user accounts.** Reading and editing entries is open; only the admin area is protected
-  by a shared token. A real deployment needs authentication and role-based access.
+- **Simple accounts.** Roles are enforced on every endpoint, but there is no registration,
+  password reset or rate limiting on login; demo accounts exist for the public demo.
+- **Existing databases are upgraded by a small built-in step** (`upgrade_schema`), not Alembic.
 - **Tables are created with `create_all`**; production use would add migrations (Alembic).
 - **Restoring an archive replaces all entries and assigns new ids.**
 - No patient data should ever be entered: the app has no encryption at rest, no access

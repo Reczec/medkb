@@ -10,7 +10,7 @@ fs.mkdirSync(scratch, { recursive: true })
 
 /**
  * Smoke tests against the real stack: FastAPI serves the built frontend (run `npm run build` first)
- * with a fresh SQLite database seeded with the example entries.
+ * in demo mode with a fresh SQLite database seeded with the example entries.
  */
 export default defineConfig({
   testDir: './e2e',
@@ -33,8 +33,8 @@ export default defineConfig({
     env: {
       DATABASE_URL: `sqlite:///${path.join(scratch, 'e2e.db').replaceAll('\\', '/')}`,
       ARCHIVE_DIR: path.join(scratch, 'archives'),
-      SEED_DEMO_DATA: 'true',
-      ADMIN_TOKEN: 'e2e-token',
+      DEMO_MODE: 'true',
+      JWT_SECRET: 'e2e-secret-that-is-at-least-32-characters',
     },
   },
 })

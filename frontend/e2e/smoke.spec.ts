@@ -1,4 +1,21 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
+
+type Role = 'admin' | 'doctor' | 'patient'
+
+/** Demo login through the API; the token is put into sessionStorage before any page script runs. */
+async function loginAs(page: Page, role: Role): Promise<string> {
+  const response = await page.request.post('/api/auth/demo', { data: { role } })
+  expect(response.ok()).toBe(true)
+  const { access_token: token } = await response.json()
+  await page.addInitScript((value) => sessionStorage.setItem('token', value), token)
+  return token
+}
+
+test.describe('as admin', () => {
+  let token = ''
+  test.beforeEach(async ({ page }) => {
+    token = await loginAs(page, 'admin')
+  })
 
 test('dashboard summarises the seeded knowledge base', async ({ page }) => {
   await page.goto('/')
@@ -81,8 +98,6 @@ test('a new entry is classified live and saved', async ({ page }) => {
 
 test('admin creates an archive', async ({ page }) => {
   await page.goto('/admin')
-  await page.getByLabel('Admin-Token').fill('e2e-token')
-  await page.getByRole('button', { name: 'Anmelden' }).click()
   await page.getByRole('button', { name: 'Archiv erstellen' }).click()
   await expect(page.getByRole('button', { name: /herunterladen/ }).first()).toBeVisible()
 })
@@ -111,6 +126,7 @@ test.describe('phone width', () => {
 
   test('long titles, URLs and keywords do not widen the page', async ({ page }) => {
     const created = await page.request.post('/api/documents', {
+      headers: { Authorization: `Bearer ${token}` },
       data: {
         title: 'Kopfschmerz/Migräne/Spannungskopfschmerz/Clusterkopfschmerz/Medikamentenübergebrauch',
         content:
@@ -138,4 +154,58 @@ test.describe('phone width', () => {
       expect(width).toBeLessThanOrEqual(375)
     })
   }
+})
+})
+
+test.describe('login and roles', () => {
+  test('visitors without a login land on the login page and can enter as a role', async ({ page }) => {
+    await page.goto('/wissen')
+    await expect(page).toHaveURL(/\/login\?next=%2Fwissen$/)
+    await page.getByRole('button', { name: /Ärztin \/ Arzt/ }).click()
+    await expect(page).toHaveURL(/\/wissen$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Wissensdatenbank' })).toBeVisible()
+  })
+
+  test('patients get the search-first home and no edit or admin access', async ({ page }) => {
+    await loginAs(page, 'patient')
+    await page.goto('/')
+    await expect(page.getByRole('heading', { level: 1, name: 'Wonach suchst du?' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Neuer Eintrag' })).toHaveCount(0)
+    await page.goto('/wissen/1')
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Bearbeiten/ })).toHaveCount(0)
+    await expect(page.getByRole('region', { name: 'Klassifikation' })).toHaveCount(0)
+    await page.goto('/admin')
+    await expect(page.getByText('Keine Berechtigung')).toBeVisible()
+  })
+
+  test('doctors see the classification but cannot edit', async ({ page }) => {
+    await loginAs(page, 'doctor')
+    await page.goto('/wissen/1')
+    await expect(page.getByRole('region', { name: 'Klassifikation' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Bearbeiten/ })).toHaveCount(0)
+  })
+
+  test('logging out returns to the login page', async ({ page }) => {
+    await loginAs(page, 'doctor')
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Abmelden' }).click()
+    await expect(page).toHaveURL(/\/login/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Anmelden' })).toBeVisible()
+  })
+
+  test('the API refuses a patient write with 403', async ({ page }) => {
+    const token = await loginAs(page, 'patient')
+    const response = await page.request.delete('/api/documents/1', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    expect(response.status()).toBe(403)
+  })
+
+  test('the login page fits a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.goto('/login')
+    await page.waitForLoadState('networkidle')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375)
+  })
 })
