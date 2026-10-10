@@ -13,9 +13,6 @@ class Settings(BaseSettings):
     # postgresql+psycopg://user:password@localhost:5432/medkb
     database_url: str = "sqlite:///./medkb.db"
 
-    # Token for admin endpoints (archives, audit log). Empty = admin endpoints disabled.
-    admin_token: str = ""
-
     # Where JSON archive files are written.
     archive_dir: Path = Path("archives")
 

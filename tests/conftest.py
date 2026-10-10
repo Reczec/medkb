@@ -25,8 +25,6 @@ from app.users import ensure_users  # noqa: E402
 # Full-strength bcrypt costs ~0.25 s per hash; tests only need it to work, not to be slow.
 _auth._hasher = PasswordHash((BcryptHasher(rounds=4),))
 
-ADMIN_TOKEN = "test-admin-token"
-ADMIN = {"X-Admin-Token": ADMIN_TOKEN}
 JWT_SECRET = "test-secret-that-is-at-least-32-bytes"
 ADMIN_PASSWORD = "admin-test-password"
 
@@ -34,7 +32,6 @@ ADMIN_PASSWORD = "admin-test-password"
 def make_settings(archive_dir, **overrides) -> Settings:
     values = {
         "database_url": "sqlite://",
-        "admin_token": ADMIN_TOKEN,
         "archive_dir": archive_dir,
         "jwt_secret": JWT_SECRET,
         "demo_mode": True,
@@ -101,15 +98,6 @@ def patient_client(test_settings):
 @pytest.fixture
 def anon_client(test_settings):
     return _client_for(None)
-
-
-@pytest.fixture
-def admin_disabled_client(archive_dir):
-    app.dependency_overrides[get_settings] = lambda: Settings(
-        _env_file=None, database_url="sqlite://", admin_token="", archive_dir=archive_dir
-    )
-    yield TestClient(app)
-    app.dependency_overrides.clear()
 
 
 def make_doc(

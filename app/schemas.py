@@ -206,6 +206,7 @@ class AuditOut(BaseModel):
     id: int
     timestamp: datetime
     action: str
+    actor: str | None = None
     document_id: int | None
     detail: str
 
@@ -264,6 +265,15 @@ class UserOut(BaseModel):
     username: str
     display_name: str
     role: str
+
+
+class UserListItem(UserOut):
+    created_at: datetime
+
+    @field_validator("created_at")
+    @classmethod
+    def _utc(cls, value: datetime) -> datetime:
+        return as_utc(value)
 
 
 class TokenOut(BaseModel):

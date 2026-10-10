@@ -16,15 +16,17 @@ from app.archive import (
     resolve_archive,
     restore_archive,
 )
+from app.auth import require_role
 from app.config import Settings, get_settings
 from app.database import get_db
+from app.models import User
 from app.schemas import ArchiveInfo, AuditOut, RestoreResult
-from app.security import require_admin
 
-router = APIRouter(prefix="/api", tags=["admin"], dependencies=[Depends(require_admin)])
+router = APIRouter(prefix="/api", tags=["admin"])
 
 DbSession = Annotated[Session, Depends(get_db)]
 AppSettings = Annotated[Settings, Depends(get_settings)]
+Admin = Annotated[User, Depends(require_role("admin"))]
 
 
 def _http_error(exc: ArchiveError) -> HTTPException:
@@ -33,17 +35,17 @@ def _http_error(exc: ArchiveError) -> HTTPException:
 
 
 @router.post("/archives", response_model=ArchiveInfo, status_code=status.HTTP_201_CREATED)
-def make_archive(db: DbSession, settings: AppSettings) -> ArchiveInfo:
-    return create_archive(db, settings.archive_dir)
+def make_archive(db: DbSession, settings: AppSettings, user: Admin) -> ArchiveInfo:
+    return create_archive(db, settings.archive_dir, actor=user.username)
 
 
 @router.get("/archives", response_model=list[ArchiveInfo])
-def get_archives(settings: AppSettings) -> list[ArchiveInfo]:
+def get_archives(settings: AppSettings, _user: Admin) -> list[ArchiveInfo]:
     return list_archives(settings.archive_dir)
 
 
 @router.get("/archives/{name}")
-def download_archive(name: str, settings: AppSettings) -> FileResponse:
+def download_archive(name: str, settings: AppSettings, _user: Admin) -> FileResponse:
     try:
         path = resolve_archive(settings.archive_dir, name)
     except ArchiveError as exc:
@@ -52,14 +54,14 @@ def download_archive(name: str, settings: AppSettings) -> FileResponse:
 
 
 @router.post("/archives/{name}/restore", response_model=RestoreResult)
-def restore(name: str, db: DbSession, settings: AppSettings) -> RestoreResult:
+def restore(name: str, db: DbSession, settings: AppSettings, user: Admin) -> RestoreResult:
     try:
-        restored, backup = restore_archive(db, settings.archive_dir, name)
+        restored, backup = restore_archive(db, settings.archive_dir, name, actor=user.username)
     except ArchiveError as exc:
         raise _http_error(exc) from exc
     return RestoreResult(restored=restored, backup=backup)
 
 
 @router.get("/audit", response_model=list[AuditOut])
-def audit_log(db: DbSession, limit: Annotated[int, Query(ge=1, le=200)] = 50) -> list:
+def audit_log(db: DbSession, _user: Admin, limit: Annotated[int, Query(ge=1, le=200)] = 50) -> list:
     return services.list_audit(db, limit)
