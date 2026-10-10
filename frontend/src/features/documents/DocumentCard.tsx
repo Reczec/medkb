@@ -1,4 +1,5 @@
 import { Sparkles } from 'lucide-react'
+import { useId } from 'react'
 import { Link } from 'react-router'
 import { CategoryBadge } from '@/components/specialty/CategoryBadge'
 import { categoryStyle } from '@/lib/categories'
@@ -11,10 +12,12 @@ const VISIBLE_KEYWORDS = 5
 export function DocumentCard({ document }: { document: Document }) {
   const style = categoryStyle(document.category)
   const extra = document.keywords.length - VISIBLE_KEYWORDS
+  const titleId = useId()
 
   return (
     <Link
       to={`/wissen/${document.id}`}
+      aria-labelledby={titleId}
       className="group relative block h-full pt-2.5 focus-visible:outline-none"
     >
       <span
@@ -37,7 +40,7 @@ export function DocumentCard({ document }: { document: Document }) {
           )}
         </div>
 
-        <h2 className="line-clamp-2 text-lg leading-snug font-semibold break-words">
+        <h2 id={titleId} className="line-clamp-2 text-lg leading-snug font-semibold break-words">
           {document.title}
         </h2>
         <p className="line-clamp-3 text-sm leading-relaxed break-words text-muted-foreground">

@@ -1,3 +1,13 @@
+# Stage 1: build the React frontend
+FROM node:22-alpine AS frontend
+
+WORKDIR /frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2: Python API that also serves the built frontend
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -10,6 +20,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY app ./app
+COPY --from=frontend /frontend/dist ./frontend/dist
 
 # Run as an unprivileged user; archives are written to /app/archives (mounted as a volume).
 RUN useradd --create-home --uid 10001 appuser \

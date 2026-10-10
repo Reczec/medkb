@@ -2,7 +2,8 @@
 
 A small web application for storing, classifying, searching and archiving medical knowledge
 entries (symptoms, diagnoses, descriptions, …). Python/FastAPI backend, SQLite or PostgreSQL,
-plain HTML/CSS/JS frontend. The UI is in German, the code and API are in English.
+React + TypeScript frontend (Vite, Tailwind CSS, shadcn/ui, Motion, Recharts). The UI is in German,
+the code and API are in English.
 
 > **Prototype with example data only – not a medical product and not medical advice.**
 > The bundled entries are short, generic textbook-style texts. There is no patient data.
@@ -30,7 +31,9 @@ a CI setup.
 - **Archive**: admin-only export of all entries to a JSON file, list of archives, download,
   restore (an automatic "pre-restore" backup is created first)
 - **Traceability**: change log of create / update / delete / archive actions (admin-only)
-- **Dashboard** with entry counts per category; responsive, light/dark UI
+- **Dashboard** with a 30-day activity chart, document types and the specialties as colour-coded
+  filing tabs; command palette (Ctrl+K), animated transitions, light/dark theme, responsive down
+  to phone width, `prefers-reduced-motion` respected
 
 | Search & dashboard | Classification suggestion | Admin: archives & change log |
 |---|---|---|
@@ -40,7 +43,7 @@ a CI setup.
 
 ```mermaid
 flowchart LR
-    UI["Browser UI<br/>HTML / CSS / JS"] -- "REST /api (JSON)" --> API["FastAPI app"]
+    UI["React UI<br/>TypeScript / Vite"] -- "REST /api (JSON)" --> API["FastAPI app"]
     API --> SVC["services: CRUD, search, stats, audit"]
     API --> CLS["classifier: rules + scoring"]
     API --> ARC["archive: JSON export / restore"]
@@ -51,22 +54,27 @@ flowchart LR
 
 ```
 app/
-  main.py          FastAPI app, startup, static UI
+  main.py          FastAPI app, startup
+  spa.py           serves the built frontend with a fallback to index.html
   routers/         documents.py (public API), admin.py (archives, audit; token-protected)
   services.py      CRUD, search with relevance ranking, statistics, audit log
   classifier.py    rule-based classification and keyword extraction
   archive.py       JSON export / list / restore
   models.py, schemas.py, database.py, config.py, security.py
   seed.py, seed_data.py   example entries
-  static/          index.html, style.css, app.js
-tests/             pytest suite (classifier, document API, admin API)
+frontend/
+  src/features/    dashboard, documents (list, detail), editor, admin
+  src/components/  layout (shell, command palette), specialty (filing tabs, score bars), ui (shadcn)
+  src/lib/         API client, query hooks, types, helpers
+  e2e/             Playwright smoke tests
+tests/             pytest suite (classifier, document API, admin API, SPA serving)
 ```
 
 ## Quick start
 
-Requires Python 3.12+.
+Requires Python 3.12+ and Node.js 22+.
 
-**Windows (PowerShell)**
+**Backend** (Windows PowerShell; on macOS/Linux use `source .venv/bin/activate` and `cp`)
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
@@ -75,15 +83,16 @@ copy .env.example .env
 uvicorn app.main:app --reload
 ```
 
-**macOS / Linux**
+**Frontend**, in a second terminal
 ```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements-dev.txt
-cp .env.example .env
-uvicorn app.main:app --reload
+cd frontend
+npm install
+npm run dev
 ```
 
-Open <http://localhost:8000>. Interactive API docs are at <http://localhost:8000/docs>.
+Open <http://localhost:5173> (Vite forwards `/api` to the backend). Interactive API docs are at
+<http://localhost:8000/docs>. For a production-like run, `npm run build` once; FastAPI then serves
+the built UI itself at <http://localhost:8000>.
 With the default `.env`, the example entries are inserted on first start and the admin
 token is `change-me` (change it in `.env`).
 
@@ -129,12 +138,20 @@ Admin endpoints need the header `X-Admin-Token: <ADMIN_TOKEN>`.
 pytest                      # in-memory SQLite
 TEST_DATABASE_URL=postgresql+psycopg://user:pass@localhost:5432/medkb_test pytest   # PostgreSQL
 ruff check . && ruff format --check .
+
+cd frontend
+npm run lint && npm run typecheck && npm test          # oxlint, TypeScript, Vitest
+npm run build && npx playwright install chromium
+PYTHON=../.venv/bin/python npm run e2e                 # Playwright against the real stack
 ```
 
-74 tests cover the classifier, CRUD and validation, search (AND semantics, umlauts, ranking,
+The backend tests cover the classifier, CRUD and validation, search (AND semantics, umlauts, ranking,
 wildcard escaping, pagination), statistics, admin authentication, archive export/restore
-(including corrupt files and path traversal) and the audit log. The suite passes on SQLite
-and on PostgreSQL 16. The workflow in `.github/workflows/ci.yml` runs lint and tests on both.
+(including corrupt files and path traversal), the audit log, the activity series and serving the
+frontend. The suite passes on SQLite and on PostgreSQL 16. Frontend unit tests (Vitest + Testing
+Library) cover the API client, helpers and every page; Playwright smoke tests run search, editing
+with live classification, archiving and phone-width layout against FastAPI with a seeded database.
+The workflow in `.github/workflows/ci.yml` runs all of it plus a Docker build.
 
 ## Limitations and possible next steps
 
