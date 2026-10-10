@@ -1,7 +1,5 @@
-import { Archive, ListChecks, LogOut } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Archive, ListChecks } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AdminTokenGate } from '@/features/admin/AdminTokenGate'
 import { ArchivesPanel } from '@/features/admin/ArchivesPanel'
 import { AuditTable } from '@/features/admin/AuditTable'
 
@@ -13,31 +11,22 @@ export function AdminPage() {
         <p className="text-muted-foreground">Archive verwalten und Änderungen nachvollziehen.</p>
       </header>
 
-      <AdminTokenGate>
-        {(logout) => (
-          <Tabs defaultValue="archives" className="gap-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <TabsList className="h-10!">
-                <TabsTrigger value="archives" className="px-3">
-                  <Archive aria-hidden /> Archive
-                </TabsTrigger>
-                <TabsTrigger value="audit" className="px-3">
-                  <ListChecks aria-hidden /> Änderungsprotokoll
-                </TabsTrigger>
-              </TabsList>
-              <Button variant="ghost" onClick={logout}>
-                <LogOut aria-hidden /> Abmelden
-              </Button>
-            </div>
-            <TabsContent value="archives">
-              <ArchivesPanel />
-            </TabsContent>
-            <TabsContent value="audit">
-              <AuditTable />
-            </TabsContent>
-          </Tabs>
-        )}
-      </AdminTokenGate>
+      <Tabs defaultValue="archives" className="gap-5">
+        <TabsList className="h-10!">
+          <TabsTrigger value="archives" className="px-3">
+            <Archive aria-hidden /> Archive
+          </TabsTrigger>
+          <TabsTrigger value="audit" className="px-3">
+            <ListChecks aria-hidden /> Änderungsprotokoll
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="archives">
+          <ArchivesPanel />
+        </TabsContent>
+        <TabsContent value="audit">
+          <AuditTable />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

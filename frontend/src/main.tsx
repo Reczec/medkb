@@ -4,6 +4,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Toaster } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { AuthProvider } from '@/features/auth/AuthProvider'
 import { applyTheme, readTheme } from '@/lib/theme'
 import App from './App.tsx'
 import './index.css'
@@ -28,7 +29,9 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <MotionConfig reducedMotion="user">
         <TooltipProvider delayDuration={300}>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
           <Toaster position="bottom-right" richColors closeButton />
         </TooltipProvider>
       </MotionConfig>

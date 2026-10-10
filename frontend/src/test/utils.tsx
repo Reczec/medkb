@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render } from '@testing-library/react'
 import type { ReactElement } from 'react'
+import { AuthProvider } from '@/features/auth/AuthProvider'
 import { createMemoryRouter, RouterProvider, type RouteObject } from 'react-router'
 
 export function makeQueryClient() {
@@ -10,14 +11,21 @@ export function makeQueryClient() {
 /** Renders `ui` at `path` inside a router; extra routes let tests assert navigation. */
 export function renderWithProviders(
   ui: ReactElement,
-  { path = '/', route = '*', routes = [] as RouteObject[], client = makeQueryClient() } = {},
+  {
+    path = '/',
+    route = '*',
+    routes = [] as RouteObject[],
+    client = makeQueryClient(),
+    withAuth = false,
+  } = {},
 ) {
   const router = createMemoryRouter([{ path: route, element: ui }, ...routes], {
     initialEntries: [path],
   })
+  const routed = <RouterProvider router={router} />
   const result = render(
     <QueryClientProvider client={client}>
-      <RouterProvider router={router} />
+      {withAuth ? <AuthProvider>{routed}</AuthProvider> : routed}
     </QueryClientProvider>,
   )
   return { ...result, router, client }

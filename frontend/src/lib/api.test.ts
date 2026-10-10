@@ -1,4 +1,5 @@
-import { ApiError, api, errorMessage } from '@/lib/api'
+import { ApiError, UNAUTHORIZED_EVENT, api, errorMessage } from '@/lib/api'
+import { tokenStore } from '@/lib/auth'
 
 describe('errorMessage', () => {
   it('reads a string detail', async () => {
@@ -29,20 +30,37 @@ describe('api', () => {
     sessionStorage.clear()
   })
 
-  it('throws ApiError with the status and sends the admin token', async () => {
-    sessionStorage.setItem('adminToken', 'secret')
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ detail: 'Invalid or missing admin token.' }), { status: 401 }),
-    )
+  it('sends the login token as a bearer header', async () => {
+    tokenStore.set('abc.def.ghi')
+    const fetchMock = vi.fn().mockResolvedValue(new Response('[]', { status: 200 }))
     vi.stubGlobal('fetch', fetchMock)
-
-    const error = await api('/api/audit', { admin: true }).catch((e: unknown) => e)
-
-    expect(error).toBeInstanceOf(ApiError)
-    expect((error as ApiError).status).toBe(401)
-    expect((error as ApiError).message).toBe('Invalid or missing admin token.')
+    await api('/api/documents')
     const init = fetchMock.mock.calls[0][1] as RequestInit
-    expect(new Headers(init.headers).get('X-Admin-Token')).toBe('secret')
+    expect(new Headers(init.headers).get('Authorization')).toBe('Bearer abc.def.ghi')
+  })
+
+  it('forgets an expired token and announces it', async () => {
+    tokenStore.set('expired')
+    const listener = vi.fn()
+    window.addEventListener(UNAUTHORIZED_EVENT, listener)
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response(JSON.stringify({ detail: 'abgelaufen' }), { status: 401 })),
+    )
+    const error = await api('/api/stats').catch((e: unknown) => e)
+    window.removeEventListener(UNAUTHORIZED_EVENT, listener)
+    expect((error as ApiError).status).toBe(401)
+    expect(tokenStore.get()).toBeNull()
+    expect(listener).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not announce a 401 when no token was sent (wrong password)', async () => {
+    const listener = vi.fn()
+    window.addEventListener(UNAUTHORIZED_EVENT, listener)
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('{}', { status: 401 })))
+    await api('/api/auth/login', { method: 'POST', body: {} }).catch(() => {})
+    window.removeEventListener(UNAUTHORIZED_EVENT, listener)
+    expect(listener).not.toHaveBeenCalled()
   })
 
   it('sends JSON bodies and parses JSON responses', async () => {
