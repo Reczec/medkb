@@ -14,9 +14,9 @@ interface SpecialtyStripProps {
 }
 
 /**
- * The signature element: specialties as labelled filing tabs standing on one drawer edge.
- * Every tab shows its full name; the drawer edge below is coloured by each specialty's share
- * of the entries, so proportion never costs legibility. On narrow screens the tabs scroll.
+ * The signature element: specialties as labelled filing tabs standing on one neutral drawer
+ * edge, each tab showing its full name. A separate, captioned bar below shows each specialty's
+ * share of the entries, so proportion never costs legibility. On narrow screens the tabs scroll.
  */
 export function SpecialtyStrip({ items, active, onSelect, className }: SpecialtyStripProps) {
   const reduced = useReducedMotion()
@@ -26,7 +26,7 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
 
   return (
     <nav aria-label="Fachgebiete" className={className}>
-      <ul className="flex items-end gap-1 overflow-x-auto px-1 pt-2">
+      <ul className="flex items-end gap-1 overflow-x-auto border-b-2 px-1 pt-2">
         {filled.map((item, index) => {
           const style = categoryStyle(item.name)
           const selected = active === item.name
@@ -47,7 +47,7 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
             </>
           )
           const tabClass = cn(
-            'relative flex items-center gap-2 overflow-hidden rounded-t-lg border border-b-0 px-3 pt-0.5 whitespace-nowrap',
+            'relative -mb-0.5 flex items-center gap-2 overflow-hidden rounded-t-lg border border-b-0 px-3 pt-0.5 whitespace-nowrap',
             'transition-[height,background-color,box-shadow] duration-200 ease-out',
             'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset',
             selected
@@ -89,8 +89,9 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
         })}
       </ul>
 
-      {/* The drawer edge: each specialty's share of all entries. */}
-      <div className="flex h-2 gap-0.5 overflow-hidden rounded-b-md" aria-hidden>
+      <div className="mt-4 flex items-center gap-3">
+        <span className="shrink-0 text-xs text-muted-foreground">Anteil der Einträge</span>
+        <div className="flex h-2 flex-1 gap-0.5 overflow-hidden rounded-full" aria-hidden>
         {filled.map((item, index) => {
           const style = categoryStyle(item.name)
           const dimmed = filtering && active !== item.name
@@ -107,6 +108,7 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
             />
           )
         })}
+        </div>
       </div>
 
       {empty > 0 && (
