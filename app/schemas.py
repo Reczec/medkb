@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from enum import StrEnum
 from typing import Annotated, Self
 
@@ -60,7 +60,7 @@ def _check_category(value: str | None) -> str | None:
     return value
 
 
-def _as_utc(value: datetime) -> datetime:
+def as_utc(value: datetime) -> datetime:
     # SQLite returns naive datetimes; everything is stored in UTC.
     return value.replace(tzinfo=UTC) if value.tzinfo is None else value
 
@@ -135,7 +135,7 @@ class DocumentOut(BaseModel):
     @field_validator("created_at", "updated_at")
     @classmethod
     def _utc(cls, value: datetime) -> datetime:
-        return _as_utc(value)
+        return as_utc(value)
 
 
 class DocumentList(BaseModel):
@@ -181,7 +181,12 @@ class RecentItem(BaseModel):
     @field_validator("updated_at")
     @classmethod
     def _utc(cls, value: datetime) -> datetime:
-        return _as_utc(value)
+        return as_utc(value)
+
+
+class DayCount(BaseModel):
+    date: date
+    count: int
 
 
 class StatsOut(BaseModel):
@@ -190,6 +195,9 @@ class StatsOut(BaseModel):
     categories: list[CountItem]
     doc_types: list[CountItem]
     recent: list[RecentItem]
+    activity: list[DayCount] = Field(
+        description="Changes (audit log entries) per UTC day, last 30 days, oldest first."
+    )
 
 
 class AuditOut(BaseModel):
@@ -204,7 +212,7 @@ class AuditOut(BaseModel):
     @field_validator("timestamp")
     @classmethod
     def _utc(cls, value: datetime) -> datetime:
-        return _as_utc(value)
+        return as_utc(value)
 
 
 class ArchiveInfo(BaseModel):

@@ -15,7 +15,7 @@ import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from app.config import Settings, get_settings  # noqa: E402
-from app.database import Base, engine  # noqa: E402
+from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 
 ADMIN_TOKEN = "test-admin-token"
@@ -27,6 +27,12 @@ def clean_database():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     yield
+
+
+@pytest.fixture
+def db_session():
+    with SessionLocal() as session:
+        yield session
 
 
 @pytest.fixture
