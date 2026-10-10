@@ -134,6 +134,12 @@ def restore_archive(
                 keywords=entry.keywords,
                 source=entry.source,
                 auto_classified=entry.auto_classified,
+                term_en=entry.term_en,
+                icd11_code=entry.icd11_code,
+                medications=entry.medications,
+                sections=entry.sections.model_dump() if entry.sections else None,
+                further_reading=[link.model_dump() for link in entry.further_reading],
+                ai_generated=entry.ai_generated,
                 created_at=entry.created_at,
                 updated_at=entry.updated_at,
             )

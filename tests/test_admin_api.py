@@ -146,3 +146,60 @@ def test_audit_log_records_changes(client):
     assert entries[1]["document_id"] == doc["id"]
     assert "Protokoll neu" in entries[1]["detail"]  # entries survive deletion of the document
     assert client.get("/api/audit", params={"limit": 2}).json().__len__() == 2
+
+
+def test_archive_roundtrip_keeps_new_fields(client):
+    payload = {
+        "title": "Migräne",
+        "doc_type": "Diagnose",
+        "sections": {"definition": "Anfallsartiger Kopfschmerz.", "red_flags": "Notruf 144."},
+        "term_en": "Migraine",
+        "icd11_code": "8A80",
+        "medications": ["sumatriptan"],
+        "further_reading": [{"label": "Info", "url": "https://www.who.int/x"}],
+    }
+    original = client.post("/api/documents", json=payload).json()
+    archive = client.post("/api/archives").json()
+    client.delete(f"/api/documents/{original['id']}")
+
+    assert client.post(f"/api/archives/{archive['name']}/restore").status_code == 200
+    restored = client.get("/api/documents").json()["items"][0]
+    for field in (
+        "content",
+        "sections",
+        "term_en",
+        "icd11_code",
+        "medications",
+        "further_reading",
+        "ai_generated",
+    ):
+        assert restored[field] == original[field], field
+
+
+def test_old_archive_without_new_fields_restores_with_defaults(client, archive_dir):
+    archive_dir.mkdir()
+    old = {
+        "format_version": 1,
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "document_count": 1,
+        "documents": [
+            {
+                "title": "Alter Eintrag",
+                "content": "Ein Eintrag aus einem Archiv vor Etappe 3.",
+                "category": "HNO",
+                "doc_type": "Symptom",
+                "keywords": ["Alt"],
+                "source": None,
+                "auto_classified": True,
+                "created_at": "2026-01-01T00:00:00+00:00",
+                "updated_at": "2026-01-01T00:00:00+00:00",
+            }
+        ],
+    }
+    (archive_dir / "archive_20260101_000000.json").write_text(json.dumps(old), encoding="utf-8")
+
+    assert client.post("/api/archives/archive_20260101_000000.json/restore").status_code == 200
+    doc = client.get("/api/documents").json()["items"][0]
+    assert doc["sections"] is None and doc["term_en"] is None
+    assert doc["medications"] == [] and doc["further_reading"] == []
+    assert doc["ai_generated"] is False
