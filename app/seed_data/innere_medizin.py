@@ -7,7 +7,6 @@ ENTRIES = [
         "expected_category": "Innere Medizin",
         "term_en": "Iron deficiency anemia",
         "icd11_code": "3A00",
-        "medications": ["ferrous sulfate"],
         "sections": {
             "definition": (
                 "Bei der Eisenmangelanämie fehlt dem Körper Eisen, um ausreichend roten "
