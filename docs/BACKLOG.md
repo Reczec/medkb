@@ -6,7 +6,7 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 
 - Editor: Escape does nothing in the "Änderungen verwerfen?" dialog. Add `onOpenChange` → `blocker.reset()` in `frontend/src/features/editor/EditorPage.tsx`. There is also no `beforeunload` guard for closing the tab or reloading.
 - Activity dates: `formatDay` in `frontend/src/lib/format.ts` parses `YYYY-MM-DD` as UTC midnight, so the date shows one day early west of UTC. Format with `timeZone: 'UTC'`. The buckets are UTC days.
-- `AdminTokenGate` drops a stored token on any error. Drop it only on 401. A token that expires mid-session ends in an error card with no way back to the gate, and backend `detail` texts are English. Most of this goes away with stage 2 auth.
+- Backend `detail` texts for validation and some 404s are English; the UI shows them as they are.
 - Archive restore shows no progress and does not guard against double submit. Defer `URL.revokeObjectURL` after the download click.
 - `ThemeToggle` and `CategoryPicker` use `role="radio"` without arrow-key navigation. Either implement roving tabindex or switch to `aria-pressed` buttons.
 - Command palette: the "Keine Einträge gefunden." message never shows, because the action items always match.

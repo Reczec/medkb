@@ -13,7 +13,7 @@ export function AdminPage() {
       </header>
 
       <Tabs defaultValue="archives" className="gap-5">
-        <TabsList className="h-10!">
+        <TabsList className="h-10! max-w-full justify-start overflow-x-auto">
           <TabsTrigger value="archives" className="px-3">
             <Archive aria-hidden /> Archive
           </TabsTrigger>
