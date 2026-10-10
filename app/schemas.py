@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, date, datetime
 from enum import StrEnum
-from typing import Annotated, Literal, Self
+from typing import Annotated, Any, Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -16,6 +17,7 @@ from pydantic import (
 )
 
 from app.classifier import CATEGORIES
+from app.content import compose_content
 
 
 class DocType(StrEnum):
@@ -60,6 +62,87 @@ def _check_category(value: str | None) -> str | None:
     return value
 
 
+MAX_MEDICATIONS = 10
+MAX_FURTHER_READING = 8
+MAX_SECTION_LENGTH = 5000
+TERM_EN_RE = re.compile(r"^[A-Za-z0-9 ,'()\-]+$")
+ICD11_CODE_RE = re.compile(r"^[0-9A-Z]{4}(\.[0-9A-Z]{1,2})?$")
+MEDICATION_RE = re.compile(r"^[a-z][a-z \-]+$")
+
+TermEn = Annotated[str, StringConstraints(strip_whitespace=True, min_length=2, max_length=200)]
+
+
+def _check_term_en(value: str | None) -> str | None:
+    if value is not None and not TERM_EN_RE.match(value):
+        raise ValueError("term_en may only contain letters, digits, spaces and , ' ( ) -")
+    return value
+
+
+def _check_icd11_code(value: str | None) -> str | None:
+    if value is None:
+        return None
+    code = value.strip().upper()
+    if not ICD11_CODE_RE.match(code):
+        raise ValueError("Not an ICD-11 stem code such as 'BA00' or '8A80.1'.")
+    return code
+
+
+def _clean_medications(values: list[str] | None) -> list[str] | None:
+    if values is None:
+        return None
+    cleaned: list[str] = []
+    for value in values:
+        name = " ".join(value.split()).lower()
+        if not (2 <= len(name) <= 60 and MEDICATION_RE.match(name)):
+            raise ValueError(f"'{value}' is not a valid active ingredient name.")
+        if name not in cleaned:
+            cleaned.append(name)
+    if len(cleaned) > MAX_MEDICATIONS:
+        raise ValueError(f"At most {MAX_MEDICATIONS} active ingredients are allowed.")
+    return cleaned
+
+
+class Sections(BaseModel):
+    """Structured content. Empty sections are stored as null; at least one must have text."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    definition: str | None = Field(default=None, max_length=MAX_SECTION_LENGTH)
+    symptoms: str | None = Field(default=None, max_length=MAX_SECTION_LENGTH)
+    causes: str | None = Field(default=None, max_length=MAX_SECTION_LENGTH)
+    diagnostics: str | None = Field(default=None, max_length=MAX_SECTION_LENGTH)
+    therapy: str | None = Field(default=None, max_length=MAX_SECTION_LENGTH)
+    red_flags: str | None = Field(default=None, max_length=MAX_SECTION_LENGTH)
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def _blank_is_none(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            return value.strip() or None
+        return value
+
+    @model_validator(mode="after")
+    def _not_empty(self) -> Self:
+        if not any(self.model_dump().values()):
+            raise ValueError("At least one section needs text.")
+        return self
+
+
+class FurtherReadingLink(BaseModel):
+    label: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+    url: Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)]
+
+    @field_validator("url")
+    @classmethod
+    def _https(cls, value: str) -> str:
+        if not value.startswith("https://") or any(c.isspace() for c in value):
+            raise ValueError("Links must be https:// URLs.")
+        return value
+
+
+FurtherReading = Annotated[list[FurtherReadingLink], Field(max_length=MAX_FURTHER_READING)]
+
+
 def as_utc(value: datetime) -> datetime:
     # SQLite returns naive datetimes; everything is stored in UTC.
     return value.replace(tzinfo=UTC) if value.tzinfo is None else value
@@ -67,13 +150,20 @@ def as_utc(value: datetime) -> datetime:
 
 class DocumentCreate(BaseModel):
     title: Title
-    content: Content
+    # Required unless sections are given; with sections it is composed from them.
+    content: Content | None = None
     doc_type: DocType
     # None -> chosen by the classifier. A value -> manual choice, never overwritten.
     category: str | None = None
     # None or [] -> generated automatically.
     keywords: list[str] | None = None
     source: Source | None = None
+    term_en: TermEn | None = None
+    icd11_code: str | None = None
+    medications: list[str] = Field(default_factory=list)
+    sections: Sections | None = None
+    further_reading: FurtherReading = Field(default_factory=list)
+    ai_generated: bool = False
 
     @field_validator("category")
     @classmethod
@@ -85,6 +175,29 @@ class DocumentCreate(BaseModel):
     def _keywords(cls, value: list[str] | None) -> list[str] | None:
         return _clean_keywords(value)
 
+    @field_validator("term_en")
+    @classmethod
+    def _term_en(cls, value: str | None) -> str | None:
+        return _check_term_en(value)
+
+    @field_validator("icd11_code")
+    @classmethod
+    def _icd11_code(cls, value: str | None) -> str | None:
+        return _check_icd11_code(value)
+
+    @field_validator("medications")
+    @classmethod
+    def _medications(cls, value: list[str]) -> list[str]:
+        return _clean_medications(value) or []
+
+    @model_validator(mode="after")
+    def _content_or_sections(self) -> Self:
+        if self.sections is not None:
+            self.content = compose_content(self.sections.model_dump())
+        elif self.content is None:
+            raise ValueError("Either 'content' or 'sections' is required.")
+        return self
+
 
 class DocumentUpdate(BaseModel):
     """Partial update: only the fields that are sent are changed."""
@@ -95,6 +208,12 @@ class DocumentUpdate(BaseModel):
     category: str | None = None
     keywords: list[str] | None = None  # [] -> regenerate automatically
     source: Source | None = None  # null clears the source
+    term_en: TermEn | None = None  # null clears
+    icd11_code: str | None = None  # null clears
+    medications: list[str] | None = None
+    # New sections recompose the content; content sent without sections makes it free text.
+    sections: Sections | None = None
+    further_reading: FurtherReading | None = None
     reclassify: bool = False  # re-run the classifier for category (and keywords)
 
     @field_validator("category")
@@ -107,10 +226,34 @@ class DocumentUpdate(BaseModel):
     def _keywords(cls, value: list[str] | None) -> list[str] | None:
         return _clean_keywords(value)
 
+    @field_validator("term_en")
+    @classmethod
+    def _term_en(cls, value: str | None) -> str | None:
+        return _check_term_en(value)
+
+    @field_validator("icd11_code")
+    @classmethod
+    def _icd11_code(cls, value: str | None) -> str | None:
+        return _check_icd11_code(value)
+
+    @field_validator("medications")
+    @classmethod
+    def _medications(cls, value: list[str] | None) -> list[str] | None:
+        return _clean_medications(value)
+
     @model_validator(mode="after")
     def _check_fields(self) -> Self:
         sent = self.model_fields_set
-        for name in ("title", "content", "doc_type", "category", "keywords"):
+        not_null = (
+            "title",
+            "content",
+            "doc_type",
+            "category",
+            "keywords",
+            "medications",
+            "further_reading",
+        )
+        for name in not_null:
             if name in sent and getattr(self, name) is None:
                 raise ValueError(f"'{name}' must not be null.")
         if not sent:
@@ -129,6 +272,12 @@ class DocumentOut(BaseModel):
     keywords: list[str]
     source: str | None
     auto_classified: bool
+    term_en: str | None = None
+    icd11_code: str | None = None
+    medications: list[str] = Field(default_factory=list)
+    sections: dict[str, str | None] | None = None
+    further_reading: list[FurtherReadingLink] = Field(default_factory=list)
+    ai_generated: bool = False
     created_at: datetime
     updated_at: datetime
 
@@ -136,6 +285,17 @@ class DocumentOut(BaseModel):
     @classmethod
     def _utc(cls, value: datetime) -> datetime:
         return as_utc(value)
+
+    @field_validator("medications", "further_reading", mode="before")
+    @classmethod
+    def _null_list(cls, value: Any) -> Any:
+        # Rows from before v2 stage 3 can hold NULL in the added columns.
+        return [] if value is None else value
+
+    @field_validator("ai_generated", mode="before")
+    @classmethod
+    def _null_false(cls, value: Any) -> Any:
+        return False if value is None else value
 
 
 class DocumentList(BaseModel):
@@ -147,9 +307,17 @@ class DocumentList(BaseModel):
 
 class ClassifyRequest(BaseModel):
     title: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
-    content: Annotated[
-        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50_000)
-    ]
+    content: Annotated[str, StringConstraints(strip_whitespace=True, max_length=50_000)] = ""
+    # Structured entries are classified on their composed full text.
+    sections: Sections | None = None
+
+    @model_validator(mode="after")
+    def _content_or_sections(self) -> Self:
+        if self.sections is not None:
+            self.content = compose_content(self.sections.model_dump())
+        if not self.content:
+            raise ValueError("Either 'content' or 'sections' is required.")
+        return self
 
 
 class ClassifyResponse(BaseModel):

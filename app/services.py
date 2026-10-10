@@ -11,6 +11,7 @@ from sqlalchemy import String, case, cast, false, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.classifier import CATEGORIES, classify
+from app.content import compose_content
 from app.models import AuditLog, Document
 from app.schemas import (
     CountItem,
@@ -44,17 +45,24 @@ def log_audit(
 
 
 def create_document(db: Session, data: DocumentCreate, actor: str | None = None) -> Document:
-    suggestion = classify(data.title, data.content)
+    content = data.content or ""  # the schema guarantees content (or composes it from sections)
+    suggestion = classify(data.title, content)
     manual_category = data.category is not None
 
     document = Document(
         title=data.title,
-        content=data.content,
+        content=content,
         doc_type=data.doc_type.value,
         category=data.category if manual_category else suggestion.category,
         keywords=data.keywords or suggestion.keywords,
         source=data.source or None,
         auto_classified=not manual_category,
+        term_en=data.term_en,
+        icd11_code=data.icd11_code,
+        medications=data.medications,
+        sections=data.sections.model_dump() if data.sections else None,
+        further_reading=[link.model_dump() for link in data.further_reading],
+        ai_generated=data.ai_generated,
     )
     db.add(document)
     db.flush()  # assigns the id for the audit entry
@@ -72,12 +80,22 @@ def update_document(
 
     if "title" in changes:
         document.title = changes["title"]
-    if "content" in changes:
+    if changes.get("sections") is not None:
+        # Structured entries keep their full text in sync with the sections.
+        document.sections = changes["sections"]
+        document.content = compose_content(changes["sections"])
+    elif "content" in changes:
         document.content = changes["content"]
+        document.sections = None  # edited as free text from now on
+    elif "sections" in changes:  # explicit null: keep the text, drop the structure
+        document.sections = None
     if "doc_type" in changes:
         document.doc_type = changes["doc_type"].value
     if "source" in changes:
         document.source = changes["source"] or None
+    for name in ("term_en", "icd11_code", "medications", "further_reading"):
+        if name in changes:
+            setattr(document, name, changes[name])
 
     if "category" in changes:
         document.category = changes["category"]
