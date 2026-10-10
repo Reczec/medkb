@@ -1,6 +1,5 @@
 import { useReducedMotion } from 'motion/react'
-import { useId } from 'react'
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { formatDay } from '@/lib/format'
 import type { DayCount } from '@/lib/types'
 
@@ -22,9 +21,9 @@ function ChartTooltip({ active, payload }: TooltipPayload) {
   )
 }
 
+/** One bar per day: days without changes stay at zero instead of being smoothed over. */
 export function ActivityChart({ activity }: { activity: DayCount[] }) {
   const reduced = useReducedMotion()
-  const gradientId = useId()
   const total = activity.reduce((sum, day) => sum + day.count, 0)
   const today = activity.at(-1)?.count ?? 0
 
@@ -39,13 +38,7 @@ export function ActivityChart({ activity }: { activity: DayCount[] }) {
       </div>
       <div className="mt-4 h-52 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={activity} margin={{ top: 8, right: 4, bottom: 0, left: -24 }}>
-            <defs>
-              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.32} />
-                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
+          <BarChart data={activity} margin={{ top: 8, right: 4, bottom: 0, left: -24 }}>
             <CartesianGrid vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="date"
@@ -62,22 +55,18 @@ export function ActivityChart({ activity }: { activity: DayCount[] }) {
               width={44}
               tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
             />
-            <Tooltip
-              content={<ChartTooltip />}
-              cursor={{ stroke: 'var(--primary)', strokeOpacity: 0.35, strokeDasharray: '3 3' }}
-            />
-            <Area
-              type="monotone"
+            <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--muted)', opacity: 0.6 }} />
+            <Bar
               dataKey="count"
-              stroke="var(--primary)"
-              strokeWidth={2}
-              fill={`url(#${gradientId})`}
+              fill="var(--primary)"
+              radius={[3, 3, 0, 0]}
+              maxBarSize={18}
+              minPointSize={0}
               isAnimationActive={!reduced}
-              animationDuration={900}
+              animationDuration={700}
               animationEasing="ease-out"
-              activeDot={{ r: 4, strokeWidth: 2, stroke: 'var(--card)' }}
             />
-          </AreaChart>
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { ArrowLeft, Loader2, Save, Wand2 } from 'lucide-react'
+import { ArrowLeft, ListPlus, Loader2, Save } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { Link, useBlocker, useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
@@ -276,7 +276,7 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
                 variant="outline"
                 onClick={() => set('keywords', mergeKeywords(form.keywords, fresh))}
               >
-                <Wand2 aria-hidden /> {fresh.length} Schlagwörter übernehmen
+                <ListPlus aria-hidden /> {fresh.length} Schlagwörter übernehmen
               </Button>
             )}
           </>
