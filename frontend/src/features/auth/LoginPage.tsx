@@ -216,6 +216,7 @@ export function LoginPage() {
         <header className="flex h-16 items-center gap-3 border-b px-4 md:hidden">
           <BrandMark className="size-8 shrink-0 text-foreground" />
           <span className="font-semibold">MedKB</span>
+          <ThemeToggle tone="surface" className="ml-auto w-28" />
         </header>
 
         <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-8">
@@ -224,6 +225,10 @@ export function LoginPage() {
               <h1 className="text-3xl font-semibold tracking-tight">Anmelden</h1>
               <p className="text-lg text-foreground/85">
                 Medizinisches Wissen, nachvollziehbar nach Fachgebieten geordnet.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Suche, erklärbare Klassifikation und Archiv – aus einer Diplomarbeit an der TGM Wien
+                entstanden.
               </p>
               <p className="text-sm text-muted-foreground">
                 {demo
@@ -268,6 +273,10 @@ export function LoginPage() {
                 </Button>
               </div>
             )}
+
+            <p className="text-xs text-muted-foreground md:hidden">
+              Prototyp mit Beispieldaten – keine medizinische Beratung.
+            </p>
 
             {demo ? (
               <details className="group rounded-xl border bg-card px-4 py-3 shadow-sheet">

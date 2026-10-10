@@ -9,13 +9,21 @@ const options: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: 'system', label: 'System', icon: Monitor },
 ]
 
-export function ThemeToggle({ className }: { className?: string }) {
+/** `rail` sits on the petrol navigation rail; `surface` on the normal work area. */
+export function ThemeToggle({
+  className,
+  tone = 'rail',
+}: {
+  className?: string
+  tone?: 'rail' | 'surface'
+}) {
   const { theme, setTheme } = useTheme()
+  const surface = tone === 'surface'
   return (
     <div
       role="radiogroup"
       aria-label="Farbschema"
-      className={cn('relative flex rounded-lg bg-rail-well p-0.5', className)}
+      className={cn('relative flex rounded-lg p-0.5', surface ? 'border bg-muted' : 'bg-rail-well', className)}
     >
       {options.map(({ value, label, icon: Icon }) => {
         const active = theme === value
@@ -30,14 +38,16 @@ export function ThemeToggle({ className }: { className?: string }) {
             onClick={() => setTheme(value)}
             className={cn(
               'relative z-10 flex h-7 flex-1 items-center justify-center rounded-md transition-colors duration-200',
-              'focus-visible:ring-2 focus-visible:ring-rail-ring focus-visible:outline-none',
-              active ? 'text-rail-foreground' : 'text-rail-muted hover:text-rail-foreground',
+              'focus-visible:ring-2 focus-visible:outline-none',
+              surface
+                ? cn('focus-visible:ring-ring', active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')
+                : cn('focus-visible:ring-rail-ring', active ? 'text-rail-foreground' : 'text-rail-muted hover:text-rail-foreground'),
             )}
           >
             {active && (
               <motion.span
                 layoutId="theme-pill"
-                className="absolute inset-0 -z-10 rounded-md bg-rail-active shadow-sm"
+                className={cn('absolute inset-0 -z-10 rounded-md shadow-sm', surface ? 'bg-card' : 'bg-rail-active')}
                 transition={{ type: 'spring', stiffness: 520, damping: 40 }}
               />
             )}
