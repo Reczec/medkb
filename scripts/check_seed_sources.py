@@ -16,7 +16,9 @@ import httpx
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from app.config import get_settings  # noqa: E402
 from app.seed_data import SEED_DOCUMENTS  # noqa: E402
+from app.sources.icd11 import is_configured, lookup_code  # noqa: E402
 
 HEADERS = {"User-Agent": "medkb-linkcheck/1.0 (+https://github.com/Reczec/medkb)"}
 
@@ -41,14 +43,8 @@ def check_links() -> bool:
 
 
 def check_icd_codes() -> bool:
-    try:
-        from app.sources.icd11 import lookup_code
-
-        from app.config import get_settings
-    except ImportError:
-        return True  # the ICD-11 client is added in a later step
     settings = get_settings()
-    if not (settings.icd_client_id and settings.icd_client_secret):
+    if not is_configured(settings):
         print("ICD-11: no API keys set, codes not checked")
         return True
     ok = True

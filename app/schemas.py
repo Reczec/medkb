@@ -509,3 +509,12 @@ class Study(BaseModel):
 class LatestStudies(BaseModel):
     category: str
     studies: list[Study]
+
+
+class Icd11Entry(BaseModel):
+    code: str
+    title: str
+    definition: str | None = None
+    url: str = Field(description="Link to the WHO ICD-11 browser.")
+    release: str
+    language: str = Field(description="Language WHO answered in ('de' is a prerelease).")

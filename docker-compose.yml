@@ -24,6 +24,11 @@ services:
       DEMO_MODE: ${DEMO_MODE:-false}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       ARCHIVE_DIR: /app/archives
+      NCBI_API_KEY: ${NCBI_API_KEY:-}
+      ICD_CLIENT_ID: ${ICD_CLIENT_ID:-}
+      ICD_CLIENT_SECRET: ${ICD_CLIENT_SECRET:-}
+      ICD_RELEASE: ${ICD_RELEASE:-2026-01}
+      ICD_LANGUAGE: ${ICD_LANGUAGE:-de}
     ports:
       - "8000:8000"
     volumes:
