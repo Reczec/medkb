@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from datetime import UTC, date, datetime
 from enum import StrEnum
-from typing import Annotated, Any, Literal, Self
+from typing import Annotated, Any, Generic, Literal, Self, TypeVar
 
 from pydantic import (
     BaseModel,
@@ -474,3 +474,38 @@ class TokenOut(BaseModel):
 
 class AuthOptions(BaseModel):
     demo_mode: bool
+
+
+# --------------------------------------------------------------------- external sources
+
+SourceStatus = Literal["ok", "empty", "unavailable", "not_configured"]
+T = TypeVar("T")
+
+
+# Generic[T] instead of PEP 695 syntax: the local dev venv still runs Python 3.11.
+class SourceResult(BaseModel, Generic[T]):  # noqa: UP046
+    """Answer of an external source. Never an error: problems are reported in ``status``."""
+
+    status: SourceStatus
+    fetched_at: datetime | None = None
+    data: T | None = None
+
+    @field_validator("fetched_at")
+    @classmethod
+    def _utc(cls, value: datetime | None) -> datetime | None:
+        return as_utc(value) if value else None
+
+
+class Study(BaseModel):
+    pmid: str
+    title: str
+    journal: str | None = None
+    year: int | None = None
+    authors: list[str] = Field(default_factory=list, description="At most the first three.")
+    more_authors: bool = False
+    url: str
+
+
+class LatestStudies(BaseModel):
+    category: str
+    studies: list[Study]

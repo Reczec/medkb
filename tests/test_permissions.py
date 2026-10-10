@@ -31,6 +31,8 @@ ENDPOINTS = [
     ("post", f"/api/archives/{ARCHIVE}/restore", None, ADMIN_ONLY),
     ("get", "/api/audit", None, ADMIN_ONLY),
     ("get", "/api/users", None, ADMIN_ONLY),
+    ("get", "/api/sources/documents/{id}/studies", None, STAFF),
+    ("get", "/api/sources/latest-studies", None, STAFF),
 ]
 
 
