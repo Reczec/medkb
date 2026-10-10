@@ -33,6 +33,7 @@ ENDPOINTS = [
     ("get", "/api/users", None, ADMIN_ONLY),
     ("get", "/api/sources/documents/{id}/studies", None, STAFF),
     ("get", "/api/sources/latest-studies", None, STAFF),
+    ("get", "/api/sources/documents/{id}/icd11", None, STAFF),
 ]
 
 
