@@ -20,7 +20,7 @@ export function RecentList({ items }: { items: RecentItem[] }) {
       {items.length === 0 ? (
         <p className="text-sm text-muted-foreground">Noch keine Einträge.</p>
       ) : (
-        <ul className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2 xl:grid-cols-5">
+        <ul className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
           {items.map((item) => (
             <li key={item.id} className="min-w-0">
               <Link

@@ -8,21 +8,27 @@ test('dashboard summarises the seeded knowledge base', async ({ page }) => {
   await expect(page.getByRole('navigation', { name: 'Fachgebiete' }).getByRole('link')).toHaveCount(9)
 })
 
-test('filing tabs are as wide as their share of entries', async ({ page }) => {
+test('every filing tab shows its full name and the drawer edge shows the share', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto('/')
   const strip = page.getByRole('navigation', { name: 'Fachgebiete' })
-  const width = async (name: string) =>
-    (await strip.getByRole('link', { name: new RegExp(name) }).boundingBox())!.width
-  const neuro = await width('Neurologie') // 3 entries
-  const hno = await width('HNO') // 2
-  const derma = await width('Dermatologie') // 1
-  expect(neuro).toBeGreaterThan(hno)
-  expect(hno).toBeGreaterThan(derma)
+  const truncated = await strip.locator('[data-tab-label]').evaluateAll((labels) =>
+    labels.filter((label) => label.scrollWidth > label.clientWidth + 1).map((l) => l.textContent),
+  )
+  expect(truncated).toEqual([])
+  await expect(strip.locator('[data-tab-label]')).toHaveCount(9)
   const tops = await strip.getByRole('link').evaluateAll((links) =>
     links.map((link) => Math.round(link.getBoundingClientRect().top)),
   )
   expect(new Set(tops).size).toBe(1) // one drawer edge, no second row
+  const share = (name: string) =>
+    strip.locator(`[data-share="${name}"]`).evaluate((el) => el.getBoundingClientRect().width)
+  const neuro = await share('Neurologie') // 3 entries
+  const hno = await share('HNO') // 2
+  const derma = await share('Dermatologie') // 1
+  expect(neuro).toBeGreaterThan(hno)
+  expect(hno).toBeGreaterThan(derma)
+  expect(neuro / derma).toBeCloseTo(3, 0)
 })
 
 test('dimmed filing tabs keep readable labels', async ({ page }) => {
@@ -87,6 +93,16 @@ test('deep links survive a reload', async ({ page }) => {
 
 test.describe('phone width', () => {
   test.use({ viewport: { width: 375, height: 812 } })
+
+  test('specialty names stay readable on a phone', async ({ page }) => {
+    await page.goto('/')
+    const labels = page.getByRole('navigation', { name: 'Fachgebiete' }).locator('[data-tab-label]')
+    await expect(labels.first()).toHaveText('Neurologie')
+    const truncated = await labels.evaluateAll((all) =>
+      all.filter((label) => label.scrollWidth > label.clientWidth + 1).length,
+    )
+    expect(truncated).toBe(0)
+  })
 
   test('long titles, URLs and keywords do not widen the page', async ({ page }) => {
     const created = await page.request.post('/api/documents', {

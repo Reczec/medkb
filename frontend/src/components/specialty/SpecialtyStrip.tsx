@@ -14,9 +14,9 @@ interface SpecialtyStripProps {
 }
 
 /**
- * The signature element: specialties as labelled filing tabs rising from one drawer edge.
- * Each tab's width is its share of the entries; narrow tabs keep icon and count and show the
- * name as a tooltip. On phones the drawer scrolls sideways.
+ * The signature element: specialties as labelled filing tabs standing on one drawer edge.
+ * Every tab shows its full name; the drawer edge below is coloured by each specialty's share
+ * of the entries, so proportion never costs legibility. On narrow screens the tabs scroll.
  */
 export function SpecialtyStrip({ items, active, onSelect, className }: SpecialtyStripProps) {
   const reduced = useReducedMotion()
@@ -26,10 +26,9 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
 
   return (
     <nav aria-label="Fachgebiete" className={className}>
-      <ul className="flex items-end gap-1 overflow-x-auto border-b-2 px-1 pt-2 [scrollbar-width:none] sm:overflow-visible">
+      <ul className="flex items-end gap-1 overflow-x-auto px-1 pt-2">
         {filled.map((item, index) => {
           const style = categoryStyle(item.name)
-          const Icon = style.icon
           const selected = active === item.name
           const dimmed = filtering && !selected
           const content = (
@@ -39,25 +38,21 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
                 style={{ background: style.color, height: selected ? 5 : 3, opacity: dimmed ? 0.35 : 1 }}
                 aria-hidden
               />
-              <span className="flex min-w-0 items-center gap-2">
-                <span
-                  className="flex size-7 shrink-0 items-center justify-center rounded-md transition-opacity duration-300"
-                  style={{ background: style.soft, color: style.color, opacity: dimmed ? 0.5 : 1 }}
-                >
-                  <Icon className="size-4" aria-hidden />
-                </span>
-                <span className="truncate text-sm font-medium @max-[118px]:sr-only">{item.name}</span>
+              <span data-tab-label className="text-[13px] font-medium whitespace-nowrap">
+                {item.name}
               </span>
-              <span className="tabular text-sm font-semibold text-muted-foreground">{item.count}</span>
+              <span className="tabular text-[13px] font-semibold text-muted-foreground">
+                {item.count}
+              </span>
             </>
           )
           const tabClass = cn(
-            'relative -mb-0.5 flex w-full items-center justify-between gap-2 overflow-hidden rounded-t-xl border border-b-0 px-2.5 pt-1 text-left',
+            'relative flex items-center gap-2 overflow-hidden rounded-t-lg border border-b-0 px-3 pt-0.5 whitespace-nowrap',
             'transition-[height,background-color,box-shadow] duration-200 ease-out',
             'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset',
             selected
-              ? 'z-10 h-14 shadow-[0_-6px_16px_-10px_oklch(0.3_0.03_220/0.35)]'
-              : 'h-12 bg-card hover:h-[52px] hover:bg-accent/60',
+              ? 'z-10 h-12 shadow-[0_-6px_16px_-10px_oklch(0.3_0.03_220/0.35)]'
+              : 'h-10 bg-card hover:h-11 hover:bg-accent/60',
           )
           const tabStyle = selected
             ? { background: `color-mix(in oklch, ${style.color} 14%, var(--background))` }
@@ -65,10 +60,8 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
           return (
             <motion.li
               key={item.name}
-              className="@container min-w-[132px] shrink-0 sm:min-w-[56px] sm:shrink"
-              style={{ flexGrow: item.count, flexBasis: 0 }}
-              title={item.name}
-              initial={reduced ? false : { opacity: 0, y: 12 }}
+              className="shrink-0"
+              initial={reduced ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             >
@@ -95,6 +88,27 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
           )
         })}
       </ul>
+
+      {/* The drawer edge: each specialty's share of all entries. */}
+      <div className="flex h-2 gap-0.5 overflow-hidden rounded-b-md" aria-hidden>
+        {filled.map((item, index) => {
+          const style = categoryStyle(item.name)
+          const dimmed = filtering && active !== item.name
+          return (
+            <motion.span
+              key={item.name}
+              data-share={item.name}
+              title={`${item.name}: ${item.count}`}
+              className="h-full min-w-1 transition-opacity duration-300"
+              style={{ flexGrow: item.count, flexBasis: 0, background: style.color, opacity: dimmed ? 0.3 : 1 }}
+              initial={reduced ? false : { scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.15 + index * 0.04, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            />
+          )
+        })}
+      </div>
+
       {empty > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">
           {empty === 1 ? '1 weiteres Fachgebiet' : `${empty} weitere Fachgebiete`} ohne Einträge
