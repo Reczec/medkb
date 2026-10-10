@@ -17,6 +17,7 @@ import type {
   Meta,
   RestoreResult,
   Stats,
+  UserInfo,
 } from '@/lib/types'
 
 export interface DocumentQuery {
@@ -136,6 +137,9 @@ export function useRestoreArchive() {
       ]),
   })
 }
+
+export const useUsers = () =>
+  useQuery({ queryKey: ['users'], queryFn: () => api<UserInfo[]>('/api/users') })
 
 export const useAudit = (limit = 50, enabled = true) =>
   useQuery({

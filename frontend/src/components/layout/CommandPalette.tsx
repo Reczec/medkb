@@ -11,6 +11,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
+import { useAuth } from '@/features/auth/context'
 import { useDebounced } from '@/hooks/useDebounced'
 import { categoryStyle } from '@/lib/categories'
 import { useDocuments } from '@/lib/queries'
@@ -28,6 +29,7 @@ export function CommandPalette() {
   const [query, setQuery] = useState('')
   const debounced = useDebounced(query, 200)
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { data, isFetching } = useDocuments({ q: debounced, limit: 8 }, open)
 
   useEffect(() => {
@@ -95,9 +97,11 @@ export function CommandPalette() {
           )}
           <CommandSeparator />
           <CommandGroup heading="Aktionen">
-            <CommandItem value="action-new" onSelect={() => go('/wissen/neu')}>
-              <FilePlus2 /> Neuer Eintrag
-            </CommandItem>
+            {user?.role === 'admin' && (
+              <CommandItem value="action-new" onSelect={() => go('/wissen/neu')}>
+                <FilePlus2 /> Neuer Eintrag
+              </CommandItem>
+            )}
             <CommandItem value="action-list" onSelect={() => go('/wissen')}>
               <Library /> Wissensdatenbank öffnen
             </CommandItem>

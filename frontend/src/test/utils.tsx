@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import { AuthProvider } from '@/features/auth/AuthProvider'
+import { AuthContext, type AuthContextValue } from '@/features/auth/context'
+import type { AuthUser } from '@/lib/auth'
 import { createMemoryRouter, RouterProvider, type RouteObject } from 'react-router'
 
 export function makeQueryClient() {
@@ -17,18 +19,31 @@ export function renderWithProviders(
     routes = [] as RouteObject[],
     client = makeQueryClient(),
     withAuth = false,
+    user = TEST_USERS.admin as AuthUser | null,
   } = {},
 ) {
   const router = createMemoryRouter([{ path: route, element: ui }, ...routes], {
     initialEntries: [path],
   })
   const routed = <RouterProvider router={router} />
+  const auth: AuthContextValue = {
+    user,
+    status: user ? 'authenticated' : 'anonymous',
+    expired: false,
+    login: vi.fn(),
+    loginDemo: vi.fn(),
+    logout: vi.fn(),
+  }
   const result = render(
     <QueryClientProvider client={client}>
-      {withAuth ? <AuthProvider>{routed}</AuthProvider> : routed}
+      {withAuth ? (
+        <AuthProvider>{routed}</AuthProvider>
+      ) : (
+        <AuthContext.Provider value={auth}>{routed}</AuthContext.Provider>
+      )}
     </QueryClientProvider>,
   )
-  return { ...result, router, client }
+  return { ...result, router, client, auth }
 }
 
 /** fetch mock that answers by URL substring: { '/api/stats': body | Response }. */
@@ -45,4 +60,10 @@ export function mockFetch(routes: Record<string, unknown>) {
   })
   vi.stubGlobal('fetch', fn)
   return fn
+}
+
+export const TEST_USERS: Record<'admin' | 'doctor' | 'patient', AuthUser> = {
+  admin: { id: 1, username: 'demo-admin', display_name: 'Admin', role: 'admin' },
+  doctor: { id: 2, username: 'demo-doctor', display_name: 'Dr. Demo', role: 'doctor' },
+  patient: { id: 3, username: 'demo-patient', display_name: 'Patient Demo', role: 'patient' },
 }

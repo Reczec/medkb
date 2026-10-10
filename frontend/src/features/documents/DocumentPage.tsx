@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useAuth } from '@/features/auth/context'
 import { ClassificationExplainer } from '@/features/documents/ClassificationExplainer'
 import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
 import { ApiError } from '@/lib/api'
@@ -101,6 +102,9 @@ function DeleteButton({ document }: { document: Document }) {
 export function DocumentPage() {
   const id = Number(useParams().id)
   const { data: document, error, isPending, refetch } = useDocument(id)
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+  const showsClassification = user?.role === 'admin' || user?.role === 'doctor'
 
   if (!(Number.isInteger(id) && id > 0)) return <DocumentNotFound />
   if (error instanceof ApiError && error.status === 404) return <DocumentNotFound />
@@ -143,6 +147,7 @@ export function DocumentPage() {
             <span>geändert {formatRelative(document.updated_at)}</span>
           </p>
         </div>
+        {isAdmin && (
         <div className="flex shrink-0 gap-2">
           <Button asChild variant="outline">
             <Link to={`/wissen/${document.id}/bearbeiten`}>
@@ -151,6 +156,7 @@ export function DocumentPage() {
           </Button>
           <DeleteButton document={document} />
         </div>
+        )}
       </header>
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
@@ -168,7 +174,7 @@ export function DocumentPage() {
         </div>
 
         <aside className="flex min-w-0 flex-col gap-6">
-          <ClassificationExplainer document={document} />
+          {showsClassification && <ClassificationExplainer document={document} />}
           <Details document={document} />
         </aside>
       </div>

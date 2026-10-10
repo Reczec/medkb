@@ -1,14 +1,23 @@
-import { LayoutDashboard, Library, PanelLeftClose, PanelLeftOpen, ShieldCheck } from 'lucide-react'
+import {
+  LayoutDashboard,
+  Library,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ShieldCheck,
+} from 'lucide-react'
 import { motion } from 'motion/react'
 import { NavLink, useLocation } from 'react-router'
 import { BrandMark } from '@/components/layout/BrandMark'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
+import { useAuth } from '@/features/auth/context'
+import { ROLE_LABELS, type Role } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 
-const NAV = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+const NAV: { to: string; label: string; icon: typeof Library; end: boolean; roles?: Role[] }[] = [
+  { to: '/', label: 'Startseite', icon: LayoutDashboard, end: true },
   { to: '/wissen', label: 'Wissensdatenbank', icon: Library, end: false },
-  { to: '/admin', label: 'Admin', icon: ShieldCheck, end: false },
+  { to: '/admin', label: 'Admin', icon: ShieldCheck, end: false, roles: ['admin'] },
 ]
 
 interface SidebarProps {
@@ -21,6 +30,8 @@ interface SidebarProps {
 
 export function Sidebar({ collapsed = false, onToggleCollapsed, onNavigate, layoutScope = 'rail' }: SidebarProps) {
   const { pathname } = useLocation()
+  const { user, logout } = useAuth()
+  const items = NAV.filter((item) => !item.roles || (user && item.roles.includes(user.role)))
 
   return (
     <div className="flex h-full flex-col bg-rail text-rail-foreground">
@@ -35,7 +46,7 @@ export function Sidebar({ collapsed = false, onToggleCollapsed, onNavigate, layo
       </div>
 
       <nav aria-label="Hauptnavigation" className="mt-4 flex flex-col gap-1 px-3">
-        {NAV.map(({ to, label, icon: Icon, end }) => {
+        {items.map(({ to, label, icon: Icon, end }) => {
           const active = end ? pathname === to : pathname.startsWith(to)
           return (
             <NavLink
@@ -68,6 +79,33 @@ export function Sidebar({ collapsed = false, onToggleCollapsed, onNavigate, layo
       </nav>
 
       <div className="mt-auto flex flex-col gap-3 border-t border-rail-border p-3">
+        {user && (
+          <div className={cn('flex items-center gap-2.5', collapsed && 'flex-col')}>
+            <span
+              className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rail-active text-xs font-semibold"
+              aria-hidden
+            >
+              {user.display_name.slice(0, 1)}
+            </span>
+            {!collapsed && (
+              <span className="min-w-0 flex-1 leading-tight">
+                <span data-user-name className="block truncate text-sm font-medium">
+                  {user.display_name}
+                </span>
+                <span className="block truncate text-xs text-rail-muted">{ROLE_LABELS[user.role]}</span>
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={logout}
+              aria-label="Abmelden"
+              title="Abmelden"
+              className="flex size-8 shrink-0 items-center justify-center rounded-lg text-rail-muted transition-colors hover:bg-rail-active hover:text-rail-foreground focus-visible:ring-2 focus-visible:ring-rail-ring focus-visible:outline-none"
+            >
+              <LogOut className="size-4" aria-hidden />
+            </button>
+          </div>
+        )}
         {!collapsed && (
           <p className="px-1 text-[11px] leading-snug text-rail-muted">
             Prototyp mit Beispieldaten – keine medizinische Beratung.

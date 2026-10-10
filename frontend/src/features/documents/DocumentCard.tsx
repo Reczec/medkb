@@ -2,6 +2,7 @@ import { ListChecks, UserPen } from 'lucide-react'
 import { useId } from 'react'
 import { Link } from 'react-router'
 import { FileTab } from '@/components/specialty/FileTab'
+import { useAuth } from '@/features/auth/context'
 import { formatDate, formatRelative } from '@/lib/format'
 import type { Document } from '@/lib/types'
 
@@ -11,6 +12,8 @@ const VISIBLE_KEYWORDS = 5
 export function DocumentCard({ document }: { document: Document }) {
   const extra = document.keywords.length - VISIBLE_KEYWORDS
   const titleId = useId()
+  const { user } = useAuth()
+  const showsMethod = user?.role !== 'patient'
 
   return (
     <Link
@@ -35,8 +38,8 @@ export function DocumentCard({ document }: { document: Document }) {
           <time dateTime={document.updated_at} title={formatDate(document.updated_at)}>
             geändert {formatRelative(document.updated_at)}
           </time>
-          <span aria-hidden>·</span>
-          {document.auto_classified ? (
+          {showsMethod && <span aria-hidden>·</span>}
+          {!showsMethod ? null : document.auto_classified ? (
             <span className="inline-flex items-center gap-1" title="Fachgebiet nach Regeln bestimmt">
               <ListChecks className="size-3.5" aria-hidden /> regelbasiert
             </span>
