@@ -1,14 +1,21 @@
 import {
+  Activity,
   Baby,
   Bone,
   Brain,
+  Droplets,
   Ear,
+  Eye,
+  FlaskConical,
   HeartPulse,
   type LucideIcon,
+  Microscope,
   Smile,
+  Soup,
   Sparkles,
   Stethoscope,
-  Activity,
+  Venus,
+  Wind,
 } from 'lucide-react'
 
 export interface CategoryStyle {
@@ -19,16 +26,27 @@ export interface CategoryStyle {
   icon: LucideIcon
 }
 
+/**
+ * 16 hues spaced evenly (22.5°) around the wheel, all at the same lightness (Equal Weight).
+ * Key order = the backend's tie order (app/classifier.py CATEGORIES).
+ */
 const styles: Record<string, { hue: number; chroma: number; icon: LucideIcon }> = {
-  Allgemeinmedizin: { hue: 196, chroma: 0.1, icon: Stethoscope },
-  'Innere Medizin': { hue: 150, chroma: 0.12, icon: Activity },
-  Kardiologie: { hue: 18, chroma: 0.17, icon: HeartPulse },
-  Neurologie: { hue: 285, chroma: 0.15, icon: Brain },
-  HNO: { hue: 235, chroma: 0.13, icon: Ear },
-  Dermatologie: { hue: 55, chroma: 0.13, icon: Sparkles },
-  Orthopädie: { hue: 85, chroma: 0.12, icon: Bone },
-  Pädiatrie: { hue: 340, chroma: 0.14, icon: Baby },
-  Psychiatrie: { hue: 265, chroma: 0.09, icon: Smile },
+  HNO: { hue: 248, chroma: 0.13, icon: Ear },
+  Augenheilkunde: { hue: 225, chroma: 0.12, icon: Eye },
+  Neurologie: { hue: 292, chroma: 0.15, icon: Brain },
+  Kardiologie: { hue: 22, chroma: 0.17, icon: HeartPulse },
+  Pneumologie: { hue: 158, chroma: 0.11, icon: Wind },
+  Gastroenterologie: { hue: 112, chroma: 0.12, icon: Soup },
+  Endokrinologie: { hue: 68, chroma: 0.13, icon: FlaskConical },
+  Urologie: { hue: 315, chroma: 0.12, icon: Droplets },
+  Gynäkologie: { hue: 0, chroma: 0.13, icon: Venus },
+  Dermatologie: { hue: 45, chroma: 0.13, icon: Sparkles },
+  Orthopädie: { hue: 90, chroma: 0.12, icon: Bone },
+  Pädiatrie: { hue: 338, chroma: 0.14, icon: Baby },
+  Psychiatrie: { hue: 270, chroma: 0.09, icon: Smile },
+  Infektiologie: { hue: 180, chroma: 0.1, icon: Microscope },
+  'Innere Medizin': { hue: 135, chroma: 0.12, icon: Activity },
+  Allgemeinmedizin: { hue: 202, chroma: 0.1, icon: Stethoscope },
 }
 
 export const KNOWN_CATEGORIES = Object.keys(styles)
