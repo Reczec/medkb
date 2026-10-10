@@ -9,3 +9,9 @@ __pycache__/
 *.db
 archives/
 .superpowers/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
