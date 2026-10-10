@@ -7,7 +7,7 @@ from collections import Counter
 from datetime import UTC, datetime, time, timedelta
 from functools import reduce
 
-from sqlalchemy import String, case, cast, func, or_, select
+from sqlalchemy import String, case, cast, false, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.classifier import CATEGORIES, classify
@@ -106,10 +106,17 @@ def delete_document(db: Session, document: Document) -> None:
 # ------------------------------------------------------------------------- search
 
 
+# Keywords are searched in their JSON text, so these characters would match its syntax.
+JSON_SYNTAX = frozenset('"[],' + "\\")
+
+
 def _term_condition_and_score(term: str):
     in_title = Document.title.icontains(term, autoescape=True)
-    in_keywords = cast(Document.keywords, String).icontains(term, autoescape=True)
     in_content = Document.content.icontains(term, autoescape=True)
+    if JSON_SYNTAX.isdisjoint(term):
+        in_keywords = cast(Document.keywords, String).icontains(term, autoescape=True)
+    else:
+        in_keywords = false()
     score = (
         case((in_title, WEIGHT_TITLE), else_=0)
         + case((in_keywords, WEIGHT_KEYWORDS), else_=0)

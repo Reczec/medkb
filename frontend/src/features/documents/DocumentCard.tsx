@@ -40,10 +40,10 @@ export function DocumentCard({ document }: { document: Document }) {
           )}
         </div>
 
-        <h2 id={titleId} className="line-clamp-2 text-lg leading-snug font-semibold break-words">
+        <h2 id={titleId} className="line-clamp-2 text-lg leading-snug font-semibold [overflow-wrap:anywhere]">
           {document.title}
         </h2>
-        <p className="line-clamp-3 text-sm leading-relaxed break-words text-muted-foreground">
+        <p className="line-clamp-3 text-sm leading-relaxed [overflow-wrap:anywhere] text-muted-foreground">
           {document.content}
         </p>
 

@@ -1,7 +1,6 @@
-import { ChevronRight, FileQuestion, Pencil, Trash2 } from 'lucide-react'
+import { ChevronRight, Pencil, Trash2 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
-import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { CategoryBadge } from '@/components/specialty/CategoryBadge'
 import {
@@ -19,6 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ClassificationExplainer } from '@/features/documents/ClassificationExplainer'
+import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
 import { ApiError } from '@/lib/api'
 import { categoryStyle } from '@/lib/categories'
 import { formatDate } from '@/lib/format'
@@ -39,7 +39,7 @@ function Details({ document }: { document: Document }) {
         {rows.map(([label, value]) => (
           <div key={label} className="contents">
             <dt className="text-muted-foreground">{label}</dt>
-            <dd className="min-w-0 break-words">{value}</dd>
+            <dd className="min-w-0 [overflow-wrap:anywhere]">{value}</dd>
           </div>
         ))}
       </dl>
@@ -48,7 +48,7 @@ function Details({ document }: { document: Document }) {
           <h3 className="mt-5 text-xs font-medium text-muted-foreground">Schlagwörter</h3>
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {document.keywords.map((keyword) => (
-              <li key={keyword} className="rounded-md bg-muted px-2 py-0.5 text-xs">
+              <li key={keyword} className="max-w-full rounded-md bg-muted px-2 py-0.5 text-xs break-all">
                 {keyword}
               </li>
             ))}
@@ -104,20 +104,8 @@ export function DocumentPage() {
   const id = Number(useParams().id)
   const { data: document, error, isPending, refetch } = useDocument(id)
 
-  if (error instanceof ApiError && error.status === 404) {
-    return (
-      <EmptyState
-        icon={FileQuestion}
-        title="Eintrag nicht gefunden"
-        text="Der Eintrag wurde gelöscht oder hat nie existiert."
-        action={
-          <Button asChild variant="outline">
-            <Link to="/wissen">Zur Wissensdatenbank</Link>
-          </Button>
-        }
-      />
-    )
-  }
+  if (!(Number.isInteger(id) && id > 0)) return <DocumentNotFound />
+  if (error instanceof ApiError && error.status === 404) return <DocumentNotFound />
   if (error) return <ErrorState error={error} onRetry={() => refetch()} />
   if (isPending || !document) {
     return (
@@ -153,7 +141,7 @@ export function DocumentPage() {
             <CategoryBadge name={document.category} />
             <span className="text-sm text-muted-foreground">{document.doc_type}</span>
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight break-words lg:text-4xl">
+          <h1 className="text-3xl font-semibold tracking-tight [overflow-wrap:anywhere] lg:text-4xl">
             {document.title}
           </h1>
         </div>
@@ -167,8 +155,8 @@ export function DocumentPage() {
         </div>
       </header>
 
-      <div className="grid items-start gap-6 lg:grid-cols-3">
-        <div className="relative pt-3 lg:col-span-2">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+        <div className="relative min-w-0 pt-3 lg:col-span-2">
           <span
             className="absolute top-0 left-6 h-4 w-28 rounded-t-md"
             style={{ background: style.color }}
@@ -181,7 +169,7 @@ export function DocumentPage() {
             <TabsContent value="content" className="px-6 pt-4 pb-7">
               <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
                 {paragraphs.map((paragraph, index) => (
-                  <p key={index} className="break-words whitespace-pre-line">
+                  <p key={index} className="whitespace-pre-line [overflow-wrap:anywhere]">
                     {paragraph}
                   </p>
                 ))}
@@ -190,7 +178,7 @@ export function DocumentPage() {
           </Tabs>
         </div>
 
-        <aside className="flex flex-col gap-6">
+        <aside className="flex min-w-0 flex-col gap-6">
           <ClassificationExplainer document={document} />
           <Details document={document} />
         </aside>

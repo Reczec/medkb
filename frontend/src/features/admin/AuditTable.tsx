@@ -9,8 +9,8 @@ const ACTIONS: Record<string, { label: string; className: string }> = {
   create: { label: 'Angelegt', className: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300' },
   update: { label: 'Bearbeitet', className: 'bg-sky-500/12 text-sky-700 dark:text-sky-300' },
   delete: { label: 'Gelöscht', className: 'bg-red-500/12 text-red-700 dark:text-red-300' },
-  archive: { label: 'Archiviert', className: 'bg-violet-500/12 text-violet-700 dark:text-violet-300' },
-  restore: { label: 'Wiederhergestellt', className: 'bg-violet-500/12 text-violet-700 dark:text-violet-300' },
+  archive_create: { label: 'Archiviert', className: 'bg-violet-500/12 text-violet-700 dark:text-violet-300' },
+  archive_restore: { label: 'Wiederhergestellt', className: 'bg-violet-500/12 text-violet-700 dark:text-violet-300' },
 }
 
 export function AuditTable() {

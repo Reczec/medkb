@@ -55,7 +55,7 @@ export function ClassificationExplainer({ document }: { document: Document }) {
                 {data.matched_terms.map((term) => (
                   <li
                     key={term}
-                    className="rounded-md border border-dashed px-2 py-0.5 font-mono text-xs"
+                    className="max-w-full rounded-md border border-dashed px-2 py-0.5 font-mono text-xs break-all"
                   >
                     {term}
                   </li>

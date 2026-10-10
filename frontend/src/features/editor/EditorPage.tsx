@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { Link, useBlocker, useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
 import { ScoreBars } from '@/components/specialty/ScoreBars'
 import {
   AlertDialog,
@@ -28,6 +29,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { AUTO, CategoryPicker } from '@/features/editor/CategoryPicker'
 import { KeywordInput, mergeKeywords } from '@/features/editor/KeywordInput'
 import { useDebounced } from '@/hooks/useDebounced'
+import { ApiError } from '@/lib/api'
 import {
   useClassify,
   useCreateDocument,
@@ -83,7 +85,12 @@ function updatePayload(form: FormState, initial: FormState): DocumentUpdate {
   if (form.category !== initial.category) {
     if (form.category === AUTO) payload.reclassify = true
     else payload.category = form.category
+  } else if (form.category === AUTO && ('title' in payload || 'content' in payload)) {
+    // The classifier stays in charge: new text means a new suggestion.
+    payload.reclassify = true
   }
+  // Without keywords the server would replace the visible ones with its own suggestion.
+  if (payload.reclassify) payload.keywords = form.keywords
   return payload
 }
 
@@ -155,8 +162,8 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
   )
 
   return (
-    <form onSubmit={submit} className="grid items-start gap-6 lg:grid-cols-3" noValidate>
-      <div className="flex flex-col gap-5 rounded-xl border bg-card p-5 shadow-sheet sm:p-6 lg:col-span-2">
+    <form onSubmit={submit} className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3" noValidate>
+      <div className="flex min-w-0 flex-col gap-5 rounded-xl border bg-card p-5 shadow-sheet sm:p-6 lg:col-span-2">
         <Field id="title" label="Titel" hint="Mindestens 3 Zeichen.">
           <Input
             id="title"
@@ -201,7 +208,7 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
             value={form.content}
             onChange={(event) => set('content', event.target.value)}
             maxLength={50_000}
-            className="min-h-56 text-base leading-relaxed [field-sizing:content]"
+            className="min-h-56 w-full min-w-0 text-base leading-relaxed [field-sizing:content] [overflow-wrap:anywhere]"
             placeholder="Beschreibung, Symptome, Ursachen, Diagnostik, Therapie …"
           />
         </Field>
@@ -235,7 +242,7 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
 
       <aside
         aria-label="Live-Klassifikation"
-        className="flex flex-col gap-4 rounded-xl border bg-card p-5 shadow-sheet lg:sticky lg:top-24"
+        className="flex min-w-0 flex-col gap-4 rounded-xl border bg-card p-5 shadow-sheet lg:sticky lg:top-24"
       >
         <div>
           <h2 className="text-base font-semibold">Live-Klassifikation</h2>
@@ -302,6 +309,9 @@ export function EditorPage() {
   const meta = useMeta()
   const document = useDocument(id ?? 0)
   const editing = id !== undefined
+
+  if (editing && !(Number.isInteger(id) && id > 0)) return <DocumentNotFound />
+  if (document.error instanceof ApiError && document.error.status === 404) return <DocumentNotFound />
 
   const error = meta.error ?? (editing ? document.error : null)
   const ready = meta.data && (!editing || document.data)

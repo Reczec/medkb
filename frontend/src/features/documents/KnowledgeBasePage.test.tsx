@@ -81,3 +81,13 @@ it('pages through results', async () => {
   fireEvent.click(screen.getByRole('button', { name: /Weiter/ }))
   await waitFor(() => expect(requested(fetchMock, (u) => u.searchParams.get('offset') === '10')).toBe(true))
 })
+
+it('clears the search box when the address loses its query', async () => {
+  mockFetch({ '/api/meta': meta, '/api/stats': stats, '/api/documents': list([doc()]) })
+  const { router } = renderWithProviders(<KnowledgeBasePage />, { path: '/wissen' })
+  const box = await screen.findByRole('searchbox')
+  fireEvent.change(box, { target: { value: 'kopf' } })
+  await waitFor(() => expect(router.state.location.search).toBe('?q=kopf'))
+  await router.navigate('/wissen')
+  await waitFor(() => expect(screen.getByRole('searchbox')).toHaveValue(''))
+})

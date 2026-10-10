@@ -24,6 +24,14 @@ export function KnowledgeBasePage() {
   const [query, setQuery] = useState(urlQuery)
   const debounced = useDebounced(query, 300)
 
+  // The address can change without this page remounting (sidebar link, command palette):
+  // follow it, unless it is just catching up with what was typed.
+  const [seenUrlQuery, setSeenUrlQuery] = useState(urlQuery)
+  if (urlQuery !== seenUrlQuery) {
+    setSeenUrlQuery(urlQuery)
+    if (urlQuery !== query.trim()) setQuery(urlQuery)
+  }
+
   /** Updates URL parameters; every filter change starts again on page 1. */
   const update = (changes: Record<string, string>) => {
     setParams(
@@ -100,7 +108,7 @@ export function KnowledgeBasePage() {
       )}
 
       {documents.isPending && (
-        <div className="grid gap-5 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {Array.from({ length: 4 }, (_, i) => (
             <Skeleton key={i} className="h-56 rounded-xl" />
           ))}
@@ -120,11 +128,12 @@ export function KnowledgeBasePage() {
       )}
 
       {items.length > 0 && (
-        <motion.ul layout={!reduced} className="grid gap-5 lg:grid-cols-2">
+        <motion.ul layout={!reduced} className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <AnimatePresence mode="popLayout" initial={false}>
             {items.map((document, index) => (
               <motion.li
                 key={document.id}
+                className="min-w-0"
                 layout={!reduced}
                 initial={reduced ? false : { opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
