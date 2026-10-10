@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import operator
+from collections import Counter
+from datetime import UTC, datetime, time, timedelta
 from functools import reduce
 
 from sqlalchemy import String, case, cast, func, or_, select
@@ -12,11 +14,13 @@ from app.classifier import CATEGORIES, classify
 from app.models import AuditLog, Document
 from app.schemas import (
     CountItem,
+    DayCount,
     DocType,
     DocumentCreate,
     DocumentUpdate,
     RecentItem,
     StatsOut,
+    as_utc,
 )
 
 MAX_SEARCH_TERMS = 8
@@ -26,6 +30,8 @@ MAX_TERM_LENGTH = 100
 WEIGHT_TITLE = 3
 WEIGHT_KEYWORDS = 2
 WEIGHT_CONTENT = 1
+
+ACTIVITY_DAYS = 30
 
 
 def log_audit(db: Session, action: str, document_id: int | None, detail: str) -> None:
@@ -169,6 +175,7 @@ def get_stats(db: Session) -> StatsOut:
     ).all()
 
     return StatsOut(
+        activity=_activity(db),
         total=total,
         auto_classified=auto or 0,
         # All known categories/types are listed, also those with 0 entries (stable dashboard).
@@ -179,6 +186,22 @@ def get_stats(db: Session) -> StatsOut:
             for d in recent
         ],
     )
+
+
+def _activity(db: Session) -> list[DayCount]:
+    """Audit log entries per UTC day for the last ACTIVITY_DAYS days, oldest first.
+
+    Counted in Python so that it behaves the same on SQLite and PostgreSQL.
+    """
+    today = datetime.now(UTC).date()
+    first_day = today - timedelta(days=ACTIVITY_DAYS - 1)
+    start = datetime.combine(first_day, time.min, tzinfo=UTC)
+    timestamps = db.scalars(select(AuditLog.timestamp).where(AuditLog.timestamp >= start)).all()
+    counts = Counter(as_utc(ts).date() for ts in timestamps)
+    return [
+        DayCount(date=day, count=counts.get(day, 0))
+        for day in (first_day + timedelta(days=i) for i in range(ACTIVITY_DAYS))
+    ]
 
 
 def list_audit(db: Session, limit: int = 50) -> list[AuditLog]:
