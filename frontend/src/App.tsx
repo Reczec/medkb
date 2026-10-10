@@ -4,7 +4,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { AdminPage } from '@/features/admin/AdminPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth, RequireRole } from '@/features/auth/guards'
-import { DashboardPage } from '@/features/dashboard/DashboardPage'
+import { HomePage } from '@/features/home/HomePage'
 import { DocumentPage } from '@/features/documents/DocumentPage'
 import { KnowledgeBasePage } from '@/features/documents/KnowledgeBasePage'
 import { EditorPage } from '@/features/editor/EditorPage'
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
     ),
     errorElement: <RouteError />,
     children: [
-      { index: true, element: <DashboardPage /> },
+      { index: true, element: <HomePage /> },
       { path: 'wissen', element: <KnowledgeBasePage /> },
       { path: 'wissen/neu', element: adminOnly(<EditorPage />) },
       { path: 'wissen/:id', element: <DocumentPage /> },
