@@ -21,7 +21,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
         <button
           type="button"
           onClick={openCommandPalette}
-          className="group flex h-10 w-full max-w-md items-center gap-2.5 rounded-lg border bg-card px-3 text-sm text-muted-foreground shadow-sheet transition-[border-color,box-shadow] duration-200 hover:border-primary/40 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className="group flex h-10 w-full max-w-md min-w-0 items-center gap-2.5 rounded-lg border bg-card px-3 text-sm text-muted-foreground shadow-sheet transition-[border-color,box-shadow] duration-200 hover:border-primary/40 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
           <Search className="size-4 shrink-0" aria-hidden />
           <span className="truncate">Einträge, Symptome, Diagnosen suchen…</span>
