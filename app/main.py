@@ -1,23 +1,21 @@
-"""FastAPI application: REST API under /api, static web UI at /."""
+"""FastAPI application: REST API under /api, React web UI (frontend/dist) at /."""
 
 from __future__ import annotations
 
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 
 from app import __version__
 from app.config import get_settings
 from app.database import Base, SessionLocal, engine
 from app.routers import admin, documents
 from app.seed import seed_if_empty
+from app.spa import mount_frontend
 
 logger = logging.getLogger("medkb")
-STATIC_DIR = Path(__file__).parent / "static"
 
 
 @asynccontextmanager
@@ -48,5 +46,5 @@ app = FastAPI(
 app.include_router(documents.router)
 app.include_router(admin.router)
 
-# Mounted last so that /api/* routes take precedence.
-app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+# Registered last so that /api/* routes take precedence.
+mount_frontend(app, get_settings().frontend_dist)

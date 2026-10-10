@@ -95,7 +95,7 @@ def test_new_documents_can_be_created_after_restore(client):
     "name", ["evil.json", "archive_1.json", "archive_20260101_000000.txt", "..%2Fsecret.json"]
 )
 def test_invalid_archive_names_are_rejected(client, name):
-    # 405 can occur when an encoded slash makes the path fall through to the static file mount.
+    # 405 can occur when an encoded slash makes the path fall through to the frontend catch-all.
     assert client.get(f"/api/archives/{name}", headers=ADMIN).status_code in (400, 404)
     assert client.post(f"/api/archives/{name}/restore", headers=ADMIN).status_code in (
         400,

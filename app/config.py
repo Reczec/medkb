@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     # Insert the bundled example entries on startup if the database is empty.
     seed_demo_data: bool = False
 
+    # Built React frontend (npm run build). Missing directory = API only, with a hint page at /.
+    frontend_dist: Path = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+
 
 @lru_cache
 def get_settings() -> Settings:
