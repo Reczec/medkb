@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import html
 import re
+import threading
+import time
 from typing import Any
 
 import httpx
@@ -11,10 +13,17 @@ import httpx
 from app.config import Settings
 from app.schemas import Study
 from app.sources.cache import SourceUnavailable
-from app.sources.http import get_json
 
 EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 MAX_AUTHORS = 3
+# NCBI allows 3 requests per second without an API key and 10 with one; it counts strictly,
+# so keep a margin, and retry once after a pause if it still answers 429.
+MIN_INTERVAL = 0.4
+MIN_INTERVAL_WITH_KEY = 0.12
+RETRY_AFTER_429 = 1.0
+
+_last_request = 0.0
+_rate_lock = threading.Lock()
 
 # MeSH heading per specialty for the dashboard tile "Neueste Studien".
 CATEGORY_TERMS: dict[str, str] = {
@@ -46,6 +55,38 @@ def document_query(term_en: str) -> str:
 
 def category_query(category: str) -> str:
     return f'"{CATEGORY_TERMS[category]}"[MeSH Major Topic] AND hasabstract'
+
+
+def throttle(settings: Settings) -> None:
+    """Space NCBI requests of this process so that bursts (e.g. the dashboard tile) stay
+    within the rate limit instead of failing with 429."""
+    global _last_request
+    interval = MIN_INTERVAL_WITH_KEY if settings.ncbi_api_key else MIN_INTERVAL
+    with _rate_lock:
+        wait = _last_request + interval - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        _last_request = time.monotonic()
+
+
+def _ncbi_get(
+    client: httpx.Client, endpoint: str, params: dict[str, Any], settings: Settings
+) -> Any:
+    for attempt in (1, 2):
+        throttle(settings)
+        try:
+            response = client.get(EUTILS + endpoint, params=params)
+        except httpx.HTTPError as exc:
+            raise SourceUnavailable(f"{endpoint}: {exc}") from exc
+        if response.status_code == 429 and attempt == 1:
+            time.sleep(RETRY_AFTER_429)
+            continue
+        try:
+            response.raise_for_status()
+            return response.json()
+        except (httpx.HTTPError, ValueError) as exc:
+            raise SourceUnavailable(f"{endpoint}: {exc}") from exc
+    raise AssertionError("unreachable")
 
 
 def _params(settings: Settings, **extra: Any) -> dict[str, Any]:
@@ -80,11 +121,9 @@ def _study(pmid: str, item: dict[str, Any]) -> Study:
 
 def search_studies(client: httpx.Client, query: str, settings: Settings, limit: int) -> list[Study]:
     """The newest PubMed articles for ``query``, newest first. Raises SourceUnavailable."""
-    found = get_json(
-        client,
-        EUTILS + "esearch.fcgi",
-        params=_params(settings, term=query, sort="pub_date", retmax=limit),
-    )
+    # No sort parameter: PubMed's default "most recent" order, newest additions first.
+    # (sort=pub_date ranks issues dated in the future first.)
+    found = _ncbi_get(client, "esearch.fcgi", _params(settings, term=query, retmax=limit), settings)
     try:
         ids = [str(pmid) for pmid in found["esearchresult"]["idlist"]]
     except (KeyError, TypeError) as exc:
@@ -92,7 +131,7 @@ def search_studies(client: httpx.Client, query: str, settings: Settings, limit: 
     if not ids:
         return []
 
-    summary = get_json(client, EUTILS + "esummary.fcgi", params=_params(settings, id=",".join(ids)))
+    summary = _ncbi_get(client, "esummary.fcgi", _params(settings, id=",".join(ids)), settings)
     try:
         result = summary["result"]
         return [_study(pmid, result[pmid]) for pmid in ids if isinstance(result.get(pmid), dict)]

@@ -13,8 +13,8 @@ from app.auth import require_role
 from app.config import Settings, get_settings
 from app.database import get_db
 from app.models import Document
-from app.schemas import Icd11Entry, LatestStudies, SourceResult, Study
-from app.sources import icd11, pubmed
+from app.schemas import Icd11Entry, LatestStudies, MedicationsOut, SourceResult, Study
+from app.sources import icd11, openfda, pubmed
 from app.sources.cache import cached
 from app.sources.http import http_client
 
@@ -99,3 +99,34 @@ def document_icd11(
     code = document.icd11_code
     key = f"icd11:{settings.icd_release}:{settings.icd_language}:{code}"
     return cached(db, key, settings, lambda: icd11.lookup_code(client, code, settings))
+
+
+@router.get("/documents/{document_id}/medications", response_model=SourceResult[MedicationsOut])
+def document_medications(
+    document_id: int, db: DbSession, settings: AppSettings, client: Client
+) -> SourceResult[Any]:
+    """FDA label excerpts for the entry's active ingredients, cached per ingredient."""
+    document = _document(db, document_id)
+    if not document.medications:
+        return SourceResult(status="empty")
+
+    found: list[Any] = []
+    missing: list[str] = []
+    fetched: list[Any] = []
+    for ingredient in document.medications:
+        result = cached(
+            db,
+            f"openfda:{ingredient}",
+            settings,
+            lambda ingredient=ingredient: openfda.fetch_label(client, ingredient, settings),
+        )
+        if result.status == "unavailable":
+            return SourceResult(status="unavailable")
+        fetched.append(result.fetched_at)
+        if result.data:
+            found.append(result.data)
+        else:
+            missing.append(ingredient)
+    return SourceResult(
+        status="ok", fetched_at=min(fetched), data={"found": found, "missing": missing}
+    )

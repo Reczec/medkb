@@ -21,7 +21,7 @@ import app.auth as _auth  # noqa: E402
 from app.config import Settings, get_settings  # noqa: E402
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
-from app.sources import icd11  # noqa: E402
+from app.sources import icd11, pubmed  # noqa: E402
 from app.users import ensure_users  # noqa: E402
 
 # Full-strength bcrypt costs ~0.25 s per hash; tests only need it to work, not to be slow.
@@ -53,10 +53,13 @@ def clean_database(tmp_path):
 
 
 @pytest.fixture(autouse=True)
-def network():
+def network(monkeypatch):
     """No test reaches the internet. Unmatched requests get an empty 200 response, which the
     source clients treat as "unavailable"; tests add their own routes with ``network.get(...)``."""
     icd11.reset_token_cache()
+    # Mocked NCBI needs no rate limiting; test_sources_pubmed checks the throttle itself.
+    monkeypatch.setattr(pubmed, "MIN_INTERVAL", 0.0)
+    monkeypatch.setattr(pubmed, "MIN_INTERVAL_WITH_KEY", 0.0)
     with respx.mock(assert_all_called=False, assert_all_mocked=False) as router:
         yield router
 

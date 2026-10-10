@@ -71,7 +71,7 @@ def test_studies_are_parsed_newest_first(doctor_client, client, pubmed):
 
     search_params = pubmed[0].calls.last.request.url.params
     assert search_params["term"] == '"Migraine" AND hasabstract'
-    assert search_params["sort"] == "pub_date"
+    assert "sort" not in search_params  # PubMed default: most recently added first
     assert search_params["retmax"] == "5"
     assert search_params["tool"] == "medkb"
     assert "api_key" not in search_params
@@ -234,3 +234,53 @@ def test_cached_reports_unavailable_without_storing(db_session, test_settings):
     result = cached(db_session, "pubmed:y", test_settings, fail)
     assert result.status == "unavailable"
     assert db_session.get(SourceCache, "pubmed:y") is None
+
+
+class FakeClock:
+    def __init__(self):
+        self.now = 100.0
+        self.sleeps = []
+
+    def monotonic(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.sleeps.append(seconds)
+        self.now += seconds
+
+
+@pytest.mark.parametrize(("api_key", "interval"), [("", 0.4), ("key", 0.12)])
+def test_requests_are_spaced_for_the_ncbi_rate_limit(monkeypatch, test_settings, api_key, interval):
+    from app.sources import pubmed
+
+    clock = FakeClock()
+    monkeypatch.setattr(pubmed, "time", clock)
+    monkeypatch.setattr(pubmed, "_last_request", 0.0)
+    monkeypatch.setattr(pubmed, "MIN_INTERVAL", 0.4)
+    monkeypatch.setattr(pubmed, "MIN_INTERVAL_WITH_KEY", 0.12)
+    test_settings.ncbi_api_key = api_key
+
+    pubmed.throttle(test_settings)  # first request: long after the last one, no wait
+    pubmed.throttle(test_settings)  # immediately after: waits one interval
+    assert clock.sleeps == [pytest.approx(interval)]
+
+
+def test_rate_limited_request_is_retried_once(doctor_client, client, network, monkeypatch):
+    from app.sources import pubmed
+
+    monkeypatch.setattr(pubmed, "RETRY_AFTER_429", 0.0)
+    network.get(ESEARCH).mock(side_effect=[httpx.Response(429), httpx.Response(200, json=SEARCH)])
+    network.get(ESUMMARY).mock(return_value=httpx.Response(200, json=SUMMARY))
+    doc = migraine_doc(client)
+    body = doctor_client.get(f"/api/sources/documents/{doc['id']}/studies").json()
+    assert body["status"] == "ok"
+
+
+def test_second_429_gives_up(doctor_client, client, network, monkeypatch):
+    from app.sources import pubmed
+
+    monkeypatch.setattr(pubmed, "RETRY_AFTER_429", 0.0)
+    network.get(ESEARCH).mock(return_value=httpx.Response(429))
+    doc = migraine_doc(client)
+    body = doctor_client.get(f"/api/sources/documents/{doc['id']}/studies").json()
+    assert body["status"] == "unavailable"

@@ -518,3 +518,19 @@ class Icd11Entry(BaseModel):
     url: str = Field(description="Link to the WHO ICD-11 browser.")
     release: str
     language: str = Field(description="Language WHO answered in ('de' is a prerelease).")
+
+
+class MedicationLabel(BaseModel):
+    """Excerpt of a US FDA drug label (English); texts are shortened."""
+
+    ingredient: str
+    brand_names: list[str] = Field(default_factory=list)
+    indications: str | None = None
+    warnings: str | None = None
+    adverse_reactions: str | None = None
+    url: str
+
+
+class MedicationsOut(BaseModel):
+    found: list[MedicationLabel]
+    missing: list[str] = Field(description="Ingredients without an FDA label.")
