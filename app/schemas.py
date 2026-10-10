@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, date, datetime
 from enum import StrEnum
-from typing import Annotated, Self
+from typing import Annotated, Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -246,3 +246,31 @@ class ArchiveEntry(BaseModel):
         checked = _check_category(value)
         assert checked is not None
         return checked
+
+
+class LoginRequest(BaseModel):
+    username: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]
+    password: Annotated[str, StringConstraints(min_length=1, max_length=200)]
+
+
+class DemoLoginRequest(BaseModel):
+    role: Literal["admin", "doctor", "patient"]
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    username: str
+    display_name: str
+    role: str
+
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
+    user: UserOut
+
+
+class AuthOptions(BaseModel):
+    demo_mode: bool

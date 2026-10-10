@@ -13,19 +13,43 @@ os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", "sqlite://")
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from pwdlib import PasswordHash  # noqa: E402
+from pwdlib.hashers.bcrypt import BcryptHasher  # noqa: E402
 
+import app.auth as _auth  # noqa: E402
 from app.config import Settings, get_settings  # noqa: E402
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
+from app.users import ensure_users  # noqa: E402
+
+# Full-strength bcrypt costs ~0.25 s per hash; tests only need it to work, not to be slow.
+_auth._hasher = PasswordHash((BcryptHasher(rounds=4),))
 
 ADMIN_TOKEN = "test-admin-token"
 ADMIN = {"X-Admin-Token": ADMIN_TOKEN}
+JWT_SECRET = "test-secret-that-is-at-least-32-bytes"
+ADMIN_PASSWORD = "admin-test-password"
+
+
+def make_settings(archive_dir, **overrides) -> Settings:
+    values = {
+        "database_url": "sqlite://",
+        "admin_token": ADMIN_TOKEN,
+        "archive_dir": archive_dir,
+        "jwt_secret": JWT_SECRET,
+        "demo_mode": True,
+        "admin_password": ADMIN_PASSWORD,
+        **overrides,
+    }
+    return Settings(_env_file=None, **values)
 
 
 @pytest.fixture(autouse=True)
-def clean_database():
+def clean_database(tmp_path):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+    with SessionLocal() as db:
+        ensure_users(db, make_settings(tmp_path / "archives"))
     yield
 
 
@@ -40,14 +64,43 @@ def archive_dir(tmp_path):
     return tmp_path / "archives"
 
 
+def _client_for(role: str | None) -> TestClient:
+    # No "with" block: the startup hook (table creation, seeding) is handled by the fixtures.
+    test_client = TestClient(app)
+    if role:
+        response = test_client.post("/api/auth/demo", json={"role": role})
+        assert response.status_code == 200, response.text
+        test_client.headers["Authorization"] = f"Bearer {response.json()['access_token']}"
+    return test_client
+
+
 @pytest.fixture
-def client(archive_dir):
-    app.dependency_overrides[get_settings] = lambda: Settings(
-        _env_file=None, database_url="sqlite://", admin_token=ADMIN_TOKEN, archive_dir=archive_dir
-    )
-    # No "with" block: the startup hook (table creation, seeding) is handled by the fixture above.
-    yield TestClient(app)
+def test_settings(archive_dir):
+    settings = make_settings(archive_dir)
+    app.dependency_overrides[get_settings] = lambda: settings
+    yield settings
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def client(test_settings):
+    """Logged in as the demo admin."""
+    return _client_for("admin")
+
+
+@pytest.fixture
+def doctor_client(test_settings):
+    return _client_for("doctor")
+
+
+@pytest.fixture
+def patient_client(test_settings):
+    return _client_for("patient")
+
+
+@pytest.fixture
+def anon_client(test_settings):
+    return _client_for(None)
 
 
 @pytest.fixture
