@@ -12,6 +12,7 @@ import os
 os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", "sqlite://")
 
 import pytest  # noqa: E402
+import respx  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from pwdlib import PasswordHash  # noqa: E402
 from pwdlib.hashers.bcrypt import BcryptHasher  # noqa: E402
@@ -48,6 +49,14 @@ def clean_database(tmp_path):
     with SessionLocal() as db:
         ensure_users(db, make_settings(tmp_path / "archives"))
     yield
+
+
+@pytest.fixture(autouse=True)
+def network():
+    """No test reaches the internet. Unmatched requests get an empty 200 response, which the
+    source clients treat as "unavailable"; tests add their own routes with ``network.get(...)``."""
+    with respx.mock(assert_all_called=False, assert_all_mocked=False) as router:
+        yield router
 
 
 @pytest.fixture

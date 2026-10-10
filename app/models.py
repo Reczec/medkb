@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy import JSON, DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -55,6 +56,16 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(10))
     display_name: Mapped[str] = mapped_column(String(100))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class SourceCache(Base):
+    """Answers from external sources, keyed by source and query (kept across demo resets)."""
+
+    __tablename__ = "source_cache"
+
+    key: Mapped[str] = mapped_column(String(300), primary_key=True)
+    payload: Mapped[Any] = mapped_column(JSON, nullable=True)
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
 class AuditLog(Base):

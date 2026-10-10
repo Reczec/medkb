@@ -30,6 +30,16 @@ class Settings(BaseSettings):
     # Optional password for a real "admin" login (works with and without demo mode).
     admin_password: str = ""
 
+    # External sources (PubMed, WHO ICD-11, openFDA). An NCBI key only raises the rate limit;
+    # ICD-11 needs free API keys from https://icd.who.int/icdapi.
+    ncbi_api_key: str = ""
+    icd_client_id: str = ""
+    icd_client_secret: str = ""
+    icd_release: str = "2026-01"
+    icd_language: str = "de"
+    sources_timeout: float = 8
+    source_cache_hours: float = 24
+
     # Built React frontend (npm run build). Missing directory = API only, with a hint page at /.
     frontend_dist: Path = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 
