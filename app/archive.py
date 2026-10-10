@@ -44,7 +44,9 @@ def _info_from_file(path: Path) -> ArchiveInfo:
     )
 
 
-def create_archive(db: Session, archive_dir: Path, suffix: str | None = None) -> ArchiveInfo:
+def create_archive(
+    db: Session, archive_dir: Path, suffix: str | None = None, actor: str | None = None
+) -> ArchiveInfo:
     """Write every document (content, metadata, keywords) into a new JSON file."""
     archive_dir.mkdir(parents=True, exist_ok=True)
     documents = db.scalars(select(Document).order_by(Document.id)).all()
@@ -77,7 +79,7 @@ def create_archive(db: Session, archive_dir: Path, suffix: str | None = None) ->
         Path(tmp_name).unlink(missing_ok=True)
         raise
 
-    log_audit(db, "archive_create", None, f"{path.name} ({len(documents)} documents)")
+    log_audit(db, "archive_create", None, f"{path.name} ({len(documents)} documents)", actor)
     db.commit()
     return _info_from_file(path)
 
@@ -110,14 +112,16 @@ def _read_entries(path: Path) -> list[ArchiveEntry]:
         raise ArchiveError(f"Archive is corrupt or has an unsupported format: {exc}") from exc
 
 
-def restore_archive(db: Session, archive_dir: Path, name: str) -> tuple[int, ArchiveInfo]:
+def restore_archive(
+    db: Session, archive_dir: Path, name: str, actor: str | None = None
+) -> tuple[int, ArchiveInfo]:
     """Replace all documents with the content of an archive.
 
     The archive is fully validated first. Before anything is deleted, the current state is
     saved as an automatic "pre-restore" archive. Document ids are not preserved.
     """
     entries = _read_entries(resolve_archive(archive_dir, name))
-    backup = create_archive(db, archive_dir, suffix="pre-restore")
+    backup = create_archive(db, archive_dir, suffix="pre-restore", actor=actor)
 
     db.execute(delete(Document))
     for entry in entries:
@@ -134,6 +138,6 @@ def restore_archive(db: Session, archive_dir: Path, name: str) -> tuple[int, Arc
                 updated_at=entry.updated_at,
             )
         )
-    log_audit(db, "archive_restore", None, f"{name} ({len(entries)} documents)")
+    log_audit(db, "archive_restore", None, f"{name} ({len(entries)} documents)", actor)
     db.commit()
     return len(entries), backup

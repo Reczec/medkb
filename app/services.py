@@ -34,14 +34,16 @@ WEIGHT_CONTENT = 1
 ACTIVITY_DAYS = 30
 
 
-def log_audit(db: Session, action: str, document_id: int | None, detail: str) -> None:
-    db.add(AuditLog(action=action, document_id=document_id, detail=detail[:255]))
+def log_audit(
+    db: Session, action: str, document_id: int | None, detail: str, actor: str | None = None
+) -> None:
+    db.add(AuditLog(action=action, actor=actor, document_id=document_id, detail=detail[:255]))
 
 
 # --------------------------------------------------------------------------- CRUD
 
 
-def create_document(db: Session, data: DocumentCreate) -> Document:
+def create_document(db: Session, data: DocumentCreate, actor: str | None = None) -> Document:
     suggestion = classify(data.title, data.content)
     manual_category = data.category is not None
 
@@ -56,12 +58,14 @@ def create_document(db: Session, data: DocumentCreate) -> Document:
     )
     db.add(document)
     db.flush()  # assigns the id for the audit entry
-    log_audit(db, "create", document.id, document.title)
+    log_audit(db, "create", document.id, document.title, actor)
     db.commit()
     return document
 
 
-def update_document(db: Session, document: Document, data: DocumentUpdate) -> Document:
+def update_document(
+    db: Session, document: Document, data: DocumentUpdate, actor: str | None = None
+) -> Document:
     changes = data.model_dump(exclude_unset=True)
     reclassify = changes.pop("reclassify", False)
     changed_fields = list(changes)
@@ -92,13 +96,13 @@ def update_document(db: Session, document: Document, data: DocumentUpdate) -> Do
         else:  # an empty list asks for automatic keywords
             document.keywords = classify(document.title, document.content).keywords
 
-    log_audit(db, "update", document.id, f"{document.title} ({', '.join(changed_fields)})")
+    log_audit(db, "update", document.id, f"{document.title} ({', '.join(changed_fields)})", actor)
     db.commit()
     return document
 
 
-def delete_document(db: Session, document: Document) -> None:
-    log_audit(db, "delete", document.id, document.title)
+def delete_document(db: Session, document: Document, actor: str | None = None) -> None:
+    log_audit(db, "delete", document.id, document.title, actor)
     db.delete(document)
     db.commit()
 

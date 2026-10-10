@@ -12,7 +12,7 @@ from fastapi import FastAPI
 from app import __version__
 from app.config import get_settings
 from app.database import Base, SessionLocal, engine
-from app.routers import admin, auth, documents
+from app.routers import admin, auth, documents, users
 from app.seed import seed_if_empty
 from app.spa import mount_frontend
 from app.users import ensure_users
@@ -33,8 +33,6 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         logger.warning("JWT_SECRET is shorter than 32 characters; use a longer random value.")
     with SessionLocal() as db:
         ensure_users(db, settings)
-    if not settings.admin_token:
-        logger.warning("ADMIN_TOKEN is not set: archive and audit endpoints are disabled.")
     if settings.seed_demo_data:
         with SessionLocal() as db:
             added = seed_if_empty(db)
@@ -56,6 +54,13 @@ app = FastAPI(
 app.include_router(auth.router)
 app.include_router(documents.router)
 app.include_router(admin.router)
+app.include_router(users.router)
+
+
+@app.get("/api/health", tags=["system"])
+def health() -> dict[str, str]:
+    return {"status": "ok"}
+
 
 # Registered last so that /api/* routes take precedence.
 mount_frontend(app, get_settings().frontend_dist)

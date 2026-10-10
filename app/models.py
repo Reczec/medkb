@@ -55,6 +55,8 @@ class AuditLog(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
     action: Mapped[str] = mapped_column(String(30))
+    # Username of who did it ("system" for automatic actions); None in logs from before v2.
+    actor: Mapped[str | None] = mapped_column(String(50), default=None)
     # No foreign key on purpose: log entries must survive deletion of the document.
     document_id: Mapped[int | None] = mapped_column(Integer, default=None)
     detail: Mapped[str] = mapped_column(String(255), default="")
