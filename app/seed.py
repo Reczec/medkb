@@ -27,8 +27,12 @@ def seed_if_empty(db: Session, force: bool = False) -> int:
             db,
             DocumentCreate(
                 title=item["title"],
-                content=item["content"],
                 doc_type=DocType(item["doc_type"]),
+                sections=item["sections"],
+                term_en=item["term_en"],
+                icd11_code=item.get("icd11_code"),
+                medications=item.get("medications", []),
+                further_reading=item["further_reading"],
                 source=SOURCE,
             ),
         )
