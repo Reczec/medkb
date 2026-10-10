@@ -69,7 +69,7 @@ SEED_DOCUMENTS: list[dict[str, str]] = [
     {
         "title": "Diabetes mellitus Typ 2",
         "doc_type": "Diagnose",
-        "expected_category": "Innere Medizin",
+        "expected_category": "Endokrinologie",
         "content": (
             "Beim Diabetes mellitus Typ 2 spricht der Körper schlechter auf Insulin an, "
             "wodurch der Blutzucker dauerhaft erhöht ist. Typische Anzeichen sind starker "
@@ -82,7 +82,7 @@ SEED_DOCUMENTS: list[dict[str, str]] = [
     {
         "title": "Sodbrennen und Reflux",
         "doc_type": "Symptom",
-        "expected_category": "Innere Medizin",
+        "expected_category": "Gastroenterologie",
         "content": (
             "Sodbrennen entsteht, wenn Magensäure in die Speiseröhre zurückfließt. Betroffene "
             "spüren ein Brennen hinter dem Brustbein, oft nach üppigen Mahlzeiten oder im "

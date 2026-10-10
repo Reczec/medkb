@@ -83,3 +83,44 @@ def test_ties_prefer_specific_category():
 def test_all_categories_have_vocabulary():
     assert DEFAULT_CATEGORY in CATEGORIES
     assert CATEGORIES[-1] == DEFAULT_CATEGORY
+
+
+SPECIALTIES = [
+    "HNO",
+    "Augenheilkunde",
+    "Neurologie",
+    "Kardiologie",
+    "Pneumologie",
+    "Gastroenterologie",
+    "Endokrinologie",
+    "Urologie",
+    "Gynäkologie",
+    "Dermatologie",
+    "Orthopädie",
+    "Pädiatrie",
+    "Psychiatrie",
+    "Infektiologie",
+    "Innere Medizin",
+    "Allgemeinmedizin",
+]
+
+
+def test_sixteen_specialties_in_tie_order():
+    assert CATEGORIES == SPECIALTIES
+
+
+@pytest.mark.parametrize(
+    ("category", "title", "content"),
+    [
+        ("Augenheilkunde", "Grauer Star", "Linsentrübung, verschwommenes Sehen, Blendung."),
+        ("Pneumologie", "Asthma bronchiale", "Asthma mit Atemnot und Giemen."),
+        ("Gastroenterologie", "Reflux", "Reflux, Sodbrennen und eine gereizte Speiseröhre."),
+        ("Endokrinologie", "Diabetes", "Diabetes, erhöhter Blutzucker, Insulin."),
+        ("Urologie", "Harnwegsinfekt", "Brennen beim Wasserlassen, Harndrang, Blase."),
+        ("Gynäkologie", "Endometriose", "Endometriose mit Regelschmerzen, Gebärmutter."),
+        ("Infektiologie", "Borreliose", "Borreliose nach Zeckenstich, Wanderröte."),
+        ("Innere Medizin", "Eisenmangelanämie", "Eisenmangel, niedriges Hämoglobin, Blässe."),
+    ],
+)
+def test_new_specialties_are_recognised(category, title, content):
+    assert classify(title, content).category == category
