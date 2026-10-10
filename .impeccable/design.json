@@ -1,0 +1,656 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-10T00:00:00Z",
+  "title": "Design System: MedKB",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Clinical Teal",
+        "canonical": "oklch(0.53 0.1 196)",
+        "tonalRamp": [
+          "oklch(0.15 0.1 196)",
+          "oklch(0.25 0.1 196)",
+          "oklch(0.35 0.1 196)",
+          "oklch(0.45 0.1 196)",
+          "oklch(0.55 0.1 196)",
+          "oklch(0.68 0.1 196)",
+          "oklch(0.82 0.1 196)",
+          "oklch(0.95 0.1 196)"
+        ],
+        "dark": "oklch(0.72 0.11 192)"
+      },
+      "primary-foreground": {
+        "role": "primary",
+        "displayName": "Teal-White",
+        "canonical": "oklch(0.99 0.005 196)",
+        "tonalRamp": [
+          "oklch(0.15 0.005 196)",
+          "oklch(0.25 0.005 196)",
+          "oklch(0.35 0.005 196)",
+          "oklch(0.45 0.005 196)",
+          "oklch(0.55 0.005 196)",
+          "oklch(0.68 0.005 196)",
+          "oklch(0.82 0.005 196)",
+          "oklch(0.95 0.005 196)"
+        ],
+        "dark": "oklch(0.18 0.03 220)"
+      },
+      "teal-wash": {
+        "role": "primary",
+        "displayName": "Teal Wash",
+        "canonical": "oklch(0.945 0.025 190)",
+        "tonalRamp": [
+          "oklch(0.15 0.025 190)",
+          "oklch(0.25 0.025 190)",
+          "oklch(0.35 0.025 190)",
+          "oklch(0.45 0.025 190)",
+          "oklch(0.55 0.025 190)",
+          "oklch(0.68 0.025 190)",
+          "oklch(0.82 0.025 190)",
+          "oklch(0.95 0.025 190)"
+        ],
+        "dark": "oklch(0.28 0.04 205)"
+      },
+      "teal-wash-foreground": {
+        "role": "primary",
+        "displayName": "Deep Teal Ink",
+        "canonical": "oklch(0.3 0.06 200)",
+        "tonalRamp": [
+          "oklch(0.15 0.06 200)",
+          "oklch(0.25 0.06 200)",
+          "oklch(0.35 0.06 200)",
+          "oklch(0.45 0.06 200)",
+          "oklch(0.55 0.06 200)",
+          "oklch(0.68 0.06 200)",
+          "oklch(0.82 0.06 200)",
+          "oklch(0.95 0.06 200)"
+        ],
+        "dark": "oklch(0.92 0.03 195)"
+      },
+      "cool-paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "oklch(0.984 0.004 197)",
+        "tonalRamp": [
+          "oklch(0.15 0.004 197)",
+          "oklch(0.25 0.004 197)",
+          "oklch(0.35 0.004 197)",
+          "oklch(0.45 0.004 197)",
+          "oklch(0.55 0.004 197)",
+          "oklch(0.68 0.004 197)",
+          "oklch(0.82 0.004 197)",
+          "oklch(0.95 0.004 197)"
+        ],
+        "dark": "oklch(0.17 0.018 240)"
+      },
+      "sheet-white": {
+        "role": "neutral",
+        "displayName": "Sheet White",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.25 0 0)",
+          "oklch(0.35 0 0)",
+          "oklch(0.45 0 0)",
+          "oklch(0.55 0 0)",
+          "oklch(0.68 0 0)",
+          "oklch(0.82 0 0)",
+          "oklch(0.95 0 0)"
+        ],
+        "dark": "oklch(0.21 0.02 240)"
+      },
+      "slate-ink": {
+        "role": "neutral",
+        "displayName": "Slate Ink",
+        "canonical": "oklch(0.24 0.025 230)",
+        "tonalRamp": [
+          "oklch(0.15 0.025 230)",
+          "oklch(0.25 0.025 230)",
+          "oklch(0.35 0.025 230)",
+          "oklch(0.45 0.025 230)",
+          "oklch(0.55 0.025 230)",
+          "oklch(0.68 0.025 230)",
+          "oklch(0.82 0.025 230)",
+          "oklch(0.95 0.025 230)"
+        ],
+        "dark": "oklch(0.94 0.008 220)"
+      },
+      "muted-wash": {
+        "role": "neutral",
+        "displayName": "Muted Wash",
+        "canonical": "oklch(0.958 0.007 210)",
+        "tonalRamp": [
+          "oklch(0.15 0.007 210)",
+          "oklch(0.25 0.007 210)",
+          "oklch(0.35 0.007 210)",
+          "oklch(0.45 0.007 210)",
+          "oklch(0.55 0.007 210)",
+          "oklch(0.68 0.007 210)",
+          "oklch(0.82 0.007 210)",
+          "oklch(0.95 0.007 210)"
+        ],
+        "dark": "oklch(0.25 0.02 238)"
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "oklch(0.5 0.022 230)",
+        "tonalRamp": [
+          "oklch(0.15 0.022 230)",
+          "oklch(0.25 0.022 230)",
+          "oklch(0.35 0.022 230)",
+          "oklch(0.45 0.022 230)",
+          "oklch(0.55 0.022 230)",
+          "oklch(0.68 0.022 230)",
+          "oklch(0.82 0.022 230)",
+          "oklch(0.95 0.022 230)"
+        ],
+        "dark": "oklch(0.7 0.02 225)"
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.91 0.01 215)",
+        "tonalRamp": [
+          "oklch(0.15 0.01 215)",
+          "oklch(0.25 0.01 215)",
+          "oklch(0.35 0.01 215)",
+          "oklch(0.45 0.01 215)",
+          "oklch(0.55 0.01 215)",
+          "oklch(0.68 0.01 215)",
+          "oklch(0.82 0.01 215)",
+          "oklch(0.95 0.01 215)"
+        ],
+        "dark": "oklch(1 0 0 / 9%)"
+      },
+      "destructive": {
+        "role": "error",
+        "displayName": "Clinical Red",
+        "canonical": "oklch(0.58 0.2 25)",
+        "tonalRamp": [
+          "oklch(0.15 0.2 25)",
+          "oklch(0.25 0.2 25)",
+          "oklch(0.35 0.2 25)",
+          "oklch(0.45 0.2 25)",
+          "oklch(0.55 0.2 25)",
+          "oklch(0.68 0.2 25)",
+          "oklch(0.82 0.2 25)",
+          "oklch(0.95 0.2 25)"
+        ],
+        "dark": "oklch(0.66 0.19 22)"
+      },
+      "petrol-rail": {
+        "role": "neutral",
+        "displayName": "Petrol Rail",
+        "canonical": "oklch(0.285 0.047 214)",
+        "tonalRamp": [
+          "oklch(0.15 0.047 214)",
+          "oklch(0.25 0.047 214)",
+          "oklch(0.35 0.047 214)",
+          "oklch(0.45 0.047 214)",
+          "oklch(0.55 0.047 214)",
+          "oklch(0.68 0.047 214)",
+          "oklch(0.82 0.047 214)",
+          "oklch(0.95 0.047 214)"
+        ],
+        "dark": "oklch(0.135 0.02 232)"
+      },
+      "rail-foreground": {
+        "role": "neutral",
+        "displayName": "Rail Foreground",
+        "canonical": "oklch(0.97 0.01 200)",
+        "tonalRamp": [
+          "oklch(0.15 0.01 200)",
+          "oklch(0.25 0.01 200)",
+          "oklch(0.35 0.01 200)",
+          "oklch(0.45 0.01 200)",
+          "oklch(0.55 0.01 200)",
+          "oklch(0.68 0.01 200)",
+          "oklch(0.82 0.01 200)",
+          "oklch(0.95 0.01 200)"
+        ],
+        "dark": "oklch(0.95 0.01 210)"
+      },
+      "rail-muted": {
+        "role": "neutral",
+        "displayName": "Rail Muted",
+        "canonical": "oklch(0.76 0.03 205)",
+        "tonalRamp": [
+          "oklch(0.15 0.03 205)",
+          "oklch(0.25 0.03 205)",
+          "oklch(0.35 0.03 205)",
+          "oklch(0.45 0.03 205)",
+          "oklch(0.55 0.03 205)",
+          "oklch(0.68 0.03 205)",
+          "oklch(0.82 0.03 205)",
+          "oklch(0.95 0.03 205)"
+        ],
+        "dark": "oklch(0.7 0.025 215)"
+      },
+      "rail-active": {
+        "role": "neutral",
+        "displayName": "Rail Active",
+        "canonical": "oklch(0.36 0.055 205)",
+        "tonalRamp": [
+          "oklch(0.15 0.055 205)",
+          "oklch(0.25 0.055 205)",
+          "oklch(0.35 0.055 205)",
+          "oklch(0.45 0.055 205)",
+          "oklch(0.55 0.055 205)",
+          "oklch(0.68 0.055 205)",
+          "oklch(0.82 0.055 205)",
+          "oklch(0.95 0.055 205)"
+        ],
+        "dark": "oklch(0.24 0.035 210)"
+      },
+      "rail-well": {
+        "role": "neutral",
+        "displayName": "Rail Well",
+        "canonical": "oklch(0.23 0.04 216)",
+        "tonalRamp": [
+          "oklch(0.15 0.04 216)",
+          "oklch(0.25 0.04 216)",
+          "oklch(0.35 0.04 216)",
+          "oklch(0.45 0.04 216)",
+          "oklch(0.55 0.04 216)",
+          "oklch(0.68 0.04 216)",
+          "oklch(0.82 0.04 216)",
+          "oklch(0.95 0.04 216)"
+        ],
+        "dark": "oklch(0.1 0.015 232)"
+      },
+      "rail-accent": {
+        "role": "neutral",
+        "displayName": "Rail Accent",
+        "canonical": "oklch(0.8 0.11 188)",
+        "tonalRamp": [
+          "oklch(0.15 0.11 188)",
+          "oklch(0.25 0.11 188)",
+          "oklch(0.35 0.11 188)",
+          "oklch(0.45 0.11 188)",
+          "oklch(0.55 0.11 188)",
+          "oklch(0.68 0.11 188)",
+          "oklch(0.82 0.11 188)",
+          "oklch(0.95 0.11 188)"
+        ],
+        "dark": "oklch(0.78 0.11 190)"
+      },
+      "specialty-allgemeinmedizin": {
+        "role": "secondary",
+        "displayName": "Allgemeinmedizin Tab",
+        "canonical": "oklch(0.62 0.1 196)",
+        "tonalRamp": [
+          "oklch(0.15 0.1 196)",
+          "oklch(0.25 0.1 196)",
+          "oklch(0.35 0.1 196)",
+          "oklch(0.45 0.1 196)",
+          "oklch(0.55 0.1 196)",
+          "oklch(0.68 0.1 196)",
+          "oklch(0.82 0.1 196)",
+          "oklch(0.95 0.1 196)"
+        ]
+      },
+      "specialty-innere-medizin": {
+        "role": "secondary",
+        "displayName": "Innere Medizin Tab",
+        "canonical": "oklch(0.62 0.12 150)",
+        "tonalRamp": [
+          "oklch(0.15 0.12 150)",
+          "oklch(0.25 0.12 150)",
+          "oklch(0.35 0.12 150)",
+          "oklch(0.45 0.12 150)",
+          "oklch(0.55 0.12 150)",
+          "oklch(0.68 0.12 150)",
+          "oklch(0.82 0.12 150)",
+          "oklch(0.95 0.12 150)"
+        ]
+      },
+      "specialty-kardiologie": {
+        "role": "secondary",
+        "displayName": "Kardiologie Tab",
+        "canonical": "oklch(0.62 0.17 18)",
+        "tonalRamp": [
+          "oklch(0.15 0.17 18)",
+          "oklch(0.25 0.17 18)",
+          "oklch(0.35 0.17 18)",
+          "oklch(0.45 0.17 18)",
+          "oklch(0.55 0.17 18)",
+          "oklch(0.68 0.17 18)",
+          "oklch(0.82 0.17 18)",
+          "oklch(0.95 0.17 18)"
+        ]
+      },
+      "specialty-neurologie": {
+        "role": "secondary",
+        "displayName": "Neurologie Tab",
+        "canonical": "oklch(0.62 0.15 285)",
+        "tonalRamp": [
+          "oklch(0.15 0.15 285)",
+          "oklch(0.25 0.15 285)",
+          "oklch(0.35 0.15 285)",
+          "oklch(0.45 0.15 285)",
+          "oklch(0.55 0.15 285)",
+          "oklch(0.68 0.15 285)",
+          "oklch(0.82 0.15 285)",
+          "oklch(0.95 0.15 285)"
+        ]
+      },
+      "specialty-hno": {
+        "role": "secondary",
+        "displayName": "HNO Tab",
+        "canonical": "oklch(0.62 0.13 235)",
+        "tonalRamp": [
+          "oklch(0.15 0.13 235)",
+          "oklch(0.25 0.13 235)",
+          "oklch(0.35 0.13 235)",
+          "oklch(0.45 0.13 235)",
+          "oklch(0.55 0.13 235)",
+          "oklch(0.68 0.13 235)",
+          "oklch(0.82 0.13 235)",
+          "oklch(0.95 0.13 235)"
+        ]
+      },
+      "specialty-dermatologie": {
+        "role": "secondary",
+        "displayName": "Dermatologie Tab",
+        "canonical": "oklch(0.62 0.13 55)",
+        "tonalRamp": [
+          "oklch(0.15 0.13 55)",
+          "oklch(0.25 0.13 55)",
+          "oklch(0.35 0.13 55)",
+          "oklch(0.45 0.13 55)",
+          "oklch(0.55 0.13 55)",
+          "oklch(0.68 0.13 55)",
+          "oklch(0.82 0.13 55)",
+          "oklch(0.95 0.13 55)"
+        ]
+      },
+      "specialty-orthopaedie": {
+        "role": "secondary",
+        "displayName": "Orthopädie Tab",
+        "canonical": "oklch(0.62 0.12 85)",
+        "tonalRamp": [
+          "oklch(0.15 0.12 85)",
+          "oklch(0.25 0.12 85)",
+          "oklch(0.35 0.12 85)",
+          "oklch(0.45 0.12 85)",
+          "oklch(0.55 0.12 85)",
+          "oklch(0.68 0.12 85)",
+          "oklch(0.82 0.12 85)",
+          "oklch(0.95 0.12 85)"
+        ]
+      },
+      "specialty-paediatrie": {
+        "role": "secondary",
+        "displayName": "Pädiatrie Tab",
+        "canonical": "oklch(0.62 0.14 340)",
+        "tonalRamp": [
+          "oklch(0.15 0.14 340)",
+          "oklch(0.25 0.14 340)",
+          "oklch(0.35 0.14 340)",
+          "oklch(0.45 0.14 340)",
+          "oklch(0.55 0.14 340)",
+          "oklch(0.68 0.14 340)",
+          "oklch(0.82 0.14 340)",
+          "oklch(0.95 0.14 340)"
+        ]
+      },
+      "specialty-psychiatrie": {
+        "role": "secondary",
+        "displayName": "Psychiatrie Tab",
+        "canonical": "oklch(0.62 0.09 265)",
+        "tonalRamp": [
+          "oklch(0.15 0.09 265)",
+          "oklch(0.25 0.09 265)",
+          "oklch(0.35 0.09 265)",
+          "oklch(0.45 0.09 265)",
+          "oklch(0.55 0.09 265)",
+          "oklch(0.68 0.09 265)",
+          "oklch(0.82 0.09 265)",
+          "oklch(0.95 0.09 265)"
+        ]
+      },
+      "specialty-fallback": {
+        "role": "secondary",
+        "displayName": "Unfiled Grey",
+        "canonical": "oklch(0.6 0.02 230)",
+        "tonalRamp": [
+          "oklch(0.15 0.02 230)",
+          "oklch(0.25 0.02 230)",
+          "oklch(0.35 0.02 230)",
+          "oklch(0.45 0.02 230)",
+          "oklch(0.55 0.02 230)",
+          "oklch(0.68 0.02 230)",
+          "oklch(0.82 0.02 230)",
+          "oklch(0.95 0.02 230)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Page Title",
+        "purpose": "One title per route; 36px on large screens for entry titles."
+      },
+      "headline": {
+        "displayName": "Summary Sentence",
+        "purpose": "One-line page summary in Muted Ink with semibold counted numbers."
+      },
+      "title": {
+        "displayName": "Section Title",
+        "purpose": "Panel and section headings; record-sheet titles step to 18px."
+      },
+      "body-reading": {
+        "displayName": "Reading Body",
+        "purpose": "Entry text on the detail sheet, max 68ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "UI text, excerpts, tables."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Sentence-case sub-labels, metadata, chips, axis ticks."
+      },
+      "numeral": {
+        "displayName": "Tabular Count",
+        "purpose": "Counts and scores; tabular figures."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet",
+        "value": "0 1px 2px oklch(0.3 0.03 220 / 0.06), 0 4px 14px -4px oklch(0.3 0.03 220 / 0.1)",
+        "dark": "0 1px 2px oklch(0 0 0 / 0.3), 0 4px 14px -4px oklch(0 0 0 / 0.35)",
+        "purpose": "Resting state of every sheet and panel."
+      },
+      {
+        "name": "lift",
+        "value": "0 2px 4px oklch(0.3 0.03 220 / 0.06), 0 14px 32px -10px oklch(0.3 0.04 220 / 0.2)",
+        "dark": "0 2px 4px oklch(0 0 0 / 0.3), 0 16px 36px -10px oklch(0 0 0 / 0.5)",
+        "purpose": "Hover/focus on interactive sheets, search trigger, tooltips."
+      },
+      {
+        "name": "tab-raise",
+        "value": "0 -6px 16px -10px oklch(0.3 0.03 220 / 0.35)",
+        "purpose": "Selected specialty-strip tab only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-expo-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Entrances, bar growth, route transitions, rail collapse."
+      },
+      {
+        "name": "duration-state",
+        "value": "200ms",
+        "purpose": "Hover/selection state changes (shadow, height, colour)."
+      },
+      {
+        "name": "duration-route",
+        "value": "280ms in / 140ms out",
+        "purpose": "Route cross-fade with 10px rise; opacity-only under reduced motion."
+      },
+      {
+        "name": "duration-entrance",
+        "value": "350-600ms, 40ms stagger",
+        "purpose": "Strip tabs rise in; share and score bars grow."
+      },
+      {
+        "name": "spring-layout",
+        "value": "stiffness 380, damping 34",
+        "purpose": "List and score reordering (layout animation)."
+      },
+      {
+        "name": "spring-indicator",
+        "value": "stiffness 480, damping 40",
+        "purpose": "Sliding active pill in rail nav and theme toggle."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single primary action per view, e.g. Neuer Eintrag.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>Neuer Eintrag</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1px solid transparent;border-radius:12px;background:var(--primary,oklch(0.53 0.1 196));color:var(--primary-foreground,oklch(0.99 0.005 196));font:500 14px/1 'Inter Variable',system-ui,sans-serif;cursor:pointer;transition:all .15s}.ds-btn-primary:hover{background:oklch(0.53 0.1 196 / 0.8)}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:none;border-color:var(--ring,oklch(0.6 0.1 196));box-shadow:0 0 0 3px oklch(0.6 0.1 196 / 0.5)}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary actions such as Bearbeiten.",
+      "html": "<button class=\"ds-btn-outline\">Bearbeiten</button>",
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1px solid var(--border,oklch(0.91 0.01 215));border-radius:12px;background:var(--background,oklch(0.984 0.004 197));color:var(--foreground,oklch(0.24 0.025 230));font:500 14px/1 'Inter Variable',system-ui,sans-serif;cursor:pointer;transition:all .15s}.ds-btn-outline:hover{background:var(--muted,oklch(0.958 0.007 210))}.ds-btn-outline:focus-visible{outline:none;border-color:var(--ring,oklch(0.6 0.1 196));box-shadow:0 0 0 3px oklch(0.6 0.1 196 / 0.5)}"
+    },
+    {
+      "name": "Search Trigger",
+      "kind": "input",
+      "refersTo": "search-trigger",
+      "description": "Sheet-like search field in the top bar that opens the command palette.",
+      "html": "<button class=\"ds-search\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><span>Einträge, Symptome, Diagnosen suchen…</span><kbd>Strg K</kbd></button>",
+      "css": ".ds-search{display:flex;align-items:center;gap:10px;width:100%;max-width:28rem;height:40px;padding:0 12px;border:1px solid var(--border,oklch(0.91 0.01 215));border-radius:12px;background:var(--card,#fff);color:var(--muted-foreground,oklch(0.5 0.022 230));font:400 14px 'Inter Variable',system-ui,sans-serif;box-shadow:var(--shadow-sheet,0 1px 2px oklch(0.3 0.03 220 / 0.06),0 4px 14px -4px oklch(0.3 0.03 220 / 0.1));transition:border-color .2s,box-shadow .2s;cursor:pointer}.ds-search kbd{margin-left:auto;padding:2px 6px;border:1px solid var(--border,oklch(0.91 0.01 215));border-radius:4px;background:var(--muted,oklch(0.958 0.007 210));font:11px 'Inter Variable',system-ui,sans-serif}.ds-search:hover{border-color:oklch(0.53 0.1 196 / 0.4);box-shadow:var(--shadow-lift,0 2px 4px oklch(0.3 0.03 220 / 0.06),0 14px 32px -10px oklch(0.3 0.04 220 / 0.2))}.ds-search:focus-visible{outline:none;box-shadow:0 0 0 2px var(--ring,oklch(0.6 0.1 196))}"
+    },
+    {
+      "name": "Rail Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Petrol rail with the sliding active pill and accent marker.",
+      "html": "<nav class=\"ds-rail\"><a class=\"ds-rail-item is-active\" href=\"#\">Dashboard</a><a class=\"ds-rail-item\" href=\"#\">Wissensdatenbank</a><a class=\"ds-rail-item\" href=\"#\">Admin</a></nav>",
+      "css": ".ds-rail{display:flex;flex-direction:column;gap:4px;width:224px;padding:12px;background:var(--rail,oklch(0.285 0.047 214))}.ds-rail-item{position:relative;display:flex;align-items:center;height:40px;padding:0 12px;border-radius:12px;color:var(--rail-muted,oklch(0.76 0.03 205));font:500 14px 'Inter Variable',system-ui,sans-serif;text-decoration:none;transition:color .2s}.ds-rail-item:hover{color:var(--rail-foreground,oklch(0.97 0.01 200))}.ds-rail-item.is-active{background:var(--rail-active,oklch(0.36 0.055 205));color:var(--rail-foreground,oklch(0.97 0.01 200))}.ds-rail-item.is-active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:2px;border-radius:9999px;background:var(--rail-accent,oklch(0.8 0.11 188))}.ds-rail-item:focus-visible{outline:none;box-shadow:0 0 0 2px var(--rail-ring,oklch(0.78 0.1 190))}"
+    },
+    {
+      "name": "Keyword Chip",
+      "kind": "chip",
+      "refersTo": "keyword-chip",
+      "description": "Muted keyword tag on sheets and detail panels.",
+      "html": "<ul class=\"ds-chips\"><li class=\"ds-chip\">Schlaganfall</li><li class=\"ds-chip\">Lähmungen</li><li class=\"ds-chip-more\">+3</li></ul>",
+      "css": ".ds-chips{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}.ds-chip{padding:2px 8px;border-radius:10px;background:var(--muted,oklch(0.958 0.007 210));color:oklch(0.24 0.025 230 / 0.8);font:400 12px 'Inter Variable',system-ui,sans-serif}.ds-chip-more{padding:2px 6px;color:var(--muted-foreground,oklch(0.5 0.022 230));font:400 12px 'Inter Variable',system-ui,sans-serif}"
+    },
+    {
+      "name": "Record Sheet with Filing Tab",
+      "kind": "card",
+      "refersTo": "record-sheet",
+      "description": "The core content unit: a white sheet with its specialty tab on top; lifts on hover.",
+      "html": "<a class=\"ds-record\" href=\"#\"><span class=\"ds-filetab\" style=\"--spec:oklch(0.62 0.15 285)\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"9\"/></svg>Neurologie</span><article class=\"ds-sheet\"><h2>Schlaganfall – Warnzeichen</h2><p class=\"ds-meta\">Diagnose · geändert vorgestern</p></article></a>",
+      "css": ".ds-record{display:flex;flex-direction:column;max-width:360px;text-decoration:none;color:var(--foreground,oklch(0.24 0.025 230));font-family:'Inter Variable',system-ui,sans-serif}.ds-filetab{position:relative;z-index:1;align-self:flex-start;margin:0 0 -1px 16px;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;overflow:hidden;border:1px solid color-mix(in oklch,var(--spec) 35%,oklch(0.91 0.01 215));border-bottom:0;border-radius:12px 12px 0 0;background:color-mix(in oklch,var(--spec) 16%,#fff);font-size:12px;font-weight:600;transition:transform .2s ease-out}.ds-filetab::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--spec)}.ds-filetab svg{color:var(--spec)}.ds-sheet{padding:20px;border:1px solid var(--border,oklch(0.91 0.01 215));border-radius:16px;background:var(--card,#fff);box-shadow:var(--shadow-sheet,0 1px 2px oklch(0.3 0.03 220 / 0.06),0 4px 14px -4px oklch(0.3 0.03 220 / 0.1));transition:box-shadow .2s ease-out}.ds-sheet h2{margin:0;font-size:18px;font-weight:600;line-height:1.375}.ds-meta{margin:12px 0 0;font-size:12px;color:var(--muted-foreground,oklch(0.5 0.022 230))}.ds-record:hover .ds-filetab{transform:translateY(-4px)}.ds-record:hover .ds-sheet{box-shadow:var(--shadow-lift,0 2px 4px oklch(0.3 0.03 220 / 0.06),0 14px 32px -10px oklch(0.3 0.04 220 / 0.2))}.ds-record:focus-visible{outline:none}.ds-record:focus-visible .ds-sheet{box-shadow:0 0 0 2px var(--ring,oklch(0.6 0.1 196))}"
+    },
+    {
+      "name": "Specialty Strip",
+      "kind": "custom",
+      "refersTo": "specialty-strip-tab",
+      "description": "Filing tabs on a drawer edge as the specialty filter, with a separate proportional share bar.",
+      "html": "<nav class=\"ds-strip\"><ul><li><button class=\"ds-stab is-selected\" style=\"--spec:oklch(0.62 0.15 285)\">Neurologie <b>3</b></button></li><li><button class=\"ds-stab\" style=\"--spec:oklch(0.62 0.13 235)\">HNO <b>2</b></button></li><li><button class=\"ds-stab\" style=\"--spec:oklch(0.62 0.17 18)\">Kardiologie <b>2</b></button></li></ul><div class=\"ds-share\"><span>Anteil der Einträge</span><i style=\"flex-grow:3;background:oklch(0.62 0.15 285)\"></i><i style=\"flex-grow:2;background:oklch(0.62 0.13 235)\"></i><i style=\"flex-grow:2;background:oklch(0.62 0.17 18)\"></i></div></nav>",
+      "css": ".ds-strip{font-family:'Inter Variable',system-ui,sans-serif;color:var(--foreground,oklch(0.24 0.025 230))}.ds-strip ul{display:flex;align-items:flex-end;gap:4px;margin:0;padding:8px 4px 0;list-style:none;border-bottom:2px solid var(--border,oklch(0.91 0.01 215))}.ds-stab{position:relative;margin-bottom:-2px;display:flex;align-items:center;gap:8px;height:40px;padding:2px 12px 0;overflow:hidden;border:1px solid var(--border,oklch(0.91 0.01 215));border-bottom:0;border-radius:12px 12px 0 0;background:var(--card,#fff);color:inherit;font:500 13px 'Inter Variable',system-ui,sans-serif;cursor:pointer;transition:height .2s ease-out,background-color .2s ease-out,box-shadow .2s ease-out}.ds-stab::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--spec);transition:height .3s}.ds-stab b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted-foreground,oklch(0.5 0.022 230))}.ds-stab:hover{height:44px;background:oklch(0.945 0.025 190 / 0.6)}.ds-stab.is-selected{z-index:1;height:48px;background:color-mix(in oklch,var(--spec) 14%,oklch(0.984 0.004 197));box-shadow:0 -6px 16px -10px oklch(0.3 0.03 220 / 0.35)}.ds-stab.is-selected::before{height:5px}.ds-stab:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--ring,oklch(0.6 0.1 196))}.ds-share{display:flex;align-items:center;gap:2px;margin-top:16px}.ds-share span{margin-right:10px;font-size:12px;color:var(--muted-foreground,oklch(0.5 0.022 230))}.ds-share i{height:8px;flex-basis:0;min-width:4px}.ds-share i:first-of-type{border-radius:9999px 0 0 9999px}.ds-share i:last-of-type{border-radius:0 9999px 9999px 0}"
+    },
+    {
+      "name": "Score Bars",
+      "kind": "custom",
+      "refersTo": "data-bar",
+      "description": "Classifier scores per specialty; winner at full colour, others at 45%.",
+      "html": "<ul class=\"ds-scores\"><li><div><span class=\"win\">Neurologie</span><em>12</em></div><p><i style=\"width:100%;background:oklch(0.62 0.15 285)\"></i></p></li><li><div><span>HNO</span><em>3</em></div><p><i style=\"width:25%;background:oklch(0.62 0.13 235);opacity:.45\"></i></p></li></ul>",
+      "css": ".ds-scores{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0;padding:0;list-style:none;font-family:'Inter Variable',system-ui,sans-serif}.ds-scores div{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--muted-foreground,oklch(0.5 0.022 230))}.ds-scores .win{font-weight:600;color:var(--foreground,oklch(0.24 0.025 230))}.ds-scores em{font-style:normal;font-size:12px;font-variant-numeric:tabular-nums}.ds-scores p{margin:4px 0 0;height:8px;overflow:hidden;border-radius:9999px;background:var(--muted,oklch(0.958 0.007 210))}.ds-scores i{display:block;height:100%;border-radius:9999px;transition:width .55s cubic-bezier(0.16,1,0.3,1)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Colour-Coded Record Room",
+    "overview": "MedKB looks like a well-kept clinical filing room. A deep petrol rail runs down the left edge like the cabinet it belongs to. Beside it is a cool off-white work surface, and on that surface lie white record sheets. Each sheet carries a small coloured tab naming its specialty, so the specialty is the first thing you read on any entry, list or chart. Filtering works like pulling a drawer tab: the tab grows, its colour stripe thickens, and the other tabs fade.\n\nThe system is calm and dense, and it reads like a reference tool rather than a showcase. Colour has a narrow job. The nine specialty hues identify where something is filed. Teal means action or a neutral measurement. Everything else stays in quiet blue-greys. Depth comes from paper: sheets rest on a soft, low shadow and lift a little when you can act on them. Motion uses one fast-settling curve and is always reduced to plain fades when the user asks for reduced motion.\n\nThe dark theme keeps the same world in blue-slate. The rail turns darker than the work area, the sheets become slate panels, and the specialty colours do not change.",
+    "keyCharacteristics": [
+      "A petrol navigation rail beside a cool off-white work area",
+      "White record sheets with a soft resting shadow and a hover lift",
+      "Nine specialty colours at equal lightness, used as tab stripes, washes, icons, dots and bar fills",
+      "Inter Variable with cv11/ss01 alternates and tabular numerals for every count",
+      "Teal primary for actions, focus and specialty-neutral data",
+      "One easing curve (expo-out) for motion, with reduced motion respected everywhere"
+    ],
+    "rules": [
+      {
+        "name": "The Filing Colour Rule",
+        "body": "A specialty colour is only ever a 3px top stripe, a 14–16% wash mixed into the surface, a 35% border mix, an icon, a dot or a bar fill. It is never the colour of text. Tab labels stay in Slate Ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Equal Weight Rule",
+        "body": "All specialty hues share lightness 0.62, so no specialty looks more important than another. A new specialty gets a new hue at L 0.62 and C 0.09–0.17.",
+        "section": "colors"
+      },
+      {
+        "name": "The Petrol Rail Rule",
+        "body": "The saturated dark petrol belongs only to the navigation rail. The work area never uses it as a background.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Count Rule",
+        "body": "Every number that can be compared (counts, scores, dates in tables) uses tabular figures.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Title Rule",
+        "body": "Each page has a single 30px title. Below it everything steps down to 16px titles, so there is no intermediate display tier.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper Lift Rule",
+        "body": "Sheets rest on the Sheet shadow. Only something you can act on lifts to the Lift shadow, and only in response to hover or focus.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** show a specialty through the Filing Tab or a stripe, dot, icon or bar in its colour, at L 0.62, the same in both themes.",
+      "**Do** keep labels on coloured surfaces in Slate Ink. A specialty colour only tints the surface (14–16% mix) or marks it (3px stripe).",
+      "**Do** put every content block on a white record sheet with a 16px radius, a 1px hairline and the Sheet shadow, and lift to the Lift shadow only on interactive hover/focus.",
+      "**Do** use Clinical Teal for the single primary action per view, for links and focus, and for data that does not belong to a specialty.",
+      "**Do** use the expo-out curve `cubic-bezier(0.16, 1, 0.3, 1)` for entrances and state changes (200ms state, 280ms route, 350–600ms entrance), and reduce to opacity-only when reduced motion is requested.",
+      "**Do** set every comparable number in tabular figures."
+    ],
+    "donts": [
+      "**Don't** colour text with a specialty hue, or fill a large area with a solid specialty colour.",
+      "**Don't** use the petrol rail colour anywhere outside the navigation rail.",
+      "**Don't** introduce shadows beyond Sheet and Lift, or use hard offset shadows.",
+      "**Don't** use solid red fills for destructive actions. Use red text on a 10% tint.",
+      "**Don't** add uppercase tracked labels above headings. Sub-labels are 12px sentence case in Muted Ink.",
+      "**Don't** make strip tabs proportional in width. Proportion lives in the separate share bar so names stay readable."
+    ]
+  }
+}
