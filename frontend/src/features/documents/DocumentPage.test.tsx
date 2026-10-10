@@ -64,3 +64,9 @@ it('deletes after confirmation and returns to the list', async () => {
   const calls = fetchMock.mock.calls as unknown as [string, RequestInit | undefined][]
   expect(calls.some(([url, init]) => url === '/api/documents/5' && init?.method === 'DELETE')).toBe(true)
 })
+
+it('treats a non-numeric id as not found instead of loading forever', async () => {
+  mockFetch({})
+  renderWithProviders(<DocumentPage />, { path: '/wissen/abc', route: '/wissen/:id' })
+  expect(await screen.findByText('Eintrag nicht gefunden')).toBeInTheDocument()
+})

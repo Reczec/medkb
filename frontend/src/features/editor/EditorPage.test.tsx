@@ -107,8 +107,8 @@ it('sends a manual category when one is chosen', async () => {
   expect(create.body.category).toBe('HNO')
 })
 
-it('asks the classifier again when switching back to automatic', async () => {
-  const manual = { ...saved, category: 'HNO', auto_classified: false }
+it('asks the classifier again when switching back to automatic and keeps the keywords', async () => {
+  const manual = { ...saved, category: 'HNO', auto_classified: false, keywords: ['MeinSchlagwort'] }
   const fetchMock = mockFetch({
     '/api/meta': meta,
     '/api/classify': classification,
@@ -118,7 +118,29 @@ it('asks the classifier again when switching back to automatic', async () => {
   fireEvent.click(await screen.findByRole('radio', { name: /Automatisch/ }))
   fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
   await waitFor(() => expect(router.state.location.pathname).toBe('/wissen/9'))
-  expect(bodies(fetchMock, 'PATCH')[0].body).toEqual({ reclassify: true })
+  expect(bodies(fetchMock, 'PATCH')[0].body).toEqual({
+    reclassify: true,
+    keywords: ['MeinSchlagwort'],
+  })
+})
+
+it('reclassifies an automatic entry when its text changes', async () => {
+  const fetchMock = mockFetch({
+    '/api/meta': meta,
+    '/api/classify': classification,
+    '/api/documents/9': saved,
+  })
+  renderEditor('/wissen/9/bearbeiten')
+  fireEvent.change(await screen.findByLabelText('Inhalt'), {
+    target: { value: 'Ohrenschmerzen und Schwindel seit gestern.' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
+  await waitFor(() => expect(bodies(fetchMock, 'PATCH')).toHaveLength(1))
+  expect(bodies(fetchMock, 'PATCH')[0].body).toEqual({
+    content: 'Ohrenschmerzen und Schwindel seit gestern.',
+    reclassify: true,
+    keywords: ['Herzrasen'],
+  })
 })
 
 it('only sends changed fields when editing', async () => {
@@ -128,12 +150,12 @@ it('only sends changed fields when editing', async () => {
     '/api/documents/9': saved,
   })
   renderEditor('/wissen/9/bearbeiten')
-  fireEvent.change(await screen.findByLabelText('Titel'), {
-    target: { value: 'Herzrasen (Palpitationen)' },
+  fireEvent.change(await screen.findByLabelText('Quelle (optional)'), {
+    target: { value: 'Leitlinie Herzrhythmus' },
   })
   fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
   await waitFor(() => expect(bodies(fetchMock, 'PATCH')).toHaveLength(1))
-  expect(bodies(fetchMock, 'PATCH')[0].body).toEqual({ title: 'Herzrasen (Palpitationen)' })
+  expect(bodies(fetchMock, 'PATCH')[0].body).toEqual({ source: 'Leitlinie Herzrhythmus' })
 })
 
 it('shows validation errors from the server', async () => {
@@ -150,4 +172,10 @@ it('shows validation errors from the server', async () => {
   expect(
     await screen.findByText(/title: String should have at least 3 characters/),
   ).toBeInTheDocument()
+})
+
+it('says so when the id in the address is not a number', async () => {
+  mockFetch({ '/api/meta': meta })
+  renderEditor('/wissen/abc/bearbeiten')
+  expect(await screen.findByText('Eintrag nicht gefunden')).toBeInTheDocument()
 })

@@ -49,6 +49,27 @@ test('deep links survive a reload', async ({ page }) => {
 test.describe('phone width', () => {
   test.use({ viewport: { width: 375, height: 812 } })
 
+  test('long titles, URLs and keywords do not widen the page', async ({ page }) => {
+    const created = await page.request.post('/api/documents', {
+      data: {
+        title: 'Kopfschmerz/Migräne/Spannungskopfschmerz/Clusterkopfschmerz/Medikamentenübergebrauch',
+        content:
+          'Siehe https://register.awmf.org/de/leitlinien/detail/030-057-sehr-lange-adresse-ohne-leerzeichen ' +
+          'für Details. Donaudampfschifffahrtsgesellschaftskapitänskajütenschlüsselanhänger.',
+        doc_type: 'Leitlinie',
+        keywords: Array.from({ length: 20 }, (_, i) => `Schlagwort${i}MitSehrLangemNamenOhneLücke`),
+      },
+    })
+    expect(created.ok()).toBe(true)
+    const { id } = await created.json()
+    for (const path of ['/wissen?q=Clusterkopfschmerz', `/wissen/${id}`, `/wissen/${id}/bearbeiten`]) {
+      await page.goto(path)
+      await page.waitForLoadState('networkidle')
+      const width = await page.evaluate(() => document.documentElement.scrollWidth)
+      expect(width, path).toBeLessThanOrEqual(375)
+    }
+  })
+
   for (const path of ['/', '/wissen', '/wissen/1', '/wissen/neu', '/admin']) {
     test(`no horizontal scrolling on ${path}`, async ({ page }) => {
       await page.goto(path)

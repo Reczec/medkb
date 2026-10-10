@@ -1,3 +1,5 @@
+import pytest
+
 from tests.conftest import make_doc
 
 # ----------------------------------------------------------------------------- basics
@@ -247,3 +249,16 @@ def test_stats(client):
     assert by_category["Dermatologie"] == 0  # categories without entries are listed too
     assert {t["name"] for t in stats["doc_types"]} >= {"Symptom", "Befund"}
     assert [r["title"] for r in stats["recent"]][0] == "Zwei"
+
+
+@pytest.mark.parametrize("q", ['"', "[", "]", ",", '","'])
+def test_search_ignores_json_syntax_of_the_keyword_column(client, q):
+    # Keywords are stored as JSON text; its quotes, brackets and commas must not match everything.
+    make_doc(client, title="Migräne", content="Kopfschmerz einseitig", keywords=["Kopf", "Schmerz"])
+    assert titles(client, q=q) == []
+
+
+def test_search_still_finds_punctuation_inside_title_or_content(client):
+    make_doc(client, title='Das "Kopfweh"-Tagebuch', content="Notizen, Termine [optional]")
+    assert titles(client, q='"Kopfweh"') == ['Das "Kopfweh"-Tagebuch']
+    assert titles(client, q="[optional]") == ['Das "Kopfweh"-Tagebuch']

@@ -5,13 +5,13 @@ import { mockFetch, renderWithProviders } from '@/test/utils'
 afterEach(() => vi.unstubAllGlobals())
 
 const archive = {
-  name: 'medkb-archive-20261010-120000.json',
+  name: 'archive_20261010_120000.json',
   created_at: '2026-10-10T12:00:00Z',
   size_bytes: 20480,
   document_count: 16,
 }
 const audit = [
-  { id: 3, timestamp: '2026-10-10T12:00:00Z', action: 'archive', document_id: null, detail: archive.name },
+  { id: 3, timestamp: '2026-10-10T12:00:00Z', action: 'archive_create', document_id: null, detail: archive.name },
   { id: 2, timestamp: '2026-10-10T11:00:00Z', action: 'update', document_id: 4, detail: 'Migräne (title)' },
 ]
 
@@ -60,7 +60,7 @@ it('restores an archive after confirmation', async () => {
   const fetchMock = mockFetch({
     '/api/audit': audit,
     '/api/archives': [archive],
-    [`/api/archives/${archive.name}/restore`]: { restored: 16, backup: { ...archive, name: 'medkb-archive-pre-restore.json' } },
+    [`/api/archives/${archive.name}/restore`]: { restored: 16, backup: { ...archive, name: 'archive_20261010_120500.json' } },
   })
   renderWithProviders(<AdminPage />, { path: '/admin' })
   fireEvent.click(await screen.findByRole('button', { name: `${archive.name} wiederherstellen` }))
@@ -85,4 +85,5 @@ it('shows the change log with readable actions', async () => {
   fireEvent.click(tab)
   expect(await screen.findByText('Migräne (title)')).toBeInTheDocument()
   expect(screen.getByText('Bearbeitet')).toBeInTheDocument()
+  expect(screen.getByText('Archiviert')).toBeInTheDocument()
 })
