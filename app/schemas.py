@@ -406,6 +406,13 @@ class ArchiveEntry(BaseModel):
     keywords: list[str] = Field(default_factory=list)
     source: str | None = None
     auto_classified: bool = True
+    # Added in v2 stage 3; archives written before that restore with these defaults.
+    term_en: TermEn | None = None
+    icd11_code: str | None = None
+    medications: list[str] = Field(default_factory=list)
+    sections: Sections | None = None
+    further_reading: FurtherReading = Field(default_factory=list)
+    ai_generated: bool = False
     created_at: datetime
     updated_at: datetime
 
@@ -415,6 +422,21 @@ class ArchiveEntry(BaseModel):
         checked = _check_category(value)
         assert checked is not None
         return checked
+
+    @field_validator("term_en")
+    @classmethod
+    def _term_en(cls, value: str | None) -> str | None:
+        return _check_term_en(value)
+
+    @field_validator("icd11_code")
+    @classmethod
+    def _icd11_code(cls, value: str | None) -> str | None:
+        return _check_icd11_code(value)
+
+    @field_validator("medications")
+    @classmethod
+    def _medications(cls, value: list[str]) -> list[str]:
+        return _clean_medications(value) or []
 
 
 class LoginRequest(BaseModel):
