@@ -14,9 +14,14 @@ import type {
   DocumentCreate,
   DocumentList,
   DocumentUpdate,
+  Icd11Entry,
+  LatestStudies,
+  MedicationsOut,
   Meta,
   RestoreResult,
+  SourceResult,
   Stats,
+  Study,
   UserInfo,
 } from '@/lib/types'
 
@@ -146,4 +151,35 @@ export const useAudit = (limit = 50, enabled = true) =>
     queryKey: ['audit', limit],
     queryFn: () => api<AuditEntry[]>(`/api/audit?limit=${limit}`),
     enabled,
+  })
+
+const SOURCE_STALE_MS = 10 * 60 * 1000
+
+/** A document's live data from an external source; fetched only while `enabled`. */
+function useDocumentSource<T>(source: string, id: number, enabled: boolean) {
+  return useQuery({
+    queryKey: ['source', source, id],
+    queryFn: ({ signal }) =>
+      api<SourceResult<T>>(`/api/sources/documents/${id}/${source}`, { signal }),
+    enabled: enabled && Number.isInteger(id) && id > 0,
+    staleTime: SOURCE_STALE_MS,
+  })
+}
+
+export const useStudies = (id: number, enabled: boolean) =>
+  useDocumentSource<Study[]>('studies', id, enabled)
+
+export const useIcd11 = (id: number, enabled: boolean) =>
+  useDocumentSource<Icd11Entry>('icd11', id, enabled)
+
+export const useMedications = (id: number, enabled: boolean) =>
+  useDocumentSource<MedicationsOut>('medications', id, enabled)
+
+export const useLatestStudies = (enabled = true) =>
+  useQuery({
+    queryKey: ['source', 'latest-studies'],
+    queryFn: ({ signal }) =>
+      api<SourceResult<LatestStudies[]>>('/api/sources/latest-studies', { signal }),
+    enabled,
+    staleTime: SOURCE_STALE_MS,
   })

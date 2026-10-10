@@ -1,7 +1,7 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { KnowledgeBasePage } from '@/features/documents/KnowledgeBasePage'
 import type { Document } from '@/lib/types'
-import { mockFetch, renderWithProviders } from '@/test/utils'
+import { mockFetch, PLAIN_FIELDS, renderWithProviders } from '@/test/utils'
 
 vi.mock('motion/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('motion/react')>()),
@@ -19,7 +19,7 @@ const stats = {
 function doc(overrides: Partial<Document> = {}): Document {
   return {
     id: 1, title: 'Migräne', content: 'Anfallsartige Kopfschmerzen.', category: 'Neurologie',
-    doc_type: 'Symptom', keywords: ['Kopfschmerz'], source: null, auto_classified: true,
+    doc_type: 'Symptom', keywords: ['Kopfschmerz'], source: null, auto_classified: true, ...PLAIN_FIELDS,
     created_at: '2026-10-01T10:00:00Z', updated_at: '2026-10-01T10:00:00Z', ...overrides,
   }
 }

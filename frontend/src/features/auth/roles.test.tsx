@@ -6,7 +6,7 @@ import { DashboardPage } from '@/features/dashboard/DashboardPage'
 import { DocumentCard } from '@/features/documents/DocumentCard'
 import { DocumentPage } from '@/features/documents/DocumentPage'
 import { EditorPage } from '@/features/editor/EditorPage'
-import { TEST_USERS, mockFetch, renderWithProviders } from '@/test/utils'
+import { TEST_USERS, mockFetch, PLAIN_FIELDS, renderWithProviders } from '@/test/utils'
 
 vi.mock('motion/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('motion/react')>()),
@@ -24,6 +24,7 @@ const doc = {
   keywords: [],
   source: null,
   auto_classified: true,
+  ...PLAIN_FIELDS,
   created_at: '2026-10-01T10:00:00Z',
   updated_at: '2026-10-01T10:00:00Z',
 }

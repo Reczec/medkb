@@ -4,6 +4,7 @@ import type { ReactElement } from 'react'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { AuthContext, type AuthContextValue } from '@/features/auth/context'
 import type { AuthUser } from '@/lib/auth'
+import type { Document } from '@/lib/types'
 import { createMemoryRouter, RouterProvider, type RouteObject } from 'react-router'
 
 export function makeQueryClient() {
@@ -66,4 +67,17 @@ export const TEST_USERS: Record<'admin' | 'doctor' | 'patient', AuthUser> = {
   admin: { id: 1, username: 'demo-admin', display_name: 'Admin', role: 'admin' },
   doctor: { id: 2, username: 'demo-doctor', display_name: 'Dr. Demo', role: 'doctor' },
   patient: { id: 3, username: 'demo-patient', display_name: 'Patient Demo', role: 'patient' },
+}
+
+type Stage3Field =
+  | 'term_en' | 'icd11_code' | 'medications' | 'sections' | 'further_reading' | 'ai_generated'
+
+/** A plain free-text entry's values for the fields added in stage 3. */
+export const PLAIN_FIELDS: Pick<Document, Stage3Field> = {
+  term_en: null,
+  icd11_code: null,
+  medications: [],
+  sections: null,
+  further_reading: [],
+  ai_generated: false,
 }

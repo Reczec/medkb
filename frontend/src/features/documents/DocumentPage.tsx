@@ -1,4 +1,5 @@
 import { ChevronRight, Pencil, Trash2 } from 'lucide-react'
+import { useId } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -19,21 +20,28 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/features/auth/context'
 import { ClassificationExplainer } from '@/features/documents/ClassificationExplainer'
 import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
+import { FurtherReading } from '@/features/documents/FurtherReading'
+import { SectionedContent } from '@/features/documents/SectionedContent'
 import { ApiError } from '@/lib/api'
 import { formatDate, formatRelative } from '@/lib/format'
 import { useDeleteDocument, useDocument } from '@/lib/queries'
 import type { Document } from '@/lib/types'
 
 function Details({ document }: { document: Document }) {
+  const id = useId()
   const rows: [string, string][] = [
     ['Dokumenttyp', document.doc_type],
+    ...(document.term_en ? [['Fachbegriff (en)', document.term_en] as [string, string]] : []),
+    ...(document.icd11_code ? [['ICD-11', document.icd11_code] as [string, string]] : []),
     ['Quelle', document.source ?? '—'],
     ['Erstellt', formatDate(document.created_at)],
     ['Geändert', formatDate(document.updated_at)],
   ]
   return (
-    <section className="rounded-xl border bg-card p-5 shadow-sheet">
-      <h2 className="text-base font-semibold">Details</h2>
+    <section aria-labelledby={id} className="rounded-xl border bg-card p-5 shadow-sheet">
+      <h2 id={id} className="text-base font-semibold">
+        Details
+      </h2>
       <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
         {rows.map(([label, value]) => (
           <div key={label} className="contents">
@@ -163,19 +171,24 @@ export function DocumentPage() {
         <div className="flex min-w-0 flex-col lg:col-span-2">
           <FileTab name={document.category} size="md" className="relative z-10 ml-5 -mb-px self-start" />
           <article className="rounded-xl border bg-card px-6 pt-6 pb-7 shadow-sheet">
-            <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
-              {paragraphs.map((paragraph, index) => (
-                <p key={index} className="whitespace-pre-line [overflow-wrap:anywhere]">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
+            {document.sections ? (
+              <SectionedContent sections={document.sections} />
+            ) : (
+              <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
+                {paragraphs.map((paragraph, index) => (
+                  <p key={index} className="whitespace-pre-line [overflow-wrap:anywhere]">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            )}
           </article>
         </div>
 
         <aside className="flex min-w-0 flex-col gap-6">
           {showsClassification && <ClassificationExplainer document={document} />}
           <Details document={document} />
+          <FurtherReading links={document.further_reading} />
         </aside>
       </div>
     </div>
