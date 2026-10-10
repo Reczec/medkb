@@ -163,6 +163,7 @@ function useDocumentSource<T>(source: string, id: number, enabled: boolean) {
       api<SourceResult<T>>(`/api/sources/documents/${id}/${source}`, { signal }),
     enabled: enabled && Number.isInteger(id) && id > 0,
     staleTime: SOURCE_STALE_MS,
+    gcTime: SOURCE_STALE_MS, // survives closing the tab, so reopening it does not refetch
   })
 }
 
@@ -182,4 +183,5 @@ export const useLatestStudies = (enabled = true) =>
       api<SourceResult<LatestStudies[]>>('/api/sources/latest-studies', { signal }),
     enabled,
     staleTime: SOURCE_STALE_MS,
+    gcTime: SOURCE_STALE_MS, // survives closing the tab, so reopening it does not refetch
   })

@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { DocumentPage } from '@/features/documents/DocumentPage'
-import { mockFetch, PLAIN_FIELDS, renderWithProviders } from '@/test/utils'
+import { mockFetch, PLAIN_FIELDS, renderWithProviders, TEST_USERS } from '@/test/utils'
 
 vi.mock('motion/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('motion/react')>()),
@@ -104,4 +104,66 @@ it('opens further reading in a new tab and names the site', async () => {
   expect(link).toHaveAttribute('target', '_blank')
   expect(link).toHaveAttribute('rel', 'noreferrer noopener')
   expect(within(reading).getByText('medlineplus.gov')).toBeInTheDocument()
+})
+
+const STUDIES = '/api/sources/documents/5/studies'
+const withMeds = { ...structured, medications: ['furosemide'] }
+const sourceCalls = (fetchMock: ReturnType<typeof mockFetch>, part = '/api/sources') =>
+  fetchMock.mock.calls.filter(([input]) => String(input).includes(part)).length
+
+function openTab(name: RegExp) {
+  const tab = screen.getByRole('tab', { name })
+  fireEvent.mouseDown(tab)
+  fireEvent.click(tab)
+}
+
+const renderAs = (user: (typeof TEST_USERS)[keyof typeof TEST_USERS], path = '/wissen/5') =>
+  renderWithProviders(<DocumentPage />, { path, route: '/wissen/:id', user })
+
+it('gives doctors source tabs that load only when opened, once', async () => {
+  const fetchMock = mockFetch({
+    '/api/documents/5': withMeds,
+    '/api/classify': classification,
+    [STUDIES]: { status: 'empty', fetched_at: null, data: null },
+  })
+  renderAs(TEST_USERS.doctor)
+  await screen.findByRole('tablist', { name: 'Ansicht' })
+  expect(screen.getByRole('tab', { name: /Medikamente/ })).toBeInTheDocument()
+  expect(sourceCalls(fetchMock)).toBe(0)
+
+  openTab(/Studien/)
+  expect(await screen.findByText(/Keine Studien gefunden/)).toBeInTheDocument()
+  expect(sourceCalls(fetchMock, STUDIES)).toBe(1)
+
+  openTab(/Inhalt/)
+  expect(await screen.findByRole('heading', { level: 2, name: 'Symptome' })).toBeInTheDocument()
+  openTab(/Studien/)
+  expect(await screen.findByText(/Keine Studien gefunden/)).toBeInTheDocument()
+  expect(sourceCalls(fetchMock, STUDIES)).toBe(1)
+  expect(sourceCalls(fetchMock)).toBe(1)
+})
+
+it('shows patients the content only and never asks the sources', async () => {
+  const fetchMock = mockFetch({ '/api/documents/5': withMeds })
+  renderAs(TEST_USERS.patient)
+  expect(await screen.findByRole('heading', { level: 2, name: 'Symptome' })).toBeInTheDocument()
+  expect(screen.queryByRole('tablist')).not.toBeInTheDocument()
+  expect(sourceCalls(fetchMock)).toBe(0)
+})
+
+it('opens the tab named in the address', async () => {
+  mockFetch({
+    '/api/documents/5': structured,
+    '/api/classify': classification,
+    '/api/sources/documents/5/icd11': { status: 'not_configured', fetched_at: null, data: null },
+  })
+  renderAs(TEST_USERS.doctor, '/wissen/5?tab=icd11')
+  expect(await screen.findByText(/ICD-11 ist auf diesem Server nicht eingerichtet/)).toBeInTheDocument()
+})
+
+it('has no medications tab when the entry names no active ingredient', async () => {
+  mockFetch({ '/api/documents/5': structured, '/api/classify': classification })
+  renderAs(TEST_USERS.doctor)
+  await screen.findByRole('tablist', { name: 'Ansicht' })
+  expect(screen.queryByRole('tab', { name: /Medikamente/ })).not.toBeInTheDocument()
 })
