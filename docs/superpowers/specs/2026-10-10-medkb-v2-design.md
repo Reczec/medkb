@@ -34,7 +34,7 @@ erhalten und sichtbar.
 ## 2. Architektur
 
 ```
-frontend/   React 18 + TypeScript + Vite
+frontend/   React 19 + TypeScript + Vite
             Tailwind CSS, shadcn/ui (Radix), Framer Motion, Recharts,
             TanStack Query, React Router
 app/        FastAPI (bestehend) + neue Module:
