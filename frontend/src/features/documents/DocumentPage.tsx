@@ -1,6 +1,6 @@
-import { ChevronRight, Pencil, Trash2 } from 'lucide-react'
+import { BookOpenText, ChevronRight, FileText, Hash, Pencil, Pill, Trash2 } from 'lucide-react'
 import { useId } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { FileTab } from '@/components/specialty/FileTab'
@@ -17,6 +17,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Icd11Panel } from '@/features/documents/sources/Icd11Panel'
+import { MedicationsPanel } from '@/features/documents/sources/MedicationsPanel'
+import { StudiesPanel } from '@/features/documents/sources/StudiesPanel'
 import { useAuth } from '@/features/auth/context'
 import { ClassificationExplainer } from '@/features/documents/ClassificationExplainer'
 import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
@@ -107,6 +111,65 @@ function DeleteButton({ document }: { document: Document }) {
   )
 }
 
+const VIEWS = [
+  { value: 'inhalt', label: 'Inhalt', icon: FileText },
+  { value: 'icd11', label: 'ICD-11', icon: Hash },
+  { value: 'studien', label: 'Studien', icon: BookOpenText },
+  { value: 'medikamente', label: 'Medikamente', icon: Pill },
+] as const
+
+/** Staff view: the sheet carries tabs; each source loads when its tab is first opened. */
+function SourceTabs({ document, content }: { document: Document; content: React.ReactNode }) {
+  const [params, setParams] = useSearchParams()
+  const views = VIEWS.filter((v) => v.value !== 'medikamente' || document.medications.length > 0)
+  const requested = params.get('tab')
+  const tab = views.some((v) => v.value === requested) ? requested! : 'inhalt'
+  const select = (value: string) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value === 'inhalt') next.delete('tab')
+        else next.set('tab', value)
+        return next
+      },
+      { replace: true },
+    )
+
+  // Radix mounts only the active tab's content, so a panel fetches on first opening;
+  // the query cache (10 min) keeps it from fetching again when the tab is reopened.
+  return (
+    <Tabs value={tab} onValueChange={select} className="gap-0">
+      <article className="rounded-xl border bg-card shadow-sheet">
+        <TabsList
+          variant="line"
+          aria-label="Ansicht"
+          className="h-12! w-full justify-start gap-1 overflow-x-auto border-b px-4"
+        >
+          {views.map(({ value, label, icon: Icon }) => (
+            <TabsTrigger key={value} value={value} className="flex-none px-3">
+              <Icon aria-hidden /> {label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <div className="px-6 pt-6 pb-7 text-base">
+          <TabsContent value="inhalt">{content}</TabsContent>
+          <TabsContent value="icd11">
+            <Icd11Panel documentId={document.id} enabled />
+          </TabsContent>
+          <TabsContent value="studien">
+            <StudiesPanel documentId={document.id} termEn={document.term_en} enabled />
+          </TabsContent>
+          {document.medications.length > 0 && (
+            <TabsContent value="medikamente">
+              <MedicationsPanel documentId={document.id} enabled />
+            </TabsContent>
+          )}
+        </div>
+      </article>
+    </Tabs>
+  )
+}
+
 export function DocumentPage() {
   const id = Number(useParams().id)
   const { data: document, error, isPending, refetch } = useDocument(id)
@@ -128,6 +191,17 @@ export function DocumentPage() {
   }
 
   const paragraphs = document.content.split(/\n\s*\n/).filter((p) => p.trim())
+  const content = document.sections ? (
+    <SectionedContent sections={document.sections} />
+  ) : (
+    <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
+      {paragraphs.map((paragraph, index) => (
+        <p key={index} className="whitespace-pre-line [overflow-wrap:anywhere]">
+          {paragraph}
+        </p>
+      ))}
+    </div>
+  )
 
   return (
     <div className="flex flex-col gap-6">
@@ -170,19 +244,13 @@ export function DocumentPage() {
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
         <div className="flex min-w-0 flex-col lg:col-span-2">
           <FileTab name={document.category} size="md" className="relative z-10 ml-5 -mb-px self-start" />
-          <article className="rounded-xl border bg-card px-6 pt-6 pb-7 shadow-sheet">
-            {document.sections ? (
-              <SectionedContent sections={document.sections} />
-            ) : (
-              <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
-                {paragraphs.map((paragraph, index) => (
-                  <p key={index} className="whitespace-pre-line [overflow-wrap:anywhere]">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            )}
-          </article>
+          {showsClassification ? (
+            <SourceTabs document={document} content={content} />
+          ) : (
+            <article className="rounded-xl border bg-card px-6 pt-6 pb-7 shadow-sheet">
+              {content}
+            </article>
+          )}
         </div>
 
         <aside className="flex min-w-0 flex-col gap-6">
