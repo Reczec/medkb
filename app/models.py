@@ -28,6 +28,16 @@ class Document(Base):
     source: Mapped[str | None] = mapped_column(String(200), default=None)
     # True while the category was chosen by the classifier, False once a user set it.
     auto_classified: Mapped[bool] = mapped_column(default=True)
+    # English term for the external sources (PubMed search, openFDA), e.g. "Migraine".
+    term_en: Mapped[str | None] = mapped_column(String(200), default=None)
+    icd11_code: Mapped[str | None] = mapped_column(String(20), default=None)
+    # Active ingredients (English, lower case) for openFDA.
+    medications: Mapped[list[str]] = mapped_column(JSON, default=list)
+    # {definition, symptoms, causes, diagnostics, therapy, red_flags}; None = free text only.
+    sections: Mapped[dict[str, str | None] | None] = mapped_column(JSON, default=None)
+    further_reading: Mapped[list[dict[str, str]]] = mapped_column(JSON, default=list)
+    # True if the entry started as an AI draft (stage 4).
+    ai_generated: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, onupdate=utcnow

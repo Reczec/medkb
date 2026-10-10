@@ -70,7 +70,15 @@ def get_db() -> Iterator[Session]:
 # Columns added after the first release: (table, column, SQL type). create_all() only creates
 # missing tables, so existing databases get these via ALTER TABLE. A real deployment would use
 # Alembic; this keeps the prototype's existing SQLite/PostgreSQL databases working.
-ADDED_COLUMNS = [("audit_log", "actor", "VARCHAR(50)")]
+ADDED_COLUMNS = [
+    ("audit_log", "actor", "VARCHAR(50)"),
+    ("documents", "term_en", "VARCHAR(200)"),
+    ("documents", "icd11_code", "VARCHAR(20)"),
+    ("documents", "medications", "JSON DEFAULT '[]'"),
+    ("documents", "sections", "JSON"),
+    ("documents", "further_reading", "JSON DEFAULT '[]'"),
+    ("documents", "ai_generated", "BOOLEAN DEFAULT FALSE"),
+]
 
 
 def upgrade_schema(target: Engine) -> None:
