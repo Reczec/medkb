@@ -25,7 +25,7 @@ const formatSize = (bytes: number) =>
 
 async function download(name: string) {
   try {
-    const response = await api(`/api/archives/${encodeURIComponent(name)}`, { admin: true, raw: true })
+    const response = await api(`/api/archives/${encodeURIComponent(name)}`, { raw: true })
     const url = URL.createObjectURL(await response.blob())
     const link = document.createElement('a')
     link.href = url

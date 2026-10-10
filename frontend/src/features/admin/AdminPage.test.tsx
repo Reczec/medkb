@@ -18,45 +18,7 @@ const audit = [
 type Call = [string, RequestInit | undefined]
 const calls = (fetchMock: ReturnType<typeof mockFetch>) => fetchMock.mock.calls as unknown as Call[]
 
-async function logIn(token: string) {
-  fireEvent.change(await screen.findByLabelText('Admin-Token'), { target: { value: token } })
-  fireEvent.click(screen.getByRole('button', { name: 'Anmelden' }))
-}
-
-it('rejects a wrong token and forgets it', async () => {
-  mockFetch({
-    '/api/audit': new Response(JSON.stringify({ detail: 'Invalid or missing admin token.' }), {
-      status: 401,
-    }),
-  })
-  renderWithProviders(<AdminPage />, { path: '/admin' })
-  await logIn('falsch')
-  expect(await screen.findByText('Admin-Token ungültig')).toBeInTheDocument()
-  expect(sessionStorage.getItem('adminToken')).toBeNull()
-})
-
-it('explains when admin functions are disabled on the server', async () => {
-  mockFetch({
-    '/api/audit': new Response(JSON.stringify({ detail: 'disabled' }), { status: 503 }),
-  })
-  renderWithProviders(<AdminPage />, { path: '/admin' })
-  await logIn('egal')
-  expect(await screen.findByText(/Admin-Funktionen sind deaktiviert/)).toBeInTheDocument()
-})
-
-it('opens the admin area with a valid token and sends it', async () => {
-  const fetchMock = mockFetch({ '/api/audit': audit, '/api/archives': [archive] })
-  renderWithProviders(<AdminPage />, { path: '/admin' })
-  await logIn('richtig')
-  expect(await screen.findByRole('tab', { name: /Archive/ })).toBeInTheDocument()
-  expect(await screen.findByText(archive.name)).toBeInTheDocument()
-  const first = calls(fetchMock)[0]
-  expect(new Headers(first[1]?.headers).get('X-Admin-Token')).toBe('richtig')
-  expect(sessionStorage.getItem('adminToken')).toBe('richtig')
-})
-
 it('restores an archive after confirmation', async () => {
-  sessionStorage.setItem('adminToken', 'richtig')
   const fetchMock = mockFetch({
     '/api/audit': audit,
     '/api/archives': [archive],
@@ -77,7 +39,6 @@ it('restores an archive after confirmation', async () => {
 })
 
 it('shows the change log with readable actions', async () => {
-  sessionStorage.setItem('adminToken', 'richtig')
   mockFetch({ '/api/audit': audit, '/api/archives': [archive] })
   renderWithProviders(<AdminPage />, { path: '/admin' })
   const tab = await screen.findByRole('tab', { name: /Änderungsprotokoll/ })

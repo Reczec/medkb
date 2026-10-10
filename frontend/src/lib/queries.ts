@@ -106,14 +106,14 @@ export function useDeleteDocument() {
 export const useArchives = (enabled = true) =>
   useQuery({
     queryKey: ['archives'],
-    queryFn: () => api<ArchiveInfo[]>('/api/archives', { admin: true }),
+    queryFn: () => api<ArchiveInfo[]>('/api/archives'),
     enabled,
   })
 
 export function useCreateArchive() {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: () => api<ArchiveInfo>('/api/archives', { method: 'POST', admin: true }),
+    mutationFn: () => api<ArchiveInfo>('/api/archives', { method: 'POST' }),
     onSuccess: () =>
       Promise.all([
         client.invalidateQueries({ queryKey: ['archives'] }),
@@ -128,7 +128,6 @@ export function useRestoreArchive() {
     mutationFn: (name: string) =>
       api<RestoreResult>(`/api/archives/${encodeURIComponent(name)}/restore`, {
         method: 'POST',
-        admin: true,
       }),
     onSuccess: () =>
       Promise.all([
@@ -141,6 +140,6 @@ export function useRestoreArchive() {
 export const useAudit = (limit = 50, enabled = true) =>
   useQuery({
     queryKey: ['audit', limit],
-    queryFn: () => api<AuditEntry[]>(`/api/audit?limit=${limit}`, { admin: true }),
+    queryFn: () => api<AuditEntry[]>(`/api/audit?limit=${limit}`),
     enabled,
   })

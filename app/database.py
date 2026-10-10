@@ -6,7 +6,7 @@ import json
 from collections.abc import Iterator
 from typing import Any
 
-from sqlalchemy import Engine, create_engine, event
+from sqlalchemy import Engine, create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -65,3 +65,19 @@ def get_db() -> Iterator[Session]:
         yield db
     finally:
         db.close()
+
+
+# Columns added after the first release: (table, column, SQL type). create_all() only creates
+# missing tables, so existing databases get these via ALTER TABLE. A real deployment would use
+# Alembic; this keeps the prototype's existing SQLite/PostgreSQL databases working.
+ADDED_COLUMNS = [("audit_log", "actor", "VARCHAR(50)")]
+
+
+def upgrade_schema(target: Engine) -> None:
+    inspector = inspect(target)
+    with target.begin() as conn:
+        for table, column, sql_type in ADDED_COLUMNS:
+            if not inspector.has_table(table):
+                continue
+            if column not in {c["name"] for c in inspector.get_columns(table)}:
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {sql_type}"))

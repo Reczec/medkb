@@ -1,5 +1,7 @@
 /** Thin fetch wrapper for the MedKB REST API. */
 
+import { tokenStore } from '@/lib/auth'
+
 export class ApiError extends Error {
   status: number
 
@@ -35,21 +37,21 @@ export async function errorMessage(res: Response): Promise<string> {
 export interface ApiOptions {
   method?: string
   body?: unknown
-  /** Send the admin token from sessionStorage. */
-  admin?: boolean
   /** Return the Response instead of parsed JSON (downloads). */
   raw?: boolean
   signal?: AbortSignal
 }
 
-export const ADMIN_TOKEN_KEY = 'adminToken'
+/** Fired on window when a request with a login token comes back 401 (expired or revoked). */
+export const UNAUTHORIZED_EVENT = 'medkb:unauthorized'
 
 export async function api(path: string, opts: ApiOptions & { raw: true }): Promise<Response>
 export async function api<T = unknown>(path: string, opts?: ApiOptions): Promise<T>
 export async function api<T = unknown>(path: string, opts: ApiOptions = {}): Promise<T | Response> {
   const headers = new Headers()
   if (opts.body !== undefined) headers.set('Content-Type', 'application/json')
-  if (opts.admin) headers.set('X-Admin-Token', sessionStorage.getItem(ADMIN_TOKEN_KEY) ?? '')
+  const token = tokenStore.get()
+  if (token) headers.set('Authorization', `Bearer ${token}`)
 
   let res: Response
   try {
@@ -64,6 +66,10 @@ export async function api<T = unknown>(path: string, opts: ApiOptions = {}): Pro
     throw new ApiError(0, 'Server nicht erreichbar')
   }
 
+  if (res.status === 401 && token) {
+    tokenStore.clear()
+    window.dispatchEvent(new Event(UNAUTHORIZED_EVENT))
+  }
   if (!res.ok) throw new ApiError(res.status, await errorMessage(res))
   if (opts.raw) return res
   if (res.status === 204) return undefined as T

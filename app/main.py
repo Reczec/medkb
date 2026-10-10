@@ -12,7 +12,7 @@ from fastapi import FastAPI
 
 from app import __version__
 from app.config import get_settings
-from app.database import Base, SessionLocal, engine
+from app.database import Base, SessionLocal, engine, upgrade_schema
 from app.demo import demo_reset_loop, reset_demo
 from app.routers import admin, auth, documents, users
 from app.seed import seed_if_empty
@@ -27,6 +27,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     # create_all is enough for this prototype; a real deployment would use migrations (Alembic).
     Base.metadata.create_all(engine)
+    upgrade_schema(engine)
     if not settings.jwt_secret:
         # get_settings() is cached, so every request sees this key until the process ends.
         settings.jwt_secret = secrets.token_urlsafe(32)
