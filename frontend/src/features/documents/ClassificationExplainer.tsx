@@ -1,4 +1,4 @@
-import { Sparkles, UserPen } from 'lucide-react'
+import { ListChecks, UserPen } from 'lucide-react'
 import { ScoreBars } from '@/components/specialty/ScoreBars'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useClassify } from '@/lib/queries'
@@ -15,7 +15,7 @@ export function ClassificationExplainer({ document }: { document: Document }) {
       <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
         {document.auto_classified ? (
           <>
-            <Sparkles className="size-3.5" aria-hidden /> Fachgebiet automatisch bestimmt
+            <ListChecks className="size-3.5" aria-hidden /> Fachgebiet regelbasiert bestimmt
           </>
         ) : (
           <>

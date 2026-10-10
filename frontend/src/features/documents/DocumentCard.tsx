@@ -1,16 +1,14 @@
-import { Sparkles } from 'lucide-react'
+import { ListChecks, UserPen } from 'lucide-react'
 import { useId } from 'react'
 import { Link } from 'react-router'
-import { CategoryBadge } from '@/components/specialty/CategoryBadge'
-import { categoryStyle } from '@/lib/categories'
+import { FileTab } from '@/components/specialty/FileTab'
 import { formatDate, formatRelative } from '@/lib/format'
 import type { Document } from '@/lib/types'
 
 const VISIBLE_KEYWORDS = 5
 
-/** A record sheet with a coloured filing tab sticking out above it. */
+/** A record sheet with its labelled specialty tab on top. */
 export function DocumentCard({ document }: { document: Document }) {
-  const style = categoryStyle(document.category)
   const extra = document.keywords.length - VISIBLE_KEYWORDS
   const titleId = useId()
 
@@ -18,31 +16,36 @@ export function DocumentCard({ document }: { document: Document }) {
     <Link
       to={`/wissen/${document.id}`}
       aria-labelledby={titleId}
-      className="group relative block h-full pt-2.5 focus-visible:outline-none"
+      className="group flex h-full flex-col focus-visible:outline-none"
     >
-      <span
-        className="absolute top-0 left-5 h-3.5 w-16 rounded-t-md transition-[width] duration-300 ease-out group-hover:w-24"
-        style={{ background: style.color }}
-        aria-hidden
+      <FileTab
+        name={document.category}
+        className="relative z-10 ml-4 -mb-px self-start transition-transform duration-200 ease-out group-hover:-translate-y-1"
       />
-      <article className="relative flex h-full flex-col gap-3 rounded-xl border bg-card p-5 shadow-sheet transition-[transform,box-shadow,border-color] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lift group-focus-visible:ring-2 group-focus-visible:ring-ring">
-        <div className="flex flex-wrap items-center gap-2">
-          <CategoryBadge name={document.category} />
-          <span className="text-xs text-muted-foreground">{document.doc_type}</span>
-          {document.auto_classified && (
-            <span
-              className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground"
-              title="Fachgebiet automatisch bestimmt"
-            >
-              <Sparkles className="size-3.5" aria-hidden />
-              <span className="sr-only">automatisch klassifiziert</span>
-            </span>
-          )}
-        </div>
-
-        <h2 id={titleId} className="line-clamp-2 text-lg leading-snug font-semibold [overflow-wrap:anywhere]">
+      <article className="relative flex flex-1 flex-col gap-3 rounded-xl border bg-card p-5 shadow-sheet transition-[box-shadow,border-color] duration-200 ease-out group-hover:shadow-lift group-focus-visible:ring-2 group-focus-visible:ring-ring">
+        <h2
+          id={titleId}
+          className="line-clamp-2 text-lg leading-snug font-semibold [overflow-wrap:anywhere]"
+        >
           {document.title}
         </h2>
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground/80">{document.doc_type}</span>
+          <span aria-hidden>·</span>
+          <time dateTime={document.updated_at} title={formatDate(document.updated_at)}>
+            geändert {formatRelative(document.updated_at)}
+          </time>
+          <span aria-hidden>·</span>
+          {document.auto_classified ? (
+            <span className="inline-flex items-center gap-1" title="Fachgebiet nach Regeln bestimmt">
+              <ListChecks className="size-3.5" aria-hidden /> regelbasiert
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1" title="Fachgebiet manuell gesetzt">
+              <UserPen className="size-3.5" aria-hidden /> manuell
+            </span>
+          )}
+        </p>
         <p className="line-clamp-3 text-sm leading-relaxed [overflow-wrap:anywhere] text-muted-foreground">
           {document.content}
         </p>
@@ -62,14 +65,6 @@ export function DocumentCard({ document }: { document: Document }) {
             )}
           </ul>
         )}
-
-        <time
-          dateTime={document.updated_at}
-          title={formatDate(document.updated_at)}
-          className="text-xs text-muted-foreground"
-        >
-          Geändert {formatRelative(document.updated_at)}
-        </time>
       </article>
     </Link>
   )

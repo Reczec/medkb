@@ -2,7 +2,7 @@ import { ChevronRight, Pencil, Trash2 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
 import { ErrorState } from '@/components/feedback/ErrorState'
-import { CategoryBadge } from '@/components/specialty/CategoryBadge'
+import { FileTab } from '@/components/specialty/FileTab'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,12 +16,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ClassificationExplainer } from '@/features/documents/ClassificationExplainer'
 import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
 import { ApiError } from '@/lib/api'
-import { categoryStyle } from '@/lib/categories'
-import { formatDate } from '@/lib/format'
+import { formatDate, formatRelative } from '@/lib/format'
 import { useDeleteDocument, useDocument } from '@/lib/queries'
 import type { Document } from '@/lib/types'
 
@@ -117,7 +115,6 @@ export function DocumentPage() {
     )
   }
 
-  const style = categoryStyle(document.category)
   const paragraphs = document.content.split(/\n\s*\n/).filter((p) => p.trim())
 
   return (
@@ -136,14 +133,15 @@ export function DocumentPage() {
       </nav>
 
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="flex min-w-0 flex-col gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <CategoryBadge name={document.category} />
-            <span className="text-sm text-muted-foreground">{document.doc_type}</span>
-          </div>
+        <div className="flex min-w-0 flex-col gap-2">
           <h1 className="text-3xl font-semibold tracking-tight [overflow-wrap:anywhere] lg:text-4xl">
             {document.title}
           </h1>
+          <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground/80">{document.doc_type}</span>
+            <span aria-hidden>·</span>
+            <span>geändert {formatRelative(document.updated_at)}</span>
+          </p>
         </div>
         <div className="flex shrink-0 gap-2">
           <Button asChild variant="outline">
@@ -156,26 +154,17 @@ export function DocumentPage() {
       </header>
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
-        <div className="relative min-w-0 pt-3 lg:col-span-2">
-          <span
-            className="absolute top-0 left-6 h-4 w-28 rounded-t-md"
-            style={{ background: style.color }}
-            aria-hidden
-          />
-          <Tabs defaultValue="content" className="relative rounded-xl border bg-card shadow-sheet">
-            <TabsList className="m-4 mb-0">
-              <TabsTrigger value="content">Inhalt</TabsTrigger>
-            </TabsList>
-            <TabsContent value="content" className="px-6 pt-4 pb-7">
-              <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
-                {paragraphs.map((paragraph, index) => (
-                  <p key={index} className="whitespace-pre-line [overflow-wrap:anywhere]">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+        <div className="flex min-w-0 flex-col lg:col-span-2">
+          <FileTab name={document.category} size="md" className="relative z-10 ml-5 -mb-px self-start" />
+          <article className="rounded-xl border bg-card px-6 pt-6 pb-7 shadow-sheet">
+            <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
+              {paragraphs.map((paragraph, index) => (
+                <p key={index} className="whitespace-pre-line [overflow-wrap:anywhere]">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </article>
         </div>
 
         <aside className="flex min-w-0 flex-col gap-6">

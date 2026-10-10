@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react'
+import { ListChecks } from 'lucide-react'
 import { categoryStyle } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 
@@ -31,7 +31,7 @@ export function CategoryPicker({ categories, value, onChange, suggestion }: Cate
             : 'hover:bg-muted',
         )}
       >
-        <Sparkles className="size-4 text-primary" aria-hidden />
+        <ListChecks className="size-4 text-primary" aria-hidden />
         Automatisch
         {suggestion && <span className="text-muted-foreground">· Vorschlag: {suggestion}</span>}
       </button>

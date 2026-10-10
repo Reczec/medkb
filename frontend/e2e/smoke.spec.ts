@@ -8,6 +8,45 @@ test('dashboard summarises the seeded knowledge base', async ({ page }) => {
   await expect(page.getByRole('navigation', { name: 'Fachgebiete' }).getByRole('link')).toHaveCount(9)
 })
 
+test('filing tabs are as wide as their share of entries', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+  const strip = page.getByRole('navigation', { name: 'Fachgebiete' })
+  const width = async (name: string) =>
+    (await strip.getByRole('link', { name: new RegExp(name) }).boundingBox())!.width
+  const neuro = await width('Neurologie') // 3 entries
+  const hno = await width('HNO') // 2
+  const derma = await width('Dermatologie') // 1
+  expect(neuro).toBeGreaterThan(hno)
+  expect(hno).toBeGreaterThan(derma)
+  const tops = await strip.getByRole('link').evaluateAll((links) =>
+    links.map((link) => Math.round(link.getBoundingClientRect().top)),
+  )
+  expect(new Set(tops).size).toBe(1) // one drawer edge, no second row
+})
+
+test('dimmed filing tabs keep readable labels', async ({ page }) => {
+  await page.goto('/wissen?category=Neurologie')
+  const strip = page.getByRole('navigation', { name: 'Fachgebiete' })
+  const other = strip.getByRole('button', { name: /HNO/ })
+  const opacity = await other.evaluate((el) => {
+    let node: Element | null = el
+    let value = 1
+    while (node) {
+      value *= Number(getComputedStyle(node).opacity)
+      node = node.parentElement
+    }
+    return value
+  })
+  expect(opacity).toBe(1)
+})
+
+test('activity is drawn as daily bars, not a smoothed curve', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.recharts-bar-rectangle').first()).toBeVisible()
+  await expect(page.locator('.recharts-area')).toHaveCount(0)
+})
+
 test('search leads to an entry with its classification', async ({ page }) => {
   await page.goto('/wissen')
   await page.getByRole('searchbox').fill('kopfschmerz')
