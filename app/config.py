@@ -22,6 +22,17 @@ class Settings(BaseSettings):
     # Insert the bundled example entries on startup if the database is empty.
     seed_demo_data: bool = False
 
+    # Signing key for login tokens (JWT). Empty = a random key per process (logins end on restart).
+    jwt_secret: str = ""
+    jwt_hours: float = 8
+
+    # Demo mode: one-click demo logins per role and a periodic reset of the example data.
+    demo_mode: bool = False
+    demo_reset_hours: float = 24
+
+    # Optional password for a real "admin" login (works with and without demo mode).
+    admin_password: str = ""
+
     # Built React frontend (npm run build). Missing directory = API only, with a hint page at /.
     frontend_dist: Path = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 

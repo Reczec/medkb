@@ -34,6 +34,19 @@ class Document(Base):
     )
 
 
+class User(Base):
+    """A login. Roles: admin (everything), doctor and patient (read only)."""
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(String(50), unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255))
+    role: Mapped[str] = mapped_column(String(10))
+    display_name: Mapped[str] = mapped_column(String(100))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class AuditLog(Base):
     """Traceability: who changed what and when (no personal data, only document titles)."""
 
