@@ -1,5 +1,15 @@
 /** Mirrors app/schemas.py. Datetimes are ISO strings in UTC. */
 
+export type SectionKey = 'definition' | 'symptoms' | 'causes' | 'diagnostics' | 'therapy' | 'red_flags'
+
+/** Structured content; the API composes `content` from it. */
+export type Sections = Partial<Record<SectionKey, string | null>>
+
+export interface FurtherReadingLink {
+  label: string
+  url: string
+}
+
 export interface Document {
   id: number
   title: string
@@ -9,6 +19,12 @@ export interface Document {
   keywords: string[]
   source: string | null
   auto_classified: boolean
+  term_en: string | null
+  icd11_code: string | null
+  medications: string[]
+  sections: Sections | null
+  further_reading: FurtherReadingLink[]
+  ai_generated: boolean
   created_at: string
   updated_at: string
 }
@@ -20,22 +36,32 @@ export interface DocumentList {
   offset: number
 }
 
+/** Send `content` for free text or `sections` for a structured entry. */
 export interface DocumentCreate {
   title: string
-  content: string
+  content?: string
+  sections?: Sections
   doc_type: string
   category?: string
   keywords?: string[]
   source?: string | null
+  term_en?: string | null
+  icd11_code?: string | null
+  medications?: string[]
 }
 
 export interface DocumentUpdate {
   title?: string
+  /** Sent without `sections`, it turns the entry into free text. */
   content?: string
+  sections?: Sections
   doc_type?: string
   category?: string
   keywords?: string[]
   source?: string | null
+  term_en?: string | null
+  icd11_code?: string | null
+  medications?: string[]
   reclassify?: boolean
 }
 
@@ -107,4 +133,51 @@ export interface ArchiveInfo {
 export interface RestoreResult {
   restored: number
   backup: ArchiveInfo
+}
+
+/** Answer of an external source; problems are reported in `status`, never as an error. */
+export interface SourceResult<T> {
+  status: 'ok' | 'empty' | 'unavailable' | 'not_configured'
+  fetched_at: string | null
+  data: T | null
+}
+
+export interface Study {
+  pmid: string
+  title: string
+  journal: string | null
+  year: number | null
+  /** The first three authors; `more_authors` means "et al.". */
+  authors: string[]
+  more_authors: boolean
+  url: string
+}
+
+export interface LatestStudies {
+  category: string
+  studies: Study[]
+}
+
+export interface Icd11Entry {
+  code: string
+  title: string
+  definition: string | null
+  url: string
+  release: string
+  /** The language WHO answered in; German is a prerelease. */
+  language: string
+}
+
+export interface MedicationLabel {
+  ingredient: string
+  brand_names: string[]
+  indications: string | null
+  warnings: string | null
+  adverse_reactions: string | null
+  url: string
+}
+
+export interface MedicationsOut {
+  found: MedicationLabel[]
+  missing: string[]
 }

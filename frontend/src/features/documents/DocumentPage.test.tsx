@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { DocumentPage } from '@/features/documents/DocumentPage'
-import { mockFetch, renderWithProviders } from '@/test/utils'
+import { mockFetch, PLAIN_FIELDS, renderWithProviders } from '@/test/utils'
 
 vi.mock('motion/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('motion/react')>()),
@@ -12,7 +12,7 @@ afterEach(() => vi.unstubAllGlobals())
 const document5 = {
   id: 5, title: 'Herzinsuffizienz', content: 'Absatz eins.\n\nAbsatz zwei mit Atemnot.',
   category: 'Kardiologie', doc_type: 'Diagnose', keywords: ['Herz', 'Atemnot'],
-  source: 'Lehrbuch', auto_classified: true,
+  source: 'Lehrbuch', auto_classified: true, ...PLAIN_FIELDS,
   created_at: '2026-10-01T10:00:00Z', updated_at: '2026-10-02T10:00:00Z',
 }
 const classification = {
@@ -69,4 +69,39 @@ it('treats a non-numeric id as not found instead of loading forever', async () =
   mockFetch({})
   renderWithProviders(<DocumentPage />, { path: '/wissen/abc', route: '/wissen/:id' })
   expect(await screen.findByText('Eintrag nicht gefunden')).toBeInTheDocument()
+})
+
+const structured = {
+  ...document5,
+  term_en: 'Heart failure',
+  icd11_code: 'BD10',
+  sections: { definition: 'Das Herz pumpt zu wenig.', symptoms: 'Atemnot.', therapy: 'Medikamente.' },
+  further_reading: [{ label: 'MedlinePlus (NIH, englisch): Heart Failure', url: 'https://medlineplus.gov/heartfailure.html' }],
+}
+
+it('shows a structured entry by its sections', async () => {
+  mockFetch({ '/api/documents/5': structured, '/api/classify': classification })
+  render()
+  expect(await screen.findByRole('heading', { level: 2, name: 'Symptome' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { level: 2, name: 'Therapie' })).toBeInTheDocument()
+  expect(screen.queryByText('Absatz eins.')).not.toBeInTheDocument()
+})
+
+it('lists the English term and the ICD-11 code in the details', async () => {
+  mockFetch({ '/api/documents/5': structured, '/api/classify': classification })
+  render()
+  const details = await screen.findByRole('region', { name: 'Details' })
+  expect(within(details).getByText('Heart failure')).toBeInTheDocument()
+  expect(within(details).getByText('BD10')).toBeInTheDocument()
+})
+
+it('opens further reading in a new tab and names the site', async () => {
+  mockFetch({ '/api/documents/5': structured, '/api/classify': classification })
+  render()
+  const reading = await screen.findByRole('region', { name: 'Weiterlesen' })
+  const link = within(reading).getByRole('link', { name: /Heart Failure/ })
+  expect(link).toHaveAttribute('href', 'https://medlineplus.gov/heartfailure.html')
+  expect(link).toHaveAttribute('target', '_blank')
+  expect(link).toHaveAttribute('rel', 'noreferrer noopener')
+  expect(within(reading).getByText('medlineplus.gov')).toBeInTheDocument()
 })

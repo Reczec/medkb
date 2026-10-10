@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { DocumentCard } from '@/features/documents/DocumentCard'
-import { renderWithProviders } from '@/test/utils'
+import { PLAIN_FIELDS, renderWithProviders } from '@/test/utils'
 
 it('names the card link after the entry title', () => {
   renderWithProviders(
@@ -14,6 +14,7 @@ it('names the card link after the entry title', () => {
         keywords: [],
         source: null,
         auto_classified: true,
+        ...PLAIN_FIELDS,
         created_at: '2026-10-01T10:00:00Z',
         updated_at: '2026-10-01T10:00:00Z',
       }}
@@ -34,6 +35,7 @@ it('carries the specialty on its filing tab and marks rule-based classification'
         keywords: [],
         source: null,
         auto_classified: true,
+        ...PLAIN_FIELDS,
         created_at: '2026-10-01T10:00:00Z',
         updated_at: '2026-10-01T10:00:00Z',
       }}
