@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { AppShell } from '@/components/layout/AppShell'
+import { AdminPage } from '@/features/admin/AdminPage'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
 import { DocumentPage } from '@/features/documents/DocumentPage'
 import { KnowledgeBasePage } from '@/features/documents/KnowledgeBasePage'
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { path: 'wissen/neu', element: <EditorPage /> },
       { path: 'wissen/:id', element: <DocumentPage /> },
       { path: 'wissen/:id/bearbeiten', element: <EditorPage /> },
+      { path: 'admin', element: <AdminPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
