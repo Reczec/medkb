@@ -13,6 +13,19 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 - Deleting an entry refetches it (404) before navigating away. Use `removeQueries(['document', id])`.
 - Knowledge base list: with `keepPreviousData`, a failed refetch shows the error card above stale results.
 
+## Auth (stage 2 review, 2026-10-11)
+
+- A late 401 from a request sent with an old token clears a freshly issued token (`api.ts`): clear only if `tokenStore.get() === token`.
+- If sessionStorage is blocked, the token is lost and every call is 401 without the expiry flow; keep an in-memory fallback in `lib/auth.ts`.
+- `reset_demo` is not one transaction: readers can briefly see 0 entries, and a failure mid-way leaves the demo empty until the next run.
+- SQLite reuses ids after the demo reset, so an editor opened before the reset can overwrite a restored example entry (PostgreSQL is fine).
+- Tokens without `exp` are accepted (only our own signed ones): `options={"require": ["exp", "sub"]}`.
+- Demo accounts and their tokens survive switching `DEMO_MODE` off.
+- `upgrade_schema` can race when two instances start at once.
+- Shutdown does not wait for a running reset thread.
+- `tests/test_permissions.py` lists routes by hand; enumerate `app.routes` instead.
+- Design ceiling: admin tabs are stock segmented controls, the users table shows roles as plain text, the activity feed and forbidden page have no in-world treatment.
+
 ## Build and ops
 
 - `/assets` has no `Cache-Control: immutable` header (the comment in `app/spa.py` claims long caching). `HEAD /` returns 405.
