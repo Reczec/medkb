@@ -51,6 +51,26 @@ describe('LoginPage', () => {
   })
 })
 
+it('still offers the password form when the login options cannot be loaded', async () => {
+  mockFetch({ '/api/auth/options': new Response('{}', { status: 503 }) })
+  renderWithProviders(<LoginPage />, { path: '/login', route: '/login', withAuth: true })
+  expect(await screen.findByLabelText('Benutzername')).toBeVisible()
+  expect(screen.getByText(/Demo-Zugänge konnten nicht geladen werden/)).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Erneut versuchen/ })).toBeInTheDocument()
+})
+
+it('ignores a next parameter that points to another site', async () => {
+  mockFetch({ '/api/auth/options': { demo_mode: true }, '/api/auth/demo': token(doctor) })
+  const { router } = renderWithProviders(<LoginPage />, {
+    path: '/login?next=%2F%5Cevil.example',
+    route: '/login',
+    withAuth: true,
+    routes: [{ path: '/', element: <p>Start</p> }],
+  })
+  fireEvent.click(await screen.findByRole('button', { name: /Ärztin \/ Arzt/ }))
+  await waitFor(() => expect(router.state.location.pathname).toBe('/'))
+})
+
 describe('guards', () => {
   it('sends visitors without a login to the login page', async () => {
     mockFetch({})
@@ -75,7 +95,9 @@ describe('guards', () => {
       </RequireAuth>,
       { path: '/admin', withAuth: true },
     )
-    expect(await screen.findByText('Keine Berechtigung')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Keine Berechtigung' })).toBeInTheDocument()
+    expect(screen.getByText(/nur für Admins/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Rolle wechseln' })).toBeInTheDocument()
     expect(screen.queryByText('Admin-Bereich')).not.toBeInTheDocument()
   })
 

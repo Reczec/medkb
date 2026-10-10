@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils'
 
 interface SpecialtyStripProps {
   items: CountItem[]
+  /** The captioned share bar under the tabs (off where no statistics belong). */
+  showShare?: boolean
   /** Selected specialty (filter mode). */
   active?: string
   /** Filter mode: tabs are toggle buttons. Without it, tabs link to the filtered list. */
@@ -18,7 +20,13 @@ interface SpecialtyStripProps {
  * edge, each tab showing its full name. A separate, captioned bar below shows each specialty's
  * share of the entries, so proportion never costs legibility. On narrow screens the tabs scroll.
  */
-export function SpecialtyStrip({ items, active, onSelect, className }: SpecialtyStripProps) {
+export function SpecialtyStrip({
+  items,
+  active,
+  onSelect,
+  className,
+  showShare = true,
+}: SpecialtyStripProps) {
   const reduced = useReducedMotion()
   const filled = items.filter((item) => item.count > 0).sort((a, b) => b.count - a.count)
   const empty = items.length - filled.length
@@ -55,7 +63,7 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
               : 'h-10 bg-card hover:h-11 hover:bg-accent/60',
           )
           const tabStyle = selected
-            ? { background: `color-mix(in oklch, ${style.color} 14%, var(--background))` }
+            ? { background: `color-mix(in oklab, ${style.color} 14%, var(--background))` }
             : undefined
           return (
             <motion.li
@@ -89,6 +97,7 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
         })}
       </ul>
 
+      {showShare && (
       <div className="mt-4 flex items-center gap-3">
         <span className="shrink-0 text-xs text-muted-foreground">Anteil der Einträge</span>
         <div className="flex h-2 flex-1 gap-0.5 overflow-hidden rounded-full" aria-hidden>
@@ -110,6 +119,7 @@ export function SpecialtyStrip({ items, active, onSelect, className }: Specialty
         })}
         </div>
       </div>
+      )}
 
       {empty > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">

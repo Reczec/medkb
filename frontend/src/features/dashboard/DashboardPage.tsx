@@ -33,7 +33,7 @@ function Summary({ stats }: { stats: Stats }) {
       <strong className={strong}>
         <CountUp value={changes} />
       </strong>{' '}
-      Änderungen in den letzten 30 Tagen.
+      {changes === 1 ? 'Änderung' : 'Änderungen'} in den letzten 30 Tagen.
     </p>
   )
 }

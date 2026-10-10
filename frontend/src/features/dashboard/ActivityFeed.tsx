@@ -35,8 +35,9 @@ export function ActivityFeed() {
                 className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-2.5 text-sm"
               >
                 <span
-                  className={cn('inline-flex rounded-md px-2 py-0.5 text-xs font-medium', action.className)}
+                  className={cn('inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium', action.className)}
                 >
+                  <action.icon className="size-3.5" aria-hidden />
                   {action.label}
                 </span>
                 <span className="min-w-0 flex-1 truncate">{entry.detail}</span>

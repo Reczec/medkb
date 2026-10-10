@@ -74,3 +74,11 @@ it('offers a retry when loading fails', async () => {
   expect(await screen.findByText('Daten konnten nicht geladen werden')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: /Erneut versuchen/ })).toBeInTheDocument()
 })
+
+it('uses the singular for one change', async () => {
+  const stats = makeStats()
+  stats.activity = stats.activity.map((day, i) => ({ ...day, count: i === 29 ? 1 : 0 }))
+  mockFetch({ '/api/stats': stats })
+  renderWithProviders(<DashboardPage />)
+  expect(await screen.findByTestId('summary')).toHaveTextContent(/1 Änderung in den letzten 30 Tagen/)
+})

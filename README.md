@@ -103,6 +103,10 @@ With the default `.env` (demo mode), the login page offers one-click access as a
 patient, and the example entries are restored on every start. Set `ADMIN_PASSWORD` for a real
 `admin` login.
 
+> **Demo mode deletes all entries and the change log on every start** (and every
+> `DEMO_RESET_HOURS`). Keep `DEMO_MODE=false` for data you want to keep; Docker Compose defaults to
+> `false`.
+
 ### Docker (PostgreSQL)
 
 ```bash

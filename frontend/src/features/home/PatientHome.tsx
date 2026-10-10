@@ -1,4 +1,4 @@
-import { MessageCircleQuestion, PhoneCall, Search } from 'lucide-react'
+import { PhoneCall, Search } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -6,7 +6,6 @@ import { SpecialtyStrip } from '@/components/specialty/SpecialtyStrip'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useAuth } from '@/features/auth/context'
 import { RecentList } from '@/features/dashboard/RecentList'
 import { useStats } from '@/lib/queries'
 
@@ -14,7 +13,6 @@ const EXAMPLES = ['Kopfschmerzen', 'Husten', 'Rückenschmerzen', 'Bluthochdruck'
 
 /** Start page for patients: search first, topics as filing tabs, no statistics. */
 export function PatientHome() {
-  const { user } = useAuth()
   const navigate = useNavigate()
   const stats = useStats()
   const [query, setQuery] = useState('')
@@ -27,10 +25,7 @@ export function PatientHome() {
   return (
     <div className="flex flex-col gap-10">
       <section className="flex flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <p className="text-muted-foreground">Hallo {user?.display_name ?? ''}</p>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Wonach suchst du?</h1>
-        </div>
+        <h1 className="text-3xl font-semibold tracking-tight">Wonach suchst du?</h1>
         <form
           role="search"
           onSubmit={(event) => {
@@ -49,7 +44,7 @@ export function PatientHome() {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Beschwerde oder Thema, z. B. Kopfschmerzen"
+              placeholder="Beschwerde oder Thema"
               className="h-14 bg-card pl-12 text-lg shadow-sheet"
               maxLength={200}
             />
@@ -91,21 +86,12 @@ export function PatientHome() {
         <>
           <section className="flex flex-col gap-3">
             <h2 className="text-base font-semibold">Themen nach Fachgebiet</h2>
-            <SpecialtyStrip items={stats.data.categories} />
+            <SpecialtyStrip items={stats.data.categories} showShare={false} />
           </section>
-          <RecentList items={stats.data.recent} />
+          <RecentList items={stats.data.recent} title="Themen zum Weiterlesen" showTimes={false} />
         </>
       )}
 
-      <section className="flex max-w-3xl items-center gap-4 rounded-xl border border-dashed bg-card/60 p-5">
-        <MessageCircleQuestion className="size-8 shrink-0 text-muted-foreground" aria-hidden />
-        <div>
-          <p className="font-medium">Fragen in eigenen Worten stellen</p>
-          <p className="text-sm text-muted-foreground">
-            Ein Assistent, der Einträge in einfacher Sprache erklärt, ist in Arbeit.
-          </p>
-        </div>
-      </section>
     </div>
   )
 }

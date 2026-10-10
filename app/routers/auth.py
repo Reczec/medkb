@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import secrets
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.auth import CurrentUser, create_token, verify_password
+from app.auth import CurrentUser, create_token, hash_password, verify_password
 from app.config import Settings, get_settings
 from app.database import get_db
 from app.models import User
@@ -16,6 +17,9 @@ from app.schemas import AuthOptions, DemoLoginRequest, LoginRequest, TokenOut, U
 from app.users import DEMO_USERS
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+# Checked against when the username is unknown, so both failures take the same time.
+_DUMMY_HASH = hash_password(secrets.token_urlsafe(16))
 
 DbSession = Annotated[Session, Depends(get_db)]
 AppSettings = Annotated[Settings, Depends(get_settings)]
@@ -29,7 +33,8 @@ def _token_for(user: User, settings: Settings) -> TokenOut:
 def login(data: LoginRequest, db: DbSession, settings: AppSettings) -> TokenOut:
     user = db.scalar(select(User).where(User.username == data.username))
     # Same message for unknown users and wrong passwords: nothing to learn from the answer.
-    if user is None or not verify_password(data.password, user.password_hash):
+    valid = verify_password(data.password, user.password_hash if user else _DUMMY_HASH)
+    if user is None or not valid:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Benutzername oder Passwort falsch")
     return _token_for(user, settings)
 
