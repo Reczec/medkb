@@ -19,6 +19,7 @@ import type {
   MedicationsOut,
   Meta,
   RestoreResult,
+  Sections,
   SourceResult,
   Stats,
   Study,
@@ -73,15 +74,22 @@ export const useDocument = (id: number) =>
     retry: (count, error) => (error as { status?: number }).status !== 404 && count < 2,
   })
 
-export const useClassify = (title: string, content: string) =>
-  useQuery({
-    queryKey: ['classify', title, content],
+type ClassifyInput = { content: string } | { sections: Sections }
+
+export function useClassify(title: string, input: string | ClassifyInput) {
+  const body = typeof input === 'string' ? { content: input } : input
+  const enabled = 'content' in body
+    ? body.content.trim().length >= 10
+    : Object.values(body.sections).some((text) => Boolean(text?.trim()))
+  return useQuery({
+    queryKey: ['classify', title, body],
     queryFn: ({ signal }) =>
-      api<ClassifyResponse>('/api/classify', { method: 'POST', body: { title, content }, signal }),
-    enabled: title.trim().length >= 1 && content.trim().length >= 10,
+      api<ClassifyResponse>('/api/classify', { method: 'POST', body: { title, ...body }, signal }),
+    enabled: title.trim().length >= 1 && enabled,
     placeholderData: keepPreviousData,
     staleTime: Infinity,
   })
+}
 
 export function useCreateDocument() {
   const client = useQueryClient()

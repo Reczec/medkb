@@ -28,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { AUTO, CategoryPicker } from '@/features/editor/CategoryPicker'
 import { KeywordInput, mergeKeywords } from '@/features/editor/KeywordInput'
+import { SectionFields } from '@/features/editor/SectionFields'
 import { useDebounced } from '@/hooks/useDebounced'
 import { ApiError } from '@/lib/api'
 import {
@@ -37,7 +38,8 @@ import {
   useMeta,
   useUpdateDocument,
 } from '@/lib/queries'
-import type { Document, DocumentCreate, DocumentUpdate, Meta } from '@/lib/types'
+import { cleanSections, composeContent } from '@/lib/sections'
+import type { Document, DocumentCreate, DocumentUpdate, Meta, Sections } from '@/lib/types'
 
 interface FormState {
   title: string
@@ -46,11 +48,16 @@ interface FormState {
   category: string
   keywords: string[]
   source: string
+  termEn: string
+  icd11Code: string
+  medications: string[]
+  mode: 'text' | 'sections'
+  sections: Sections
 }
 
 function initialState(meta: Meta, document?: Document): FormState {
   if (!document) {
-    return { title: '', content: '', docType: meta.doc_types[0] ?? '', category: AUTO, keywords: [], source: '' }
+    return { title: '', content: '', docType: meta.doc_types[0] ?? '', category: AUTO, keywords: [], source: '', termEn: '', icd11Code: '', medications: [], mode: 'text', sections: {} }
   }
   return {
     title: document.title,
@@ -59,14 +66,22 @@ function initialState(meta: Meta, document?: Document): FormState {
     category: document.auto_classified ? AUTO : document.category,
     keywords: document.keywords,
     source: document.source ?? '',
+    termEn: document.term_en ?? '',
+    icd11Code: document.icd11_code ?? '',
+    medications: document.medications,
+    mode: document.sections ? 'sections' : 'text',
+    sections: cleanSections(document.sections ?? {}),
   }
 }
 
 function createPayload(form: FormState): DocumentCreate {
   const payload: DocumentCreate = {
     title: form.title.trim(),
-    content: form.content.trim(),
+    ...(form.mode === 'sections' ? { sections: cleanSections(form.sections) } : { content: form.content.trim() }),
     doc_type: form.docType,
+    term_en: form.termEn.trim() || null,
+    icd11_code: form.icd11Code.trim() || null,
+    medications: form.medications,
   }
   if (form.category !== AUTO) payload.category = form.category
   if (form.keywords.length > 0) payload.keywords = form.keywords
@@ -78,14 +93,23 @@ function createPayload(form: FormState): DocumentCreate {
 function updatePayload(form: FormState, initial: FormState): DocumentUpdate {
   const payload: DocumentUpdate = {}
   if (form.title.trim() !== initial.title) payload.title = form.title.trim()
-  if (form.content.trim() !== initial.content) payload.content = form.content.trim()
+  if (form.mode === 'sections') {
+    if (initial.mode !== 'sections' || JSON.stringify(cleanSections(form.sections)) !== JSON.stringify(initial.sections)) {
+      payload.sections = cleanSections(form.sections)
+    }
+  } else if (initial.mode !== 'text' || form.content.trim() !== initial.content) {
+    payload.content = form.content.trim()
+  }
+  if (form.termEn.trim() !== initial.termEn) payload.term_en = form.termEn.trim() || null
+  if (form.icd11Code.trim() !== initial.icd11Code) payload.icd11_code = form.icd11Code.trim() || null
+  if (form.medications.join('\n') !== initial.medications.join('\n')) payload.medications = form.medications
   if (form.docType !== initial.docType) payload.doc_type = form.docType
   if (form.source.trim() !== initial.source) payload.source = form.source.trim() || null
   if (form.keywords.join('\n') !== initial.keywords.join('\n')) payload.keywords = form.keywords
   if (form.category !== initial.category) {
     if (form.category === AUTO) payload.reclassify = true
     else payload.category = form.category
-  } else if (form.category === AUTO && ('title' in payload || 'content' in payload)) {
+  } else if (form.category === AUTO && ('title' in payload || 'content' in payload || 'sections' in payload)) {
     // The classifier stays in charge: new text means a new suggestion.
     payload.reclassify = true
   }
@@ -119,13 +143,26 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
     setForm((current) => ({ ...current, [key]: value }))
 
   const title = useDebounced(form.title, 400)
-  const content = useDebounced(form.content, 400)
-  const classification = useClassify(title, content)
+  const debouncedForm = useDebounced(form, 400)
+  const classification = useClassify(title, debouncedForm.mode === 'sections'
+    ? { sections: cleanSections(debouncedForm.sections) }
+    : { content: debouncedForm.content })
   const suggestion = classification.data
 
   const changes = document ? updatePayload(form, initial) : null
-  const dirty = document ? Object.keys(changes!).length > 0 : form.title !== '' || form.content !== ''
-  const valid = form.title.trim().length >= 3 && form.content.trim().length >= 10
+  const dirty = document ? Object.keys(changes!).length > 0 : JSON.stringify(form) !== JSON.stringify(initial)
+  const valid = form.title.trim().length >= 3 && (form.mode === 'sections'
+    ? Object.keys(cleanSections(form.sections)).length > 0
+    : form.content.trim().length >= 10)
+
+  const changeMode = (mode: FormState['mode']) => {
+    setForm((current) => {
+      if (mode === current.mode) return current
+      return mode === 'sections'
+        ? { ...current, mode, sections: { definition: current.content } }
+        : { ...current, mode, content: composeContent(current.sections) }
+    })
+  }
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
@@ -207,7 +244,30 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
           </Field>
         </div>
 
-        <Field id="content" label="Inhalt" hint="Mindestens 10 Zeichen. Leerzeilen trennen Absätze.">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field id="term-en" label="Fachbegriff (en)" hint="Optional, für die PubMed-Suche.">
+            <Input id="term-en" value={form.termEn} onChange={(event) => set('termEn', event.target.value)} maxLength={200} className="h-11" placeholder="z. B. Migraine" />
+          </Field>
+          <Field id="icd11-code" label="ICD-11-Code" hint="Optional, z. B. 8A80 oder 8A80.1.">
+            <Input id="icd11-code" value={form.icd11Code} onChange={(event) => set('icd11Code', event.target.value)} maxLength={20} className="h-11" />
+          </Field>
+        </div>
+
+        <Field id="medications" label="Wirkstoffe (en)">
+          <KeywordInput id="medications" value={form.medications} onChange={(value) => set('medications', value)} maxItems={10} maxLength={60} addLabel="Wirkstoff hinzufügen" emptyHint="Optional: bis zu 10 Wirkstoffe auf Englisch, für die openFDA-Abfrage." />
+        </Field>
+
+        <div className="flex flex-col gap-2">
+          <span id="content-mode-label" className="text-sm font-medium">Textaufbau</span>
+          <div role="group" aria-labelledby="content-mode-label" className="flex w-fit gap-1 rounded-lg border bg-muted p-1">
+            <Button type="button" variant={form.mode === 'text' ? 'outline' : 'ghost'} aria-pressed={form.mode === 'text'} onClick={() => changeMode('text')}>Freitext</Button>
+            <Button type="button" variant={form.mode === 'sections' ? 'outline' : 'ghost'} aria-pressed={form.mode === 'sections'} onClick={() => changeMode('sections')}>Abschnitte</Button>
+          </div>
+        </div>
+
+        {form.mode === 'sections' ? (
+          <SectionFields value={form.sections} onChange={(value) => set('sections', value)} />
+        ) : <Field id="content" label="Inhalt" hint="Mindestens 10 Zeichen. Leerzeilen trennen Absätze.">
           <Textarea
             id="content"
             value={form.content}
@@ -216,7 +276,7 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
             className="min-h-56 w-full min-w-0 text-base leading-relaxed [field-sizing:content] [overflow-wrap:anywhere]"
             placeholder="Beschreibung, Symptome, Ursachen, Diagnostik, Therapie …"
           />
-        </Field>
+        </Field>}
 
         <div className="flex flex-col gap-2">
           <span id="category-label" className="text-sm font-medium">
@@ -257,7 +317,9 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
         </div>
         {!suggestion && (
           <p className="rounded-lg bg-muted px-3 py-3 text-sm text-muted-foreground">
-            Titel und mindestens 10 Zeichen Inhalt eingeben, dann erscheint ein Vorschlag.
+            {form.mode === 'sections'
+              ? 'Titel und mindestens einen Abschnitt ausfüllen, dann erscheint ein Vorschlag.'
+              : 'Titel und mindestens 10 Zeichen Inhalt eingeben, dann erscheint ein Vorschlag.'}
           </p>
         )}
         {suggestion && (

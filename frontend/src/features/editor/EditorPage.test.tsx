@@ -88,6 +88,9 @@ it('creates an entry without a category when automatic is kept', async () => {
     title: 'Herzrasen',
     content: 'Herzrasen und Brustschmerzen bei Belastung.',
     doc_type: 'Symptom',
+    term_en: null,
+    icd11_code: null,
+    medications: [],
   })
 })
 
@@ -179,4 +182,99 @@ it('says so when the id in the address is not a number', async () => {
   mockFetch({ '/api/meta': meta })
   renderEditor('/wissen/abc/bearbeiten')
   expect(await screen.findByText('Eintrag nicht gefunden')).toBeInTheDocument()
+})
+
+const structured = {
+  ...saved, term_en: 'Migraine', icd11_code: '8A80', medications: ['ibuprofen'],
+  sections: { definition: 'Migräne mit Kopfschmerzen.', symptoms: 'Lichtempfindlichkeit.', red_flags: 'Bei Lähmungen sofort 144.' },
+  further_reading: [{ label: 'WHO', url: 'https://www.who.int/' }], ai_generated: true,
+}
+
+it('creates and previews sections without sending free text', async () => {
+  const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification, '/api/documents': saved })
+  const { router } = renderEditor()
+  await fillNewEntry()
+  fireEvent.click(screen.getByRole('button', { name: 'Abschnitte' }))
+  expect(screen.getByLabelText('Definition')).toHaveValue('Herzrasen und Brustschmerzen bei Belastung.')
+  fireEvent.change(screen.getByLabelText('Symptome'), { target: { value: 'Brustschmerz.' } })
+  await waitFor(() => expect(bodies(fetchMock, 'POST').some((call) => call.url === '/api/classify' && call.body.sections?.symptoms === 'Brustschmerz.')).toBe(true))
+  const preview = bodies(fetchMock, 'POST').findLast((call) => call.url === '/api/classify')!
+  expect(preview.body).not.toHaveProperty('content')
+  fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
+  await waitFor(() => expect(router.state.location.pathname).toBe('/wissen/9'))
+  const create = bodies(fetchMock, 'POST').find((call) => call.url === '/api/documents')!
+  expect(create.body.sections).toMatchObject({ definition: 'Herzrasen und Brustschmerzen bei Belastung.', symptoms: 'Brustschmerz.' })
+  expect(create.body).not.toHaveProperty('content')
+})
+
+it('prefills sections and only patches the changed structured content', async () => {
+  const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification, '/api/documents/9': structured })
+  renderEditor('/wissen/9/bearbeiten')
+  expect(await screen.findByLabelText('Definition')).toHaveValue('Migräne mit Kopfschmerzen.')
+  expect(screen.getByLabelText('Fachbegriff (en)')).toHaveValue('Migraine')
+  expect(screen.getByLabelText('ICD-11-Code')).toHaveValue('8A80')
+  expect(screen.getByRole('button', { name: 'Abschnitte' })).toHaveAttribute('aria-pressed', 'true')
+  fireEvent.change(screen.getByLabelText('Therapie'), { target: { value: 'Bewegung und Ruhe.' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
+  await waitFor(() => expect(bodies(fetchMock, 'PATCH')).toHaveLength(1))
+  const patch = bodies(fetchMock, 'PATCH')[0].body
+  expect(patch.sections.therapy).toBe('Bewegung und Ruhe.')
+  expect(patch.reclassify).toBe(true)
+  expect(patch).not.toHaveProperty('content')
+  expect(patch).not.toHaveProperty('further_reading')
+  expect(patch).not.toHaveProperty('ai_generated')
+})
+
+it('sends content without sections when converting an entry to free text', async () => {
+  const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification, '/api/documents/9': structured })
+  renderEditor('/wissen/9/bearbeiten')
+  await screen.findByLabelText('Definition')
+  fireEvent.click(screen.getByRole('button', { name: 'Freitext' }))
+  expect(screen.getByLabelText('Inhalt')).toHaveValue('Definition\nMigräne mit Kopfschmerzen.\n\nSymptome\nLichtempfindlichkeit.\n\nWarnzeichen\nBei Lähmungen sofort 144.')
+  fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
+  await waitFor(() => expect(bodies(fetchMock, 'PATCH')).toHaveLength(1))
+  expect(bodies(fetchMock, 'PATCH')[0].body.content).toContain('Symptome\nLichtempfindlichkeit.')
+  expect(bodies(fetchMock, 'PATCH')[0].body).not.toHaveProperty('sections')
+})
+
+it('adds and removes active ingredients and clears optional fields', async () => {
+  const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification, '/api/documents/9': structured })
+  renderEditor('/wissen/9/bearbeiten')
+  fireEvent.click(await screen.findByRole('button', { name: 'ibuprofen entfernen' }))
+  fireEvent.change(screen.getByRole('textbox', { name: 'Wirkstoff hinzufügen' }), { target: { value: 'metformin' } })
+  fireEvent.keyDown(screen.getByRole('textbox', { name: 'Wirkstoff hinzufügen' }), { key: 'Enter' })
+  fireEvent.change(screen.getByLabelText('Fachbegriff (en)'), { target: { value: '' } })
+  fireEvent.change(screen.getByLabelText('ICD-11-Code'), { target: { value: '' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
+  await waitFor(() => expect(bodies(fetchMock, 'PATCH')).toHaveLength(1))
+  expect(bodies(fetchMock, 'PATCH')[0].body).toEqual({ medications: ['metformin'], term_en: null, icd11_code: null })
+})
+
+it('keeps the form and shows the ICD field error from a 422 response', async () => {
+  const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification, '/api/documents': new Response(JSON.stringify({ detail: [{ loc: ['body', 'icd11_code'], msg: 'Not an ICD-11 stem code.' }] }), { status: 422 }) })
+  const { router } = renderEditor()
+  await fillNewEntry()
+  fireEvent.change(screen.getByLabelText('ICD-11-Code'), { target: { value: '8A80.123' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
+  expect(await screen.findByText('icd11_code: Not an ICD-11 stem code.')).toBeInTheDocument()
+  expect(screen.getByLabelText('ICD-11-Code')).toHaveValue('8A80.123')
+  expect(router.state.location.pathname).toBe('/wissen/neu')
+  expect(bodies(fetchMock, 'POST').find((call) => call.url === '/api/documents')!.body.icd11_code).toBe('8A80.123')
+})
+
+it('does not patch an untouched structured entry', async () => {
+  const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification, '/api/documents/9': structured })
+  const { router } = renderEditor('/wissen/9/bearbeiten')
+  await screen.findByLabelText('Definition')
+  fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
+  await waitFor(() => expect(router.state.location.pathname).toBe('/wissen/9'))
+  expect(bodies(fetchMock, 'PATCH')).toHaveLength(0)
+})
+
+it('blocks leaving a new form when only an optional field changed', async () => {
+  mockFetch({ '/api/meta': meta })
+  renderEditor()
+  fireEvent.change(await screen.findByLabelText('Fachbegriff (en)'), { target: { value: 'Migraine' } })
+  fireEvent.click(screen.getByRole('link', { name: 'Abbrechen' }))
+  expect(await screen.findByRole('alertdialog')).toHaveTextContent('Änderungen verwerfen?')
 })
