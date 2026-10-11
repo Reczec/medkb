@@ -114,6 +114,27 @@ cp .env.example .env      # set JWT_SECRET
 docker compose up --build
 ```
 
+## Configuration: external sources
+
+The doctor and admin views show PubMed studies, WHO ICD-11 and openFDA drug labels. PubMed
+and openFDA work without credentials. An optional `NCBI_API_KEY` increases PubMed's request
+limit. Patients see the entry content and warning signs without requesting these sources.
+
+For ICD-11, register at [WHO ICD API](https://icd.who.int/icdapi), open **View API access key(s)**
+and put `ICD_CLIENT_ID` and `ICD_CLIENT_SECRET` in `.env`. Without them the tab reports that
+ICD-11 is not configured. The defaults are `ICD_RELEASE=2026-01` and `ICD_LANGUAGE=de`;
+the German response is marked as a WHO prerelease. Use `en` for English.
+
+`SOURCES_TIMEOUT=8` sets the upstream request timeout in seconds; `SOURCE_CACHE_HOURS=24`
+sets the database cache lifetime. The panels show their source and retrieval time, and offer
+a retry if a source is unavailable. FDA labels are English US product information and are
+explicitly marked as unsuitable for dosage decisions.
+
+Run `python scripts/check_seed_sources.py` to check the bundled further-reading links and,
+with WHO credentials configured, ICD codes. The codes require that live verification before
+their source mapping can be considered confirmed. See [.env.example](.env.example) for all
+source variables.
+
 ## API overview
 
 | Method | Path | Who | Description |
