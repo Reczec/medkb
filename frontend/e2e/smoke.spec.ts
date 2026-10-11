@@ -1,6 +1,22 @@
 import { expect, test, type Page } from '@playwright/test'
+import path from 'node:path'
 
 type Role = 'admin' | 'doctor' | 'patient'
+
+/** Optional captures of the real built stack for the stage finish review. */
+async function captureReview(page: Page, surface: string) {
+  if (process.env.MEDKB_CAPTURE_REVIEW !== '1') return
+  for (const theme of ['light', 'dark']) {
+    await page.evaluate((value) => localStorage.setItem('theme', value), theme)
+    for (const [device, width, height] of [['desktop', 1440, 900], ['phone', 375, 812]] as const) {
+      await page.setViewportSize({ width, height })
+      await page.reload()
+      await page.waitForLoadState('networkidle')
+      await page.evaluate(() => document.fonts.ready)
+      await page.screenshot({ path: path.resolve(import.meta.dirname, '../../.impeccable/review', `${surface}-${device}-${theme}.png`), fullPage: true })
+    }
+  }
+}
 
 const study = {
   pmid: '123456', title: 'Demo study on migraine', journal: 'Demo Journal', year: 2026,
@@ -43,6 +59,7 @@ test('dashboard summarises the seeded knowledge base', async ({ page }) => {
   const summary = page.getByTestId('summary')
   await expect(summary).toContainText('47')
   await expect(page.getByRole('navigation', { name: 'Fachgebiete' }).getByRole('link')).toHaveCount(16)
+  await captureReview(page, 'dashboard')
 })
 
 test('every filing tab shows its full name and the drawer edge shows the share', async ({ page }) => {
@@ -138,6 +155,33 @@ test('admin creates an archive', async ({ page }) => {
   await expect(page.getByRole('button', { name: /herunterladen/ }).first()).toBeVisible()
 })
 
+test('the section editor creates an entry with source metadata and warning signs', async ({ page }) => {
+  await page.goto('/wissen/neu')
+  await page.getByLabel('Titel', { exact: true }).fill('Migräne – strukturiertes Beispiel')
+  await page.getByLabel('Fachbegriff (en)').fill('Migraine')
+  await page.getByLabel('ICD-11-Code').fill('8A80')
+  await page.getByLabel('Wirkstoff hinzufügen').fill('sumatriptan')
+  await page.getByLabel('Wirkstoff hinzufügen').press('Enter')
+  await page.getByRole('button', { name: 'Abschnitte', exact: true }).click()
+  await page.getByLabel('Definition', { exact: true }).fill('Migräne verursacht wiederkehrende Kopfschmerzen.')
+  await page.getByLabel('Symptome', { exact: true }).fill('Kopfschmerzen mit Übelkeit und Lichtempfindlichkeit.')
+  await page.getByLabel('Warnzeichen', { exact: true }).fill('Bei plötzlich stärkstem Kopfschmerz: 144 anrufen.')
+  await expect(page.getByRole('complementary', { name: 'Live-Klassifikation' })).toContainText('Vorschlag: Neurologie')
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click()
+  await expect(page).toHaveURL(/\/wissen\/\d+$/)
+  await expect(page.getByRole('heading', { name: 'Migräne – strukturiertes Beispiel', level: 1 })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Symptome', exact: true })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Warnzeichen', exact: true })).toContainText('144 anrufen')
+  await expect(page.getByText('Im Notfall: 144', { exact: true })).toBeVisible()
+  await expect(page.getByRole('tab', { name: 'Medikamente' })).toBeVisible()
+  await expect(page.getByText('Migraine', { exact: true })).toBeVisible()
+  await expect(page.getByText('8A80', { exact: true })).toBeVisible()
+  if (process.env.MEDKB_CAPTURE_REVIEW === '1') {
+    await page.goto(page.url() + '/bearbeiten')
+    await captureReview(page, 'editor')
+  }
+})
+
 test('deep links survive a reload', async ({ page }) => {
   await page.goto('/wissen/1')
   await page.reload()
@@ -195,6 +239,31 @@ test.describe('phone width', () => {
 })
 
 test.describe('login and roles', () => {
+  test('a doctor opens studies with PubMed provenance and a persistent tab', async ({ page }) => {
+    await loginAs(page, 'doctor')
+    await page.goto('/wissen/1')
+    await page.getByRole('tab', { name: 'Studien', exact: true }).click()
+    await expect(page.getByRole('link', { name: study.title })).toHaveAttribute('href', study.url)
+    await expect(page.getByText('PubMed · NCBI', { exact: true })).toBeVisible()
+    await page.reload()
+    await expect(page.getByRole('tab', { name: 'Studien', exact: true })).toHaveAttribute('aria-selected', 'true')
+    await expect(page.getByRole('link', { name: study.title })).toBeVisible()
+    await captureReview(page, 'studies')
+  })
+
+  test('a patient sees seed warning signs without source tabs or requests', async ({ page }) => {
+    await loginAs(page, 'patient')
+    const sourceRequests: string[] = []
+    page.on('request', (request) => {
+      if (new URL(request.url()).pathname.startsWith('/api/sources/')) sourceRequests.push(request.url())
+    })
+    await page.goto('/wissen/1')
+    await expect(page.getByRole('region', { name: 'Warnzeichen', exact: true })).toBeVisible()
+    await expect(page.getByRole('tablist')).toHaveCount(0)
+    await expect(page.getByRole('contentinfo')).toContainText('Prototyp mit Beispieldaten – keine medizinische Beratung.')
+    await captureReview(page, 'patient-detail')
+    expect(sourceRequests).toEqual([])
+  })
   test('visitors without a login land on the login page and can enter as a role', async ({ page }) => {
     await page.goto('/wissen')
     await expect(page).toHaveURL(/\/login\?next=%2Fwissen$/)

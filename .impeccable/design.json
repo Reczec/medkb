@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-10T00:00:00Z",
+  "generatedAt": "2026-10-11T09:05:06.535Z",
   "title": "Design System: MedKB",
   "extensions": {
     "colorMeta": {
@@ -279,136 +279,136 @@
       "specialty-allgemeinmedizin": {
         "role": "secondary",
         "displayName": "Allgemeinmedizin Tab",
-        "canonical": "oklch(0.62 0.1 196)",
+        "canonical": "oklch(0.62 0.1 202)",
         "tonalRamp": [
-          "oklch(0.15 0.1 196)",
-          "oklch(0.25 0.1 196)",
-          "oklch(0.35 0.1 196)",
-          "oklch(0.45 0.1 196)",
-          "oklch(0.55 0.1 196)",
-          "oklch(0.68 0.1 196)",
-          "oklch(0.82 0.1 196)",
-          "oklch(0.95 0.1 196)"
+          "oklch(0.15 0.1 202)",
+          "oklch(0.25 0.1 202)",
+          "oklch(0.35 0.1 202)",
+          "oklch(0.45 0.1 202)",
+          "oklch(0.55 0.1 202)",
+          "oklch(0.68 0.1 202)",
+          "oklch(0.82 0.1 202)",
+          "oklch(0.95 0.1 202)"
         ]
       },
       "specialty-innere-medizin": {
         "role": "secondary",
         "displayName": "Innere Medizin Tab",
-        "canonical": "oklch(0.62 0.12 150)",
+        "canonical": "oklch(0.62 0.12 135)",
         "tonalRamp": [
-          "oklch(0.15 0.12 150)",
-          "oklch(0.25 0.12 150)",
-          "oklch(0.35 0.12 150)",
-          "oklch(0.45 0.12 150)",
-          "oklch(0.55 0.12 150)",
-          "oklch(0.68 0.12 150)",
-          "oklch(0.82 0.12 150)",
-          "oklch(0.95 0.12 150)"
+          "oklch(0.15 0.12 135)",
+          "oklch(0.25 0.12 135)",
+          "oklch(0.35 0.12 135)",
+          "oklch(0.45 0.12 135)",
+          "oklch(0.55 0.12 135)",
+          "oklch(0.68 0.12 135)",
+          "oklch(0.82 0.12 135)",
+          "oklch(0.95 0.12 135)"
         ]
       },
       "specialty-kardiologie": {
         "role": "secondary",
         "displayName": "Kardiologie Tab",
-        "canonical": "oklch(0.62 0.17 18)",
+        "canonical": "oklch(0.62 0.17 22)",
         "tonalRamp": [
-          "oklch(0.15 0.17 18)",
-          "oklch(0.25 0.17 18)",
-          "oklch(0.35 0.17 18)",
-          "oklch(0.45 0.17 18)",
-          "oklch(0.55 0.17 18)",
-          "oklch(0.68 0.17 18)",
-          "oklch(0.82 0.17 18)",
-          "oklch(0.95 0.17 18)"
+          "oklch(0.15 0.17 22)",
+          "oklch(0.25 0.17 22)",
+          "oklch(0.35 0.17 22)",
+          "oklch(0.45 0.17 22)",
+          "oklch(0.55 0.17 22)",
+          "oklch(0.68 0.17 22)",
+          "oklch(0.82 0.17 22)",
+          "oklch(0.95 0.17 22)"
         ]
       },
       "specialty-neurologie": {
         "role": "secondary",
         "displayName": "Neurologie Tab",
-        "canonical": "oklch(0.62 0.15 285)",
+        "canonical": "oklch(0.62 0.15 292)",
         "tonalRamp": [
-          "oklch(0.15 0.15 285)",
-          "oklch(0.25 0.15 285)",
-          "oklch(0.35 0.15 285)",
-          "oklch(0.45 0.15 285)",
-          "oklch(0.55 0.15 285)",
-          "oklch(0.68 0.15 285)",
-          "oklch(0.82 0.15 285)",
-          "oklch(0.95 0.15 285)"
+          "oklch(0.15 0.15 292)",
+          "oklch(0.25 0.15 292)",
+          "oklch(0.35 0.15 292)",
+          "oklch(0.45 0.15 292)",
+          "oklch(0.55 0.15 292)",
+          "oklch(0.68 0.15 292)",
+          "oklch(0.82 0.15 292)",
+          "oklch(0.95 0.15 292)"
         ]
       },
       "specialty-hno": {
         "role": "secondary",
         "displayName": "HNO Tab",
-        "canonical": "oklch(0.62 0.13 235)",
+        "canonical": "oklch(0.62 0.13 248)",
         "tonalRamp": [
-          "oklch(0.15 0.13 235)",
-          "oklch(0.25 0.13 235)",
-          "oklch(0.35 0.13 235)",
-          "oklch(0.45 0.13 235)",
-          "oklch(0.55 0.13 235)",
-          "oklch(0.68 0.13 235)",
-          "oklch(0.82 0.13 235)",
-          "oklch(0.95 0.13 235)"
+          "oklch(0.15 0.13 248)",
+          "oklch(0.25 0.13 248)",
+          "oklch(0.35 0.13 248)",
+          "oklch(0.45 0.13 248)",
+          "oklch(0.55 0.13 248)",
+          "oklch(0.68 0.13 248)",
+          "oklch(0.82 0.13 248)",
+          "oklch(0.95 0.13 248)"
         ]
       },
       "specialty-dermatologie": {
         "role": "secondary",
         "displayName": "Dermatologie Tab",
-        "canonical": "oklch(0.62 0.13 55)",
+        "canonical": "oklch(0.62 0.13 45)",
         "tonalRamp": [
-          "oklch(0.15 0.13 55)",
-          "oklch(0.25 0.13 55)",
-          "oklch(0.35 0.13 55)",
-          "oklch(0.45 0.13 55)",
-          "oklch(0.55 0.13 55)",
-          "oklch(0.68 0.13 55)",
-          "oklch(0.82 0.13 55)",
-          "oklch(0.95 0.13 55)"
+          "oklch(0.15 0.13 45)",
+          "oklch(0.25 0.13 45)",
+          "oklch(0.35 0.13 45)",
+          "oklch(0.45 0.13 45)",
+          "oklch(0.55 0.13 45)",
+          "oklch(0.68 0.13 45)",
+          "oklch(0.82 0.13 45)",
+          "oklch(0.95 0.13 45)"
         ]
       },
       "specialty-orthopaedie": {
         "role": "secondary",
         "displayName": "Orthopädie Tab",
-        "canonical": "oklch(0.62 0.12 85)",
+        "canonical": "oklch(0.62 0.12 90)",
         "tonalRamp": [
-          "oklch(0.15 0.12 85)",
-          "oklch(0.25 0.12 85)",
-          "oklch(0.35 0.12 85)",
-          "oklch(0.45 0.12 85)",
-          "oklch(0.55 0.12 85)",
-          "oklch(0.68 0.12 85)",
-          "oklch(0.82 0.12 85)",
-          "oklch(0.95 0.12 85)"
+          "oklch(0.15 0.12 90)",
+          "oklch(0.25 0.12 90)",
+          "oklch(0.35 0.12 90)",
+          "oklch(0.45 0.12 90)",
+          "oklch(0.55 0.12 90)",
+          "oklch(0.68 0.12 90)",
+          "oklch(0.82 0.12 90)",
+          "oklch(0.95 0.12 90)"
         ]
       },
       "specialty-paediatrie": {
         "role": "secondary",
         "displayName": "Pädiatrie Tab",
-        "canonical": "oklch(0.62 0.14 340)",
+        "canonical": "oklch(0.62 0.14 338)",
         "tonalRamp": [
-          "oklch(0.15 0.14 340)",
-          "oklch(0.25 0.14 340)",
-          "oklch(0.35 0.14 340)",
-          "oklch(0.45 0.14 340)",
-          "oklch(0.55 0.14 340)",
-          "oklch(0.68 0.14 340)",
-          "oklch(0.82 0.14 340)",
-          "oklch(0.95 0.14 340)"
+          "oklch(0.15 0.14 338)",
+          "oklch(0.25 0.14 338)",
+          "oklch(0.35 0.14 338)",
+          "oklch(0.45 0.14 338)",
+          "oklch(0.55 0.14 338)",
+          "oklch(0.68 0.14 338)",
+          "oklch(0.82 0.14 338)",
+          "oklch(0.95 0.14 338)"
         ]
       },
       "specialty-psychiatrie": {
         "role": "secondary",
         "displayName": "Psychiatrie Tab",
-        "canonical": "oklch(0.62 0.09 265)",
+        "canonical": "oklch(0.62 0.09 270)",
         "tonalRamp": [
-          "oklch(0.15 0.09 265)",
-          "oklch(0.25 0.09 265)",
-          "oklch(0.35 0.09 265)",
-          "oklch(0.45 0.09 265)",
-          "oklch(0.55 0.09 265)",
-          "oklch(0.68 0.09 265)",
-          "oklch(0.82 0.09 265)",
-          "oklch(0.95 0.09 265)"
+          "oklch(0.15 0.09 270)",
+          "oklch(0.25 0.09 270)",
+          "oklch(0.35 0.09 270)",
+          "oklch(0.45 0.09 270)",
+          "oklch(0.55 0.09 270)",
+          "oklch(0.68 0.09 270)",
+          "oklch(0.82 0.09 270)",
+          "oklch(0.95 0.09 270)"
         ]
       },
       "specialty-fallback": {
@@ -424,6 +424,111 @@
           "oklch(0.68 0.02 230)",
           "oklch(0.82 0.02 230)",
           "oklch(0.95 0.02 230)"
+        ]
+      },
+      "specialty-augenheilkunde": {
+        "role": "secondary",
+        "displayName": "Augenheilkunde Tab",
+        "canonical": "oklch(0.62 0.12 225)",
+        "tonalRamp": [
+          "oklch(0.15 0.12 225)",
+          "oklch(0.25 0.12 225)",
+          "oklch(0.35 0.12 225)",
+          "oklch(0.45 0.12 225)",
+          "oklch(0.55 0.12 225)",
+          "oklch(0.68 0.12 225)",
+          "oklch(0.82 0.12 225)",
+          "oklch(0.95 0.12 225)"
+        ]
+      },
+      "specialty-pneumologie": {
+        "role": "secondary",
+        "displayName": "Pneumologie Tab",
+        "canonical": "oklch(0.62 0.11 158)",
+        "tonalRamp": [
+          "oklch(0.15 0.11 158)",
+          "oklch(0.25 0.11 158)",
+          "oklch(0.35 0.11 158)",
+          "oklch(0.45 0.11 158)",
+          "oklch(0.55 0.11 158)",
+          "oklch(0.68 0.11 158)",
+          "oklch(0.82 0.11 158)",
+          "oklch(0.95 0.11 158)"
+        ]
+      },
+      "specialty-gastroenterologie": {
+        "role": "secondary",
+        "displayName": "Gastroenterologie Tab",
+        "canonical": "oklch(0.62 0.12 112)",
+        "tonalRamp": [
+          "oklch(0.15 0.12 112)",
+          "oklch(0.25 0.12 112)",
+          "oklch(0.35 0.12 112)",
+          "oklch(0.45 0.12 112)",
+          "oklch(0.55 0.12 112)",
+          "oklch(0.68 0.12 112)",
+          "oklch(0.82 0.12 112)",
+          "oklch(0.95 0.12 112)"
+        ]
+      },
+      "specialty-endokrinologie": {
+        "role": "secondary",
+        "displayName": "Endokrinologie Tab",
+        "canonical": "oklch(0.62 0.13 68)",
+        "tonalRamp": [
+          "oklch(0.15 0.13 68)",
+          "oklch(0.25 0.13 68)",
+          "oklch(0.35 0.13 68)",
+          "oklch(0.45 0.13 68)",
+          "oklch(0.55 0.13 68)",
+          "oklch(0.68 0.13 68)",
+          "oklch(0.82 0.13 68)",
+          "oklch(0.95 0.13 68)"
+        ]
+      },
+      "specialty-urologie": {
+        "role": "secondary",
+        "displayName": "Urologie Tab",
+        "canonical": "oklch(0.62 0.12 315)",
+        "tonalRamp": [
+          "oklch(0.15 0.12 315)",
+          "oklch(0.25 0.12 315)",
+          "oklch(0.35 0.12 315)",
+          "oklch(0.45 0.12 315)",
+          "oklch(0.55 0.12 315)",
+          "oklch(0.68 0.12 315)",
+          "oklch(0.82 0.12 315)",
+          "oklch(0.95 0.12 315)"
+        ]
+      },
+      "specialty-gynaekologie": {
+        "role": "secondary",
+        "displayName": "Gynäkologie Tab",
+        "canonical": "oklch(0.62 0.13 0)",
+        "tonalRamp": [
+          "oklch(0.15 0.13 0)",
+          "oklch(0.25 0.13 0)",
+          "oklch(0.35 0.13 0)",
+          "oklch(0.45 0.13 0)",
+          "oklch(0.55 0.13 0)",
+          "oklch(0.68 0.13 0)",
+          "oklch(0.82 0.13 0)",
+          "oklch(0.95 0.13 0)"
+        ]
+      },
+      "specialty-infektiologie": {
+        "role": "secondary",
+        "displayName": "Infektiologie Tab",
+        "canonical": "oklch(0.62 0.1 180)",
+        "tonalRamp": [
+          "oklch(0.15 0.1 180)",
+          "oklch(0.25 0.1 180)",
+          "oklch(0.35 0.1 180)",
+          "oklch(0.45 0.1 180)",
+          "oklch(0.55 0.1 180)",
+          "oklch(0.68 0.1 180)",
+          "oklch(0.82 0.1 180)",
+          "oklch(0.95 0.1 180)"
         ]
       }
     },
@@ -573,7 +678,7 @@
       "kind": "card",
       "refersTo": "record-sheet",
       "description": "The core content unit: a white sheet with its specialty tab on top; lifts on hover.",
-      "html": "<a class=\"ds-record\" href=\"#\"><span class=\"ds-filetab\" style=\"--spec:oklch(0.62 0.15 285)\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"9\"/></svg>Neurologie</span><article class=\"ds-sheet\"><h2>Schlaganfall – Warnzeichen</h2><p class=\"ds-meta\">Diagnose · geändert vorgestern</p></article></a>",
+      "html": "<a class=\"ds-record\" href=\"#\"><span class=\"ds-filetab\" style=\"--spec:oklch(0.62 0.15 292)\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"9\"/></svg>Neurologie</span><article class=\"ds-sheet\"><h2>Schlaganfall – Warnzeichen</h2><p class=\"ds-meta\">Diagnose · geändert vorgestern</p></article></a>",
       "css": ".ds-record{display:flex;flex-direction:column;max-width:360px;text-decoration:none;color:var(--foreground,oklch(0.24 0.025 230));font-family:'Inter Variable',system-ui,sans-serif}.ds-filetab{position:relative;z-index:1;align-self:flex-start;margin:0 0 -1px 16px;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;overflow:hidden;border:1px solid color-mix(in oklch,var(--spec) 35%,oklch(0.91 0.01 215));border-bottom:0;border-radius:12px 12px 0 0;background:color-mix(in oklch,var(--spec) 16%,#fff);font-size:12px;font-weight:600;transition:transform .2s ease-out}.ds-filetab::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--spec)}.ds-filetab svg{color:var(--spec)}.ds-sheet{padding:20px;border:1px solid var(--border,oklch(0.91 0.01 215));border-radius:16px;background:var(--card,#fff);box-shadow:var(--shadow-sheet,0 1px 2px oklch(0.3 0.03 220 / 0.06),0 4px 14px -4px oklch(0.3 0.03 220 / 0.1));transition:box-shadow .2s ease-out}.ds-sheet h2{margin:0;font-size:18px;font-weight:600;line-height:1.375}.ds-meta{margin:12px 0 0;font-size:12px;color:var(--muted-foreground,oklch(0.5 0.022 230))}.ds-record:hover .ds-filetab{transform:translateY(-4px)}.ds-record:hover .ds-sheet{box-shadow:var(--shadow-lift,0 2px 4px oklch(0.3 0.03 220 / 0.06),0 14px 32px -10px oklch(0.3 0.04 220 / 0.2))}.ds-record:focus-visible{outline:none}.ds-record:focus-visible .ds-sheet{box-shadow:0 0 0 2px var(--ring,oklch(0.6 0.1 196))}"
     },
     {
@@ -581,7 +686,7 @@
       "kind": "custom",
       "refersTo": "specialty-strip-tab",
       "description": "Filing tabs on a drawer edge as the specialty filter, with a separate proportional share bar.",
-      "html": "<nav class=\"ds-strip\"><ul><li><button class=\"ds-stab is-selected\" style=\"--spec:oklch(0.62 0.15 285)\">Neurologie <b>3</b></button></li><li><button class=\"ds-stab\" style=\"--spec:oklch(0.62 0.13 235)\">HNO <b>2</b></button></li><li><button class=\"ds-stab\" style=\"--spec:oklch(0.62 0.17 18)\">Kardiologie <b>2</b></button></li></ul><div class=\"ds-share\"><span>Anteil der Einträge</span><i style=\"flex-grow:3;background:oklch(0.62 0.15 285)\"></i><i style=\"flex-grow:2;background:oklch(0.62 0.13 235)\"></i><i style=\"flex-grow:2;background:oklch(0.62 0.17 18)\"></i></div></nav>",
+      "html": "<nav class=\"ds-strip\"><ul><li><button class=\"ds-stab is-selected\" style=\"--spec:oklch(0.62 0.15 292)\">Neurologie <b>3</b></button></li><li><button class=\"ds-stab\" style=\"--spec:oklch(0.62 0.13 248)\">HNO <b>2</b></button></li><li><button class=\"ds-stab\" style=\"--spec:oklch(0.62 0.17 22)\">Kardiologie <b>2</b></button></li></ul><div class=\"ds-share\"><span>Anteil der Einträge</span><i style=\"flex-grow:3;background:oklch(0.62 0.15 292)\"></i><i style=\"flex-grow:2;background:oklch(0.62 0.13 248)\"></i><i style=\"flex-grow:2;background:oklch(0.62 0.17 22)\"></i></div></nav>",
       "css": ".ds-strip{font-family:'Inter Variable',system-ui,sans-serif;color:var(--foreground,oklch(0.24 0.025 230))}.ds-strip ul{display:flex;align-items:flex-end;gap:4px;margin:0;padding:8px 4px 0;list-style:none;border-bottom:2px solid var(--border,oklch(0.91 0.01 215))}.ds-stab{position:relative;margin-bottom:-2px;display:flex;align-items:center;gap:8px;height:40px;padding:2px 12px 0;overflow:hidden;border:1px solid var(--border,oklch(0.91 0.01 215));border-bottom:0;border-radius:12px 12px 0 0;background:var(--card,#fff);color:inherit;font:500 13px 'Inter Variable',system-ui,sans-serif;cursor:pointer;transition:height .2s ease-out,background-color .2s ease-out,box-shadow .2s ease-out}.ds-stab::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--spec);transition:height .3s}.ds-stab b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted-foreground,oklch(0.5 0.022 230))}.ds-stab:hover{height:44px;background:oklch(0.945 0.025 190 / 0.6)}.ds-stab.is-selected{z-index:1;height:48px;background:color-mix(in oklch,var(--spec) 14%,oklch(0.984 0.004 197));box-shadow:0 -6px 16px -10px oklch(0.3 0.03 220 / 0.35)}.ds-stab.is-selected::before{height:5px}.ds-stab:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--ring,oklch(0.6 0.1 196))}.ds-share{display:flex;align-items:center;gap:2px;margin-top:16px}.ds-share span{margin-right:10px;font-size:12px;color:var(--muted-foreground,oklch(0.5 0.022 230))}.ds-share i{height:8px;flex-basis:0;min-width:4px}.ds-share i:first-of-type{border-radius:9999px 0 0 9999px}.ds-share i:last-of-type{border-radius:0 9999px 9999px 0}"
     },
     {
@@ -589,17 +694,17 @@
       "kind": "custom",
       "refersTo": "data-bar",
       "description": "Classifier scores per specialty; winner at full colour, others at 45%.",
-      "html": "<ul class=\"ds-scores\"><li><div><span class=\"win\">Neurologie</span><em>12</em></div><p><i style=\"width:100%;background:oklch(0.62 0.15 285)\"></i></p></li><li><div><span>HNO</span><em>3</em></div><p><i style=\"width:25%;background:oklch(0.62 0.13 235);opacity:.45\"></i></p></li></ul>",
+      "html": "<ul class=\"ds-scores\"><li><div><span class=\"win\">Neurologie</span><em>12</em></div><p><i style=\"width:100%;background:oklch(0.62 0.15 292)\"></i></p></li><li><div><span>HNO</span><em>3</em></div><p><i style=\"width:25%;background:oklch(0.62 0.13 248);opacity:.45\"></i></p></li></ul>",
       "css": ".ds-scores{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0;padding:0;list-style:none;font-family:'Inter Variable',system-ui,sans-serif}.ds-scores div{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--muted-foreground,oklch(0.5 0.022 230))}.ds-scores .win{font-weight:600;color:var(--foreground,oklch(0.24 0.025 230))}.ds-scores em{font-style:normal;font-size:12px;font-variant-numeric:tabular-nums}.ds-scores p{margin:4px 0 0;height:8px;overflow:hidden;border-radius:9999px;background:var(--muted,oklch(0.958 0.007 210))}.ds-scores i{display:block;height:100%;border-radius:9999px;transition:width .55s cubic-bezier(0.16,1,0.3,1)}"
     }
   ],
   "narrative": {
     "northStar": "The Colour-Coded Record Room",
-    "overview": "MedKB looks like a well-kept clinical filing room. A deep petrol rail runs down the left edge like the cabinet it belongs to. Beside it is a cool off-white work surface, and on that surface lie white record sheets. Each sheet carries a small coloured tab naming its specialty, so the specialty is the first thing you read on any entry, list or chart. Filtering works like pulling a drawer tab: the tab grows, its colour stripe thickens, and the other tabs fade.\n\nThe system is calm and dense, and it reads like a reference tool rather than a showcase. Colour has a narrow job. The nine specialty hues identify where something is filed. Teal means action or a neutral measurement. Everything else stays in quiet blue-greys. Depth comes from paper: sheets rest on a soft, low shadow and lift a little when you can act on them. Motion uses one fast-settling curve and is always reduced to plain fades when the user asks for reduced motion.\n\nThe dark theme keeps the same world in blue-slate. The rail turns darker than the work area, the sheets become slate panels, and the specialty colours do not change.",
+    "overview": "MedKB looks like a well-kept clinical filing room. A deep petrol rail runs down the left edge like the cabinet it belongs to. Beside it is a cool off-white work surface, and on that surface lie white record sheets. Each sheet carries a small coloured tab naming its specialty, so the specialty is the first thing you read on any entry, list or chart. Filtering works like pulling a drawer tab: the tab grows, its colour stripe thickens, and the other tabs fade.\n\nThe system is calm and dense, and it reads like a reference tool rather than a showcase. Colour has a narrow job. The sixteen specialty hues identify where something is filed. Teal means action or a neutral measurement. Everything else stays in quiet blue-greys. Depth comes from paper: sheets rest on a soft, low shadow and lift a little when you can act on them. Motion uses one fast-settling curve and is always reduced to plain fades when the user asks for reduced motion.\n\nThe dark theme keeps the same world in blue-slate. The rail turns darker than the work area, the sheets become slate panels, and the specialty colours do not change.",
     "keyCharacteristics": [
       "A petrol navigation rail beside a cool off-white work area",
       "White record sheets with a soft resting shadow and a hover lift",
-      "Nine specialty colours at equal lightness, used as tab stripes, washes, icons, dots and bar fills",
+      "Sixteen specialty colours at equal lightness, used as tab stripes, washes, icons, dots and bar fills",
       "Inter Variable with cv11/ss01 alternates and tabular numerals for every count",
       "Teal primary for actions, focus and specialty-neutral data",
       "One easing curve (expo-out) for motion, with reduced motion respected everywhere"

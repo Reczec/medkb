@@ -19,15 +19,22 @@ colors:
   rail-active: "oklch(0.36 0.055 205)"
   rail-well: "oklch(0.23 0.04 216)"
   rail-accent: "oklch(0.8 0.11 188)"
-  specialty-allgemeinmedizin: "oklch(0.62 0.1 196)"
-  specialty-innere-medizin: "oklch(0.62 0.12 150)"
-  specialty-kardiologie: "oklch(0.62 0.17 18)"
-  specialty-neurologie: "oklch(0.62 0.15 285)"
-  specialty-hno: "oklch(0.62 0.13 235)"
-  specialty-dermatologie: "oklch(0.62 0.13 55)"
-  specialty-orthopaedie: "oklch(0.62 0.12 85)"
-  specialty-paediatrie: "oklch(0.62 0.14 340)"
-  specialty-psychiatrie: "oklch(0.62 0.09 265)"
+  specialty-allgemeinmedizin: "oklch(0.62 0.1 202)"
+  specialty-innere-medizin: "oklch(0.62 0.12 135)"
+  specialty-kardiologie: "oklch(0.62 0.17 22)"
+  specialty-neurologie: "oklch(0.62 0.15 292)"
+  specialty-hno: "oklch(0.62 0.13 248)"
+  specialty-dermatologie: "oklch(0.62 0.13 45)"
+  specialty-orthopaedie: "oklch(0.62 0.12 90)"
+  specialty-paediatrie: "oklch(0.62 0.14 338)"
+  specialty-psychiatrie: "oklch(0.62 0.09 270)"
+  specialty-augenheilkunde: "oklch(0.62 0.12 225)"
+  specialty-pneumologie: "oklch(0.62 0.11 158)"
+  specialty-gastroenterologie: "oklch(0.62 0.12 112)"
+  specialty-endokrinologie: "oklch(0.62 0.13 68)"
+  specialty-urologie: "oklch(0.62 0.12 315)"
+  specialty-gynaekologie: "oklch(0.62 0.13 0)"
+  specialty-infektiologie: "oklch(0.62 0.1 180)"
   specialty-fallback: "oklch(0.6 0.02 230)"
 typography:
   display:
@@ -169,14 +176,14 @@ components:
 
 MedKB looks like a well-kept clinical filing room. A deep petrol rail runs down the left edge like the cabinet it belongs to. Beside it is a cool off-white work surface, and on that surface lie white record sheets. Each sheet carries a small coloured tab naming its specialty, so the specialty is the first thing you read on any entry, list or chart. Filtering works like pulling a drawer tab: the tab grows, its colour stripe thickens, and the other tabs fade.
 
-The system is calm and dense, and it reads like a reference tool rather than a showcase. Colour has a narrow job. The nine specialty hues identify where something is filed. Teal means action or a neutral measurement. Everything else stays in quiet blue-greys. Depth comes from paper: sheets rest on a soft, low shadow and lift a little when you can act on them. Motion uses one fast-settling curve and is always reduced to plain fades when the user asks for reduced motion.
+The system is calm and dense, and it reads like a reference tool rather than a showcase. Colour has a narrow job. The sixteen specialty hues identify where something is filed. Teal means action or a neutral measurement. Everything else stays in quiet blue-greys. Depth comes from paper: sheets rest on a soft, low shadow and lift a little when you can act on them. Motion uses one fast-settling curve and is always reduced to plain fades when the user asks for reduced motion.
 
 The dark theme keeps the same world in blue-slate. The rail turns darker than the work area, the sheets become slate panels, and the specialty colours do not change.
 
 **Key Characteristics:**
 - A petrol navigation rail beside a cool off-white work area
 - White record sheets with a soft resting shadow and a hover lift
-- Nine specialty colours at equal lightness, used as tab stripes, washes, icons, dots and bar fills
+- Sixteen specialty colours at equal lightness, used as tab stripes, washes, icons, dots and bar fills
 - Inter Variable with cv11/ss01 alternates and tabular numerals for every count
 - Teal primary for actions, focus and specialty-neutral data
 - One easing curve (expo-out) for motion, with reduced motion respected everywhere
@@ -190,7 +197,7 @@ A cool, low-chroma blue-grey field. Colour appears only where it carries filing 
 - **Teal Wash** (teal-wash / teal-wash-foreground): A pale teal for selected chips, hover on strip tabs, and icon wells in admin panels.
 
 ### Secondary
-- **Specialty Hues** (specialty-*): Nine colours that all sit at oklch lightness 0.62, with chroma between 0.09 and 0.17. These are Allgemeinmedizin, Innere Medizin, Kardiologie, Neurologie, HNO, Dermatologie, Orthopädie, Pädiatrie and Psychiatrie. Unknown specialties use a grey fallback (specialty-fallback). The hues stay the same in light and dark themes.
+- **Specialty Hues** (specialty-*): Sixteen colours that all sit at oklch lightness 0.62, with chroma between 0.09 and 0.17. These are Allgemeinmedizin, Innere Medizin, Kardiologie, Neurologie, HNO, Dermatologie, Orthopädie, Pädiatrie, Psychiatrie, Augenheilkunde, Pneumologie, Gastroenterologie, Endokrinologie, Urologie, Gynäkologie and Infektiologie. Unknown specialties use a grey fallback (specialty-fallback). The hues stay the same in light and dark themes.
 
 ### Neutral
 - **Cool Paper** (cool-paper): The work-area background, a near-white with a faint cyan cast.
