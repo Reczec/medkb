@@ -17,7 +17,7 @@ from app.config import Settings
 from app.models import AICache, AIUsage, utcnow
 
 GLOBAL = "global"
-PROMPT_VERSION = "stage4-v1"
+PROMPT_VERSION = "stage4-v2"
 
 
 def day() -> str:
@@ -29,7 +29,7 @@ def client_identity(ip: str, settings: Settings) -> str:
 
 
 def cache_key(
-    feature: str, document_id: int | None, inputs: Any, role: str, settings: Settings
+    feature: str, document_id: int | str | None, inputs: Any, role: str, settings: Settings
 ) -> str:
     identity = [
         PROMPT_VERSION,

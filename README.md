@@ -166,11 +166,11 @@ with `JWT_SECRET`; set a stable secret. Configure trusted proxy handling at depl
 the app does not parse user-supplied forwarded headers itself.
 
 Cached successful document results bind to content, role, provider, model and prompt version,
-and survive an unchanged demo reset. Questions and admin opinions/drafts are uncached.
+and survive unchanged demo resets, including PostgreSQL ID changes. Seed identity uses canonical source/title plus semantic content; snapshots exclude IDs and timestamps. Questions and admin opinions/drafts are uncached.
 Prompt changes require bumping `PROMPT_VERSION` in `app/ai/store.py`. Errors and interrupted
 streams are never successful cache entries. Streamed tokens are provisional; only `done`
 contains the validated final result. `ask` uses the existing keyword search's top five
-entries, validates source indices, and accepts six bounded previous messages. Try short
+entries, validates source indices, and accepts six bounded previous messages. German question words are removed; generic follow-ups reuse the previous user topic. Try short
 topics such as “Migräne”; this is keyword retrieval, not semantic search. Source-index
 validation and prompts do not certify factual correctness or clinical safety.
 

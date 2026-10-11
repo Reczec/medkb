@@ -1,12 +1,13 @@
 """Role-gated AI assistance; generated drafts never write documents."""
 
+import asyncio
 from typing import Annotated, Any, Literal
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.ai import prompts, service, store
+from app.ai import prompts, retrieval, service, store
 from app.ai.provider import AIProvider, get_provider
 from app.ai.schemas import AskRequest, DraftRequest, StudyRequest
 from app.auth import CurrentUser, require_role
@@ -63,6 +64,7 @@ async def document_assistance(
         user.role,
         document_id=document_id,
         stream=stream,
+        cache_identity=service.document_cache_identity(document),
     )
 
 
@@ -76,7 +78,8 @@ async def ask(
     provider: Provider,
     stream: bool = False,
 ):
-    documents, _ = search_documents(db, q=body.question, limit=5)
+    query = retrieval.query(body)
+    documents = search_documents(db, q=query, limit=5)[0] if query else []
     references = [{"index": i, "id": d.id, "title": d.title} for i, d in enumerate(documents, 1)]
     if not documents:
         result = {
@@ -164,7 +167,9 @@ async def study_summary(
     provider: Provider,
     client: Annotated[httpx.Client, Depends(http_client)],
 ):
-    abstract = cached(
+    # The session is used sequentially: no DB operation overlaps this awaited worker.
+    abstract = await asyncio.to_thread(
+        cached,
         db,
         f"pubmed-abstract:{body.pmid}",
         settings,

@@ -2,12 +2,12 @@ import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import type { useAI } from './useAI'
 
-export function AIResponse({ ai, structured = false }: { ai: ReturnType<typeof useAI>; structured?: boolean }) {
+export function AIResponse({ ai, structured = false, onRetry }: { ai: ReturnType<typeof useAI>; structured?: boolean; onRetry?: () => void }) {
   if (!ai.pending && !ai.result && !ai.error) return null
   return <div className="mt-4 min-w-0 border-t pt-4">
     {ai.error ? <div role="alert" className="text-sm">
       <p className="text-destructive">{ai.error}</p>
-      <Button type="button" variant="outline" className="mt-3" onClick={ai.retry}>Erneut versuchen</Button>
+      <Button type="button" variant="outline" className="mt-3" onClick={onRetry ?? ai.retry}>Erneut versuchen</Button>
     </div> : <>
       <p className="mb-3 flex flex-wrap gap-2 text-xs font-medium text-muted-foreground">
         <span>KI-generiert</span>{ai.result?.cached && <span>· Bereits erstellt</span>}

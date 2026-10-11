@@ -30,3 +30,23 @@ it('answers a question with links to the actual knowledge entries', async () => 
   fireEvent.click(screen.getByRole('button', { name: 'Frage stellen' }))
   expect(await screen.findByRole('link', { name: '[1] Migräne' })).toHaveAttribute('href', '/wissen/5')
 })
+
+it('records a successfully retried exchange before a followup request', async () => {
+  const result = { text: 'Erklärung [1].', cached: false, citations: [{ index: 1, id: 5, title: 'Migräne' }] }
+  const fetchMock = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({ detail: 'ai_unavailable' }), { status: 503 }))
+    .mockImplementation(async () => new Response(JSON.stringify(result)))
+  vi.stubGlobal('fetch', fetchMock)
+  renderWithProviders(<AssistantPage />)
+  fireEvent.change(screen.getByLabelText('Deine Frage'), { target: { value: 'Was ist Migräne?' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Frage stellen' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Erneut versuchen' }))
+  await screen.findByRole('link', { name: '[1] Migräne' })
+  expect(screen.getByRole('button', { name: 'Gespräch zurücksetzen' })).toBeInTheDocument()
+  expect(screen.getByLabelText('Deine Frage')).toHaveValue('')
+  fireEvent.change(screen.getByLabelText('Deine Frage'), { target: { value: 'Wie wird das behandelt?' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Frage stellen' }))
+  const options = fetchMock.mock.calls.at(-1)![1] as RequestInit
+  expect(JSON.parse(String(options.body)).history).toEqual([
+    { role: 'user', content: 'Was ist Migräne?' }, { role: 'assistant', content: 'Erklärung [1].' },
+  ])
+})
