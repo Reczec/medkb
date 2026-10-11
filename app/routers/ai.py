@@ -13,7 +13,7 @@ from app.auth import CurrentUser, require_role
 from app.config import Settings, get_settings
 from app.database import get_db
 from app.models import Document
-from app.schemas import ClassifyRequest, DocumentOut
+from app.schemas import ClassifyRequest
 from app.services import search_documents
 from app.sources.cache import cached
 from app.sources.http import http_client
@@ -59,7 +59,7 @@ async def document_assistance(
         provider,
         identity(request, settings),
         feature,
-        DocumentOut.model_validate(document).model_dump(mode="json"),
+        service.document_inputs(document),
         user.role,
         document_id=document_id,
         stream=stream,

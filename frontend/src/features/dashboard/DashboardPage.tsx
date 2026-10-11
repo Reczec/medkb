@@ -9,6 +9,7 @@ import { DocTypeBars } from '@/features/dashboard/DocTypeBars'
 import { RecentList } from '@/features/dashboard/RecentList'
 import { LatestStudies } from '@/features/dashboard/LatestStudies'
 import { useStats } from '@/lib/queries'
+import { AIUsage } from '@/features/ai/AIUsage'
 import type { Stats } from '@/lib/types'
 
 function Summary({ stats }: { stats: Stats }) {
@@ -65,6 +66,7 @@ export function DashboardPage() {
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Überblick</h1>
         {data && <Summary stats={data} />}
+        {(user?.role === 'admin' || user?.role === 'doctor') && <AIUsage />}
       </header>
 
       {isPending && <DashboardSkeleton />}

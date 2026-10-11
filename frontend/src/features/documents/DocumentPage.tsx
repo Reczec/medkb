@@ -1,4 +1,5 @@
-import { BookOpenText, ChevronRight, FileText, Hash, Pencil, Pill, Trash2 } from 'lucide-react'
+import { BookOpenText, ChevronRight, FileText, Hash, Pencil, Pill, Trash2, MessageSquareText } from 'lucide-react'
+import { DocumentAI } from '@/features/ai/DocumentAI'
 import { useId } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
@@ -113,6 +114,7 @@ function DeleteButton({ document }: { document: Document }) {
 
 const VIEWS = [
   { value: 'inhalt', label: 'Inhalt', icon: FileText },
+  { value: 'ki', label: 'KI-Zusammenfassung', icon: MessageSquareText },
   { value: 'icd11', label: 'ICD-11', icon: Hash },
   { value: 'studien', label: 'Studien', icon: BookOpenText },
   { value: 'medikamente', label: 'Medikamente', icon: Pill },
@@ -153,6 +155,7 @@ function SourceTabs({ document, content }: { document: Document; content: React.
         </TabsList>
         <div className="px-6 pt-6 pb-7 text-base">
           <TabsContent value="inhalt">{content}</TabsContent>
+          <TabsContent value="ki"><DocumentAI key={document.id} documentId={document.id} summaryOnly /></TabsContent>
           <TabsContent value="icd11">
             <Icd11Panel documentId={document.id} enabled />
           </TabsContent>
@@ -256,6 +259,7 @@ export function DocumentPage() {
         <aside className="flex min-w-0 flex-col gap-6">
           {showsClassification && <ClassificationExplainer document={document} />}
           <Details document={document} />
+          <div className="rounded-xl border bg-card p-5 shadow-sheet"><DocumentAI key={document.id} documentId={document.id} /></div>
           <FurtherReading links={document.further_reading} />
         </aside>
       </div>

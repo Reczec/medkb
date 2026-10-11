@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { AppShell } from '@/components/layout/AppShell'
 import { AdminPage } from '@/features/admin/AdminPage'
+import { AssistantPage } from '@/features/ai/AssistantPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth, RequireRole } from '@/features/auth/guards'
 import { HomePage } from '@/features/home/HomePage'
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'wissen', element: <KnowledgeBasePage /> },
+      { path: 'assistent', element: <AssistantPage /> },
       { path: 'wissen/neu', element: adminOnly(<EditorPage />) },
       { path: 'wissen/:id', element: <DocumentPage /> },
       { path: 'wissen/:id/bearbeiten', element: adminOnly(<EditorPage />) },

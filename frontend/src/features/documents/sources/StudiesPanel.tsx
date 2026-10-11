@@ -1,4 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
+import { StudyAI } from '@/features/ai/StudyAI'
 import { SourcePanel } from '@/features/documents/sources/SourcePanel'
 import { useStudies } from '@/lib/queries'
 import type { Study } from '@/lib/types'
@@ -37,6 +38,7 @@ export function StudyItem({ study }: { study: Study }) {
           aria-hidden
         />
       </a>
+      <StudyAI pmid={study.pmid} />
     </li>
   )
 }

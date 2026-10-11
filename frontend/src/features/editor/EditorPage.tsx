@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { Link, useBlocker, useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { EditorAI } from '@/features/ai/EditorAI'
 import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
 import { ScoreBars } from '@/components/specialty/ScoreBars'
 import {
@@ -42,6 +43,7 @@ import { cleanSections, composeContent } from '@/lib/sections'
 import type { Document, DocumentCreate, DocumentUpdate, Meta, Sections } from '@/lib/types'
 
 interface FormState {
+  aiGenerated?: boolean
   title: string
   content: string
   docType: string
@@ -71,6 +73,7 @@ function initialState(meta: Meta, document?: Document): FormState {
     medications: document.medications,
     mode: document.sections ? 'sections' : 'text',
     sections: cleanSections(document.sections ?? {}),
+    aiGenerated: document.ai_generated,
   }
 }
 
@@ -82,6 +85,7 @@ function createPayload(form: FormState): DocumentCreate {
     term_en: form.termEn.trim() || null,
     icd11_code: form.icd11Code.trim() || null,
     medications: form.medications,
+    ...(form.aiGenerated ? { ai_generated: true } : {}),
   }
   if (form.category !== AUTO) payload.category = form.category
   if (form.keywords.length > 0) payload.keywords = form.keywords
@@ -348,6 +352,14 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
             )}
           </>
         )}
+        <EditorAI title={form.title} content={form.mode === 'sections' ? composeContent(form.sections) : form.content}
+          canDraft={!document} onCategory={category => set('category', category)}
+          onDraft={draft => setForm(current => ({ ...current,
+            content: draft.content ?? '', sections: cleanSections(draft.sections ?? {}),
+            mode: draft.sections ? 'sections' : 'text', docType: draft.doc_type,
+            termEn: draft.term_en ?? '', icd11Code: draft.icd11_code ?? '',
+            medications: draft.medications ?? [], aiGenerated: true,
+          }))} />
       </aside>
 
       <AlertDialog open={blocker.state === 'blocked'}>
