@@ -107,3 +107,7 @@ def test_security_headers_on_every_response(spa_client, path):
 
 def test_the_real_app_sends_security_headers(client):
     assert client.get("/api/health").headers["x-content-type-options"] == "nosniff"
+
+
+def test_explicit_index_html_is_never_cached(spa_client):
+    assert spa_client.get("/index.html").headers["cache-control"] == "no-cache"

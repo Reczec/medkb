@@ -45,14 +45,20 @@ def log_audit(
 
 
 def create_document(
-    db: Session, data: DocumentCreate, actor: str | None = None, commit: bool = True
+    db: Session,
+    data: DocumentCreate,
+    actor: str | None = None,
+    commit: bool = True,
+    document_id: int | None = None,
 ) -> Document:
-    """Insert one entry. ``commit=False`` leaves the transaction open (atomic demo reset)."""
+    """Insert one entry. ``commit=False`` leaves the transaction open (atomic demo reset);
+    ``document_id`` pins the id (example entries keep theirs across resets)."""
     content = data.content or ""  # the schema guarantees content (or composes it from sections)
     suggestion = classify(data.title, content)
     manual_category = data.category is not None
 
     document = Document(
+        id=document_id,
         title=data.title,
         content=content,
         doc_type=data.doc_type.value,

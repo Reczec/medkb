@@ -6,7 +6,7 @@ import asyncio
 import logging
 from typing import Protocol
 
-from sqlalchemy import delete
+from sqlalchemy import delete, text
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
@@ -29,7 +29,12 @@ def reset_demo(db: Session) -> int:
     failure part-way leaves the old state in place.
     """
     try:
+        if db.get_bind().dialect.name == "postgresql":
+            # A second reset (a new instance starting during a deploy) waits instead of
+            # inserting its examples next to ours. Readers are not blocked.
+            db.execute(text("LOCK TABLE documents IN SHARE ROW EXCLUSIVE MODE"))
         db.execute(delete(Document))
+        db.flush()
         count = seed_if_empty(db, force=True, commit=False)
         db.flush()  # the seed's own audit entries must exist before the log is cleared
         db.execute(delete(AuditLog))
