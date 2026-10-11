@@ -91,3 +91,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t medkb:ci .
+      - name: Start the container like Render does (own PORT, demo mode, SQLite)
+        run: |
+          docker run -d --name medkb -p 9000:9000 -e PORT=9000 -e DEMO_MODE=true \
+            -e JWT_SECRET=ci-secret-that-is-at-least-32-characters-long \
+            -e DATABASE_URL=sqlite:////tmp/medkb.db medkb:ci
+          for i in $(seq 1 60); do
+            curl -fsS http://127.0.0.1:9000/api/health && break
+            sleep 1
+          done
+      - name: Health, web UI and demo login answer
+        run: |
+          curl -fsS http://127.0.0.1:9000/api/health | grep -q '"ok"'
+          curl -fsS http://127.0.0.1:9000/ | grep -q MedKB
+          curl -fsSI http://127.0.0.1:9000/ | grep -qi 'x-content-type-options: nosniff'
+          curl -fsS -X POST -H 'Content-Type: application/json' -d '{"role":"patient"}' \
+            http://127.0.0.1:9000/api/auth/demo | grep -q access_token
+      - if: failure()
+        run: docker logs medkb

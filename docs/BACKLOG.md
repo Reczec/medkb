@@ -26,7 +26,6 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 ## Build and ops
 
 - Move `shadcn` from dependencies to devDependencies. It is only needed at build time for `tailwind.css`.
-- The CI docker job only builds the image. Also run it and curl `/api/health` and `/`.
 - The README screenshots still show the old UI. Stage 5 replaces them with new screenshots and a demo GIF.
 
 ## Sources (stage 3 review, 2026-10-11)
