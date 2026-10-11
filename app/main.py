@@ -24,6 +24,16 @@ from app.users import ensure_users
 logger = logging.getLogger("medkb")
 
 
+def client_ip_warning(settings) -> str | None:
+    """A public demo behind a proxy needs CLIENT_IP_HEADER, else all visitors share one AI quota."""
+    if settings.demo_mode and not settings.client_ip_header:
+        return (
+            "CLIENT_IP_HEADER is not set: behind a reverse proxy every visitor shares one AI "
+            "quota. Set it to the header the proxy writes (Render: True-Client-IP)."
+        )
+    return None
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
@@ -38,6 +48,8 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         logger.warning("JWT_SECRET is shorter than 32 characters; use a longer random value.")
     with SessionLocal() as db:
         ensure_users(db, settings)
+    if warning := client_ip_warning(settings):
+        logger.warning(warning)
     reset_task: asyncio.Task[None] | None = None
     if settings.demo_mode:
         with SessionLocal() as db:

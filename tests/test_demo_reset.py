@@ -88,3 +88,13 @@ def test_reader_never_sees_an_empty_base_during_reset(client, db_session, monkey
     monkeypatch.setattr(db_session, "commit", look_then_commit)
     demo.reset_demo(db_session)
     assert seen and min(seen) > 0
+
+
+def test_public_demo_without_client_ip_header_warns(archive_dir):
+    from app.main import client_ip_warning
+    from tests.conftest import make_settings
+
+    assert "CLIENT_IP_HEADER" in client_ip_warning(make_settings(archive_dir, demo_mode=True))
+    configured = make_settings(archive_dir, demo_mode=True, client_ip_header="True-Client-IP")
+    assert client_ip_warning(configured) is None
+    assert client_ip_warning(make_settings(archive_dir, demo_mode=False)) is None
