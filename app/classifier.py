@@ -91,7 +91,7 @@ VOCABULARY: dict[str, dict[str, int]] = {
         "harnweg": 2, "harnblase": 2, "blasenentzündung": 2, "^blase": 1, "zystitis": 2,
         "wasserlassen": 2, "harndrang": 2, "inkontinenz": 2, "prostata": 2,
         "nierenstein": 2, "harnstein": 2, "nierenkolik": 2, "pyelonephritis": 2, "^urin": 1,
-        "^harn": 1, "hoden": 2, "erektil": 2, "^psa": 2, "urolog": 2,
+        "^harn": 1, "^hoden": 2, "erektil": 2, "^psa": 2, "^urolog": 2,
     },
     "Gynäkologie": {
         "endometriose": 2, "regelschmerz": 2, "regelblutung": 2, "menstruation": 2,
