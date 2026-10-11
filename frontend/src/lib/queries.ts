@@ -47,7 +47,7 @@ export function documentsPath({ q, category, docType, offset = 0, limit = 10 }: 
 /** Everything that shows document data must refresh after a change. */
 function invalidateAfterChange(client: QueryClient) {
   return Promise.all(
-    ['documents', 'document', 'stats', 'audit'].map((key) =>
+    ['documents', 'document', 'stats', 'audit', 'source'].map((key) =>
       client.invalidateQueries({ queryKey: [key] }),
     ),
   )

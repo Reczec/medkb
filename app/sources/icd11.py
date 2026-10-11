@@ -96,11 +96,14 @@ def lookup_code(client: httpx.Client, code: str, settings: Settings) -> Icd11Ent
         raise SourceUnavailable("ICD-11 entity without title")
     language = entity["title"].get("@language") or settings.icd_language
     entity_id = stem_id.split("/mms/", 1)[-1]
-    return Icd11Entry(
-        code=str(entity.get("code") or code),
-        title=title,
-        definition=_value(entity.get("definition")),
-        url=f"https://icd.who.int/browse/{settings.icd_release}/mms/{language}#{entity_id}",
-        release=settings.icd_release,
-        language=language,
-    )
+    try:
+        return Icd11Entry(
+            code=str(entity.get("code") or code),
+            title=title,
+            definition=_value(entity.get("definition")),
+            url=f"https://icd.who.int/browse/{settings.icd_release}/mms/{language}#{entity_id}",
+            release=settings.icd_release,
+            language=language,
+        )
+    except ValueError as exc:
+        raise SourceUnavailable(f"unexpected ICD-11 entity: {exc}") from exc

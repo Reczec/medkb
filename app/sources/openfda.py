@@ -36,13 +36,31 @@ def _first(label: dict[str, Any], *fields: str) -> str | None:
     return None
 
 
+def _metadata(label: dict[str, Any]) -> dict[str, Any]:
+    meta = label.get("openfda")
+    if meta is None:
+        return {}
+    if not isinstance(meta, dict):
+        raise SourceUnavailable("openFDA metadata is not an object")
+    return meta
+
+
+def _strings(meta: dict[str, Any], field: str) -> list[str]:
+    values = meta.get(field)
+    if values is None:
+        return []
+    if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+        raise SourceUnavailable(f"openFDA {field} is not a list of strings")
+    return values
+
+
 def _fit(label: dict[str, Any]) -> tuple[bool, bool, bool]:
     """Ranking: single-ingredient before combinations, prescription before OTC/homeopathic,
     labels with an indication before those without."""
-    meta = label.get("openfda") or {}
-    generic = " ".join(meta.get("generic_name") or []).upper()
+    meta = _metadata(label)
+    generic = " ".join(_strings(meta, "generic_name")).upper()
     single = bool(generic) and " AND " not in generic and "," not in generic
-    prescription = "HUMAN PRESCRIPTION DRUG" in (meta.get("product_type") or [])
+    prescription = "HUMAN PRESCRIPTION DRUG" in _strings(meta, "product_type")
     return single, prescription, bool(label.get("indications_and_usage"))
 
 
@@ -60,15 +78,14 @@ def fetch_label(
         response.raise_for_status()
         results = [r for r in response.json()["results"] if isinstance(r, dict)]
         label = max(results, key=_fit)  # max keeps the first of equally fitting labels
+        brands = _strings(_metadata(label), "brand_name")
+        return MedicationLabel(
+            ingredient=ingredient,
+            brand_names=list(dict.fromkeys(brands))[:MAX_BRANDS],
+            indications=_first(label, "indications_and_usage"),
+            warnings=_first(label, "boxed_warning", "warnings_and_cautions", "warnings"),
+            adverse_reactions=_first(label, "adverse_reactions"),
+            url=ABOUT_URL,
+        )
     except (httpx.HTTPError, ValueError, KeyError, TypeError) as exc:
         raise SourceUnavailable(f"openFDA {ingredient}: {exc}") from exc
-
-    brands = (label.get("openfda") or {}).get("brand_name") or []
-    return MedicationLabel(
-        ingredient=ingredient,
-        brand_names=list(dict.fromkeys(str(b) for b in brands))[:MAX_BRANDS],
-        indications=_first(label, "indications_and_usage"),
-        warnings=_first(label, "boxed_warning", "warnings_and_cautions", "warnings"),
-        adverse_reactions=_first(label, "adverse_reactions"),
-        url=ABOUT_URL,
-    )
