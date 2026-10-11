@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client'
 import { Toaster } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AuthProvider } from '@/features/auth/AuthProvider'
+import { I18nProvider } from '@/i18n/I18nProvider'
 import { applyTheme, readTheme } from '@/lib/theme'
 import App from './App.tsx'
 import './index.css'
@@ -27,14 +28,16 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <MotionConfig reducedMotion="user">
-        <TooltipProvider delayDuration={300}>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-          <Toaster position="bottom-right" richColors closeButton />
-        </TooltipProvider>
-      </MotionConfig>
+      <I18nProvider>
+        <MotionConfig reducedMotion="user">
+          <TooltipProvider delayDuration={300}>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+            <Toaster position="bottom-right" richColors closeButton />
+          </TooltipProvider>
+        </MotionConfig>
+      </I18nProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

@@ -42,7 +42,7 @@ export function ActivityChart({ activity }: { activity: DayCount[] }) {
             <CartesianGrid vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="date"
-              tickFormatter={formatDay}
+              tickFormatter={(value: string) => formatDay(value)}
               tickLine={false}
               axisLine={false}
               minTickGap={32}
