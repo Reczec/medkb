@@ -6,8 +6,8 @@ ICD-11 API and openFDA, and AI assistance that stays grounded in the entries. Th
 (admin, doctor, patient) see the same knowledge at different depths.
 
 **Live demo: [medkb.onrender.com](https://medkb.onrender.com)** · one click per role, no sign-up.
-The free hosting sleeps after 15 minutes without visitors; the first request then takes up to a
-minute.
+The free hosting sleeps after 15 minutes without visitors; the first request then takes about
+20–30 seconds (measured: 22 s), everything after that is instant.
 
 > **Prototype with example data only – not a medical product and not medical advice.**
 > The bundled entries are short, generic textbook-style texts. There is no patient data.
@@ -223,8 +223,8 @@ service in Frankfurt, health check `/api/health`, demo mode with a reset every 3
    client-controlled.
 3. Every push to `main` deploys again.
 
-Free-tier behaviour: the service sleeps after 15 minutes without requests and needs about a
-minute to wake; Neon pauses after 5 minutes and wakes in seconds. The filesystem is not
+Free-tier behaviour: the service sleeps after 15 minutes without requests and needs about 20–30
+seconds to wake (measured 22 s on 2026-10-12, including the demo reset); Neon pauses after 5 minutes and wakes in seconds. The filesystem is not
 persistent, so archives live only until the next restart. Hashed assets are cached for a year,
 the HTML shell never; every response carries basic security headers.
 

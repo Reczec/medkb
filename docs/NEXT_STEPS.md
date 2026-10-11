@@ -4,7 +4,7 @@ Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onr
 
 ## Still to verify live
 
-1. **Cold start:** open the demo after 15+ minutes without visitors and time the first page (Render: about a minute).
+1. ~~Cold start~~: measured 22 s after 18 idle minutes (2026-10-12).
 2. ~~Visitor IP header~~: confirmed 2026-10-12 (spoof test plus a second network).
 
 ## Done after the launch (2026-10-12)

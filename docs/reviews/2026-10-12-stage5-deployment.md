@@ -35,7 +35,7 @@ Spoof test (2026-10-12): 19 uncached questions with `True-Client-IP: 198.51.100.
 
 Second network (user's phone on mobile data, same day): AI answered while the home network was at its limit, so Render writes the visitor's real IP into `True-Client-IP` and visitors get separate quotas. That phone test also showed the assistant answering "keine passenden Einträge" for "Was hilft bei Erkältung?": fixed in the following commit (everyday question words, partial-match fallback weighted by term rarity and title hits).
 
-Open live check: cold start time after 15 min idle.
+Cold start (2026-10-12, after 18 idle minutes): first request 22.3 s (wake, Neon connect, demo reset), following requests 0.1 s. A first attempt was void: a push redeployed the service during the wait.
 
 ## Rulings
 
