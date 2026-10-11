@@ -68,6 +68,29 @@ class SourceCache(Base):
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class AICache(Base):
+    """Validated AI answers, tied to content identity and audience; retained across resets."""
+
+    __tablename__ = "ai_cache"
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    feature: Mapped[str] = mapped_column(String(30))
+    document_id: Mapped[int | None] = mapped_column(default=None)
+    model: Mapped[str] = mapped_column(String(200))
+    output: Mapped[dict[str, Any]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class AIUsage(Base):
+    """UTC-day reservations, keyed by HMAC client identity (or the global counter)."""
+
+    __tablename__ = "ai_usage"
+
+    client_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    day: Mapped[str] = mapped_column(String(10), primary_key=True)
+    count: Mapped[int] = mapped_column(default=0)
+
+
 class AuditLog(Base):
     """Traceability: who changed what and when (no personal data, only document titles)."""
 
