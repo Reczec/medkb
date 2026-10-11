@@ -1,6 +1,15 @@
 # Stage 3 — completion and handoff (2026-10-11)
 
-Branch: `feat/v2-stage3`. Tasks 1–10 inherited from Claude; tasks 11–13 completed here. Integration into main remains a user decision.
+Original branch: `feat/v2-stage3`. Tasks 1–10 inherited from Claude; tasks 11–13 completed here. On 2026-10-11 the user authorized a local merge into `main`; the branch was integrated by fast-forward through `2977eda`. Nothing was pushed.
+
+## Continuation commits
+
+- `33f2a34`: task 11, latest PubMed studies on the staff dashboard; source mocks and seed-count adjustments moved forward to keep browser tests green.
+- `450ed2f`: task 12, structured editor, source metadata, active-ingredient chips and section-aware classification preview.
+- `912a892`: task 13, three browser flows, source configuration and agent documentation, synchronized 16-specialty palette in DESIGN.md and its JSON sidecar.
+- `2977eda`: all three final software-review fixes, ten regression cases, backlog and this durable handoff.
+
+The local integration includes every preceding stage 3 commit. The implementation plan, this record, AGENTS.md, README configuration and BACKLOG provide the continuation context for Claude or Codex. The plan-specific ignored execution scratch directory was removed after its decisions were preserved here; local visual-review captures remain under `.impeccable/review/`.
 
 ## Implemented
 
@@ -28,8 +37,8 @@ Fresh substitute Impeccable finish reviewer: ship for the supported stage 3 UI s
 
 ## Rulings (including inherited Claude decisions)
 
-- - T5 conftest token-cache reset needs T6 module. Ruling: add the reset to the fixture in T6 — module does not exist before — cost if wrong: none.
-- - T4 script ICD check needs T6 lookup_code. Ruling: T4 ships link check only; T6 adds the ICD part — cost if wrong: none.
+- T5 conftest token-cache reset needs T6 module. Ruling: add the reset to the fixture in T6 — module does not exist before — cost if wrong: none.
+- T4 script ICD check needs T6 lookup_code. Ruling: T4 ships link check only; T6 adds the ICD part — cost if wrong: none.
 - Task 4: Ruling: seed entries get `content` = compose_content(sections) in app/seed_data/__init__.py — keeps test_classifier/test_demo_reset unchanged as the plan requires — cost if wrong: none.
 - Task 4: Ruling: 47 entries (plan said ~46, range 44–48) — 3 per specialty, 2 for Allgemeinmedizin — cost if wrong: none.
 - Task 4: Ruling: ICD-11 codes written from the WHO classification without live verification (no ICD keys yet); scripts/check_seed_sources.py verifies them once keys exist — cost if wrong: a wrong code shows "empty" in the ICD-11 tab until fixed.
@@ -61,3 +70,7 @@ Fresh substitute Impeccable finish reviewer: ship for the supported stage 3 UI s
 ## Final checks
 
 Full post-fix checks passed: pytest 486 tests, Ruff check and format (68 files), frontend lint/typecheck, Vitest 128 tests (24 files), production build, Playwright 25 tests. Existing warnings remain: FastAPI/httpx deprecation, Vite config __dirname, and the main JS chunk over 500 kB (already in BACKLOG).
+
+## Local integration verification
+
+After the authorized fast-forward into `main`, all checks were rerun successfully: pytest 486 tests; Ruff check and format (68 files); frontend lint, typecheck, Vitest 128 tests, production build and Playwright 25 tests. No conflicts occurred. The fully merged local `feat/v2-stage3` branch was deleted after verification; its commits remain in `main`. No worktree was created or removed, and no remote branch or repository was changed. This integration record, its AGENTS.md link and the plan's completion status are committed separately on `main`.

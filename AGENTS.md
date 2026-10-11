@@ -6,6 +6,7 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 - **Visual system** (tokens, filing-tab signature, rules): [DESIGN.md](DESIGN.md). Read it before any UI change.
 - **v2 spec** (the whole target, 5 stages): [docs/superpowers/specs/2026-10-10-medkb-v2-design.md](docs/superpowers/specs/2026-10-10-medkb-v2-design.md)
 - **Open follow-ups** from the stage 1 reviews: [docs/BACKLOG.md](docs/BACKLOG.md)
+- **Stage 3 completion and handoff** (commits, reviews, decisions and remaining verification): [docs/reviews/2026-10-11-stage3-completion.md](docs/reviews/2026-10-11-stage3-completion.md)
 
 ## Status
 
@@ -13,7 +14,7 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 |---|---|
 | 1 React frontend, redesign, dashboard | done, merged into `main` ([plan](docs/superpowers/plans/2026-10-10-etappe-1-frontend-redesign.md)) |
 | 2 Roles and auth (admin / doctor / patient, demo login, demo reset) | done ([plan](docs/superpowers/plans/2026-10-10-etappe-2-rollen-auth.md)) |
-| 3 Data model, 47 realistic entries, PubMed / WHO ICD-11 / openFDA | done ([plan](docs/superpowers/plans/2026-10-11-etappe-3-inhalte-quellen.md)) |
+| 3 Data model, 47 realistic entries, PubMed / WHO ICD-11 / openFDA | done, merged locally into `main` ([plan](docs/superpowers/plans/2026-10-11-etappe-3-inhalte-quellen.md)) |
 | 4 AI features (free OpenAI-compatible provider, cache, rate limit) | open |
 | 5 Deployment (Render + Neon), README, demo GIF | open |
 

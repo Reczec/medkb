@@ -1,5 +1,7 @@
 # Etappe 3 – Datenmodell, Inhalte, externe Quellen – Implementation Plan
 
+**Status (2026-10-11):** Tasks 1–13 abgeschlossen, finales Code- und UI-Review durchgeführt, drei Code-Reviewfehler mit Regressionstests behoben und lokal in `main` integriert. Ausführung, Commits, Planabweichungen, Prüfungen und verbleibende Live-Verifikation stehen in der [Abschluss- und Übergabenotiz](../../reviews/2026-10-11-stage3-completion.md). Die folgenden Checklisten erhalten den ursprünglichen Plan; für den tatsächlichen Abschlussstatus gilt die Übergabenotiz.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Einträge werden strukturiert (Sektionen, englischer Fachbegriff, ICD-11-Code, Wirkstoffe, Weiterlesen) und tragen echte Live-Daten aus PubMed, WHO ICD-11 und openFDA. Die Wissensbasis wächst auf rund 45 Lehrbuch-Einträge in 16 Fachgebieten.
