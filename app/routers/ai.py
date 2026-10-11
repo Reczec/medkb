@@ -30,7 +30,8 @@ Admin = Annotated[Any, Depends(require_role("admin"))]
 def client_ip(request: Request, settings: Settings) -> str:
     """The visitor's address: the trusted proxy header if configured, else the connection."""
     if settings.client_ip_header:
-        forwarded = request.headers.get(settings.client_ip_header, "").split(",")[0].strip()
+        # The proxy appends the address it saw; anything before it came from the visitor.
+        forwarded = request.headers.get(settings.client_ip_header, "").split(",")[-1].strip()
         if forwarded:
             return forwarded
     return request.client.host if request.client else "unknown"

@@ -10,7 +10,8 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
-    autoDeployTrigger: commit
+    # Deploy a push to main only after its CI checks (tests, container smoke test) pass.
+    autoDeployTrigger: checksPass
     envVars:
       # Neon connection string, e.g. postgresql://user:password@host/medkb?sslmode=require
       - key: DATABASE_URL

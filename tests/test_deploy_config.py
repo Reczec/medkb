@@ -55,3 +55,7 @@ def test_image_binds_the_platform_port_and_ignores_forwarded_headers():
     # Render sets FORWARDED_ALLOW_IPS=*; uvicorn would then trust any X-Forwarded-For.
     assert "--no-proxy-headers" in command
     assert "PORT" in next(line for line in dockerfile.splitlines() if "urlopen" in line)
+
+
+def test_render_deploys_only_after_ci_passes():
+    assert "autoDeployTrigger: checksPass" in (ROOT / "render.yaml").read_text(encoding="utf-8")

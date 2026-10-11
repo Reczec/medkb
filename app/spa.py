@@ -68,6 +68,8 @@ def mount_frontend(app: FastAPI, dist_dir: Path) -> None:
             raise HTTPException(status_code=404, detail="Not Found")
         if full_path:
             candidate = (root / full_path).resolve()
+            if candidate == index.resolve():
+                return FileResponse(index, headers={"Cache-Control": "no-cache"})
             if candidate.is_file() and root in candidate.parents:
                 return FileResponse(candidate)
         # Client-side route: the React router decides. Never cache the shell.
