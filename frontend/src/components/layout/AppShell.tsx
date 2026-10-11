@@ -5,6 +5,7 @@ import { PageTransition } from '@/components/layout/PageTransition'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Topbar } from '@/components/layout/Topbar'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { useI18n } from '@/i18n/context'
 import { cn } from '@/lib/utils'
 
 const COLLAPSE_KEY = 'sidebar'
@@ -21,6 +22,7 @@ export function AppShell() {
   const [collapsed, setCollapsed] = useState(readCollapsed)
   const [menuOpen, setMenuOpen] = useState(false)
   const { pathname } = useLocation()
+  const { t } = useI18n()
 
   useEffect(() => {
     window.scrollTo({ top: 0 })
@@ -50,8 +52,8 @@ export function AppShell() {
 
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
         <SheetContent side="left" className="w-[272px] border-0 p-0" showCloseButton={false}>
-          <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SheetDescription className="sr-only">Hauptnavigation von MedKB</SheetDescription>
+          <SheetTitle className="sr-only">{t('nav.title')}</SheetTitle>
+          <SheetDescription className="sr-only">{t('nav.description')}</SheetDescription>
           <Sidebar layoutScope="drawer" onNavigate={() => setMenuOpen(false)} />
         </SheetContent>
       </Sheet>

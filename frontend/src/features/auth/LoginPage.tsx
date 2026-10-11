@@ -17,39 +17,42 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/features/auth/context'
+import { useI18n } from '@/i18n/context'
+import { LanguageSwitch } from '@/i18n/LanguageSwitch'
+import type { TranslationKey } from '@/i18n/translate'
 import { api } from '@/lib/api'
 import type { Role } from '@/lib/auth'
 import { safeNext } from '@/lib/redirect'
 
 interface DemoRole {
   role: Role
-  label: string
-  title: string
+  title: TranslationKey
   icon: LucideIcon
-  can: string[]
+  can: TranslationKey[]
+  openAs: TranslationKey
 }
 
 const DEMO_ROLES: DemoRole[] = [
   {
     role: 'doctor',
-    label: 'Ärztin / Arzt',
-    title: 'Fachansicht',
+    title: 'login.doctor.title',
     icon: Stethoscope,
-    can: ['Alle Einträge lesen', 'Klassifikation mit Begründung'],
+    can: ['login.doctor.can1', 'login.doctor.can2'],
+    openAs: 'login.openAs.doctor',
   },
   {
     role: 'patient',
-    label: 'Patient:in',
-    title: 'Einfach nachschlagen',
+    title: 'login.patient.title',
     icon: HeartHandshake,
-    can: ['Themen suchen und lesen', 'Ohne Klassifikationsdetails'],
+    can: ['login.patient.can1', 'login.patient.can2'],
+    openAs: 'login.openAs.patient',
   },
   {
     role: 'admin',
-    label: 'Admin',
-    title: 'Wissensbasis pflegen',
+    title: 'login.admin.title',
     icon: ShieldCheck,
-    can: ['Einträge anlegen und bearbeiten', 'Archiv, Protokoll, Nutzer'],
+    can: ['login.admin.can1', 'login.admin.can2'],
+    openAs: 'login.openAs.admin',
   },
 ]
 
@@ -61,6 +64,7 @@ const TAB_STYLE = {
 
 function PasswordForm() {
   const { login } = useAuth()
+  const { t } = useI18n()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -81,7 +85,7 @@ function PasswordForm() {
   return (
     <form onSubmit={submit} className="flex flex-col gap-3">
       <label className="flex flex-col gap-1.5 text-sm font-medium">
-        Benutzername
+        {t('login.username')}
         <Input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -90,7 +94,7 @@ function PasswordForm() {
         />
       </label>
       <label className="flex flex-col gap-1.5 text-sm font-medium">
-        Passwort
+        {t('login.password')}
         <Input
           type="password"
           value={password}
@@ -106,7 +110,7 @@ function PasswordForm() {
       )}
       <Button type="submit" className="h-11" disabled={busy || !username.trim() || !password}>
         {busy && <Loader2 className="animate-spin" aria-hidden />}
-        Anmelden
+        {t('login.submit')}
       </Button>
     </form>
   )
@@ -114,6 +118,7 @@ function PasswordForm() {
 
 function RoleCards({ onEnter, pending }: { onEnter: (role: Role) => void; pending: Role | null }) {
   const reduced = useReducedMotion()
+  const { t } = useI18n()
   return (
     <ul className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-3">
       {DEMO_ROLES.map((item, index) => {
@@ -138,13 +143,13 @@ function RoleCards({ onEnter, pending }: { onEnter: (role: Role) => void; pendin
               >
                 <span className="absolute inset-x-0 top-0 h-[3px] bg-primary" aria-hidden />
                 <Icon className="size-3.5 text-primary" aria-hidden />
-                {item.label}
+                {t(`role.${item.role}`)}
               </span>
               <span className="flex flex-1 flex-col gap-3 rounded-xl border bg-card p-4 shadow-sheet transition-shadow duration-200 group-hover:shadow-lift group-focus-visible:ring-2 group-focus-visible:ring-ring">
-                <span className="font-semibold">{item.title}</span>
+                <span className="font-semibold">{t(item.title)}</span>
                 <span className="flex flex-col gap-1 text-sm text-muted-foreground">
                   {item.can.map((line) => (
-                    <span key={line}>{line}</span>
+                    <span key={line}>{t(line)}</span>
                   ))}
                 </span>
                 <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary">
@@ -156,7 +161,7 @@ function RoleCards({ onEnter, pending }: { onEnter: (role: Role) => void; pendin
                       aria-hidden
                     />
                   )}
-                  Als {item.label} öffnen
+                  {t(item.openAs)}
                 </span>
               </span>
             </button>
@@ -169,6 +174,7 @@ function RoleCards({ onEnter, pending }: { onEnter: (role: Role) => void; pendin
 
 export function LoginPage() {
   const { status, expired, loginDemo } = useAuth()
+  const { t } = useI18n()
   const [params] = useSearchParams()
   const [pending, setPending] = useState<Role | null>(null)
   const [demoError, setDemoError] = useState<string | null>(null)
@@ -201,13 +207,14 @@ export function LoginPage() {
           <BrandMark className="size-8 shrink-0 text-rail-foreground" />
           <div className="min-w-0 leading-tight">
             <div className="text-[15px] font-semibold tracking-tight">MedKB</div>
-            <div className="truncate text-xs text-rail-muted">Medizinische Wissensdatenbank</div>
+            <div className="truncate text-xs text-rail-muted">{t('app.tagline')}</div>
           </div>
         </div>
         <div className="mt-auto flex flex-col gap-3 border-t border-rail-border p-3">
           <p className="px-1 text-[11px] leading-snug text-rail-muted">
-            Prototyp mit Beispieldaten – keine medizinische Beratung.
+            {t('notice.prototype')}
           </p>
+          <LanguageSwitch />
           <ThemeToggle />
         </div>
       </aside>
@@ -216,24 +223,20 @@ export function LoginPage() {
         <header className="flex h-16 items-center gap-3 border-b px-4 md:hidden">
           <BrandMark className="size-8 shrink-0 text-foreground" />
           <span className="font-semibold">MedKB</span>
-          <ThemeToggle tone="surface" className="ml-auto w-28" />
+          <div className="ml-auto flex items-center gap-2">
+            <LanguageSwitch tone="surface" className="w-20" />
+            <ThemeToggle tone="surface" className="w-28" />
+          </div>
         </header>
 
         <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-8">
           <div className="flex w-full max-w-2xl flex-col gap-6">
             <header className="flex flex-col gap-2">
-              <h1 className="text-3xl font-semibold tracking-tight">Anmelden</h1>
-              <p className="text-lg text-foreground/85">
-                Medizinisches Wissen, nachvollziehbar nach Fachgebieten geordnet.
-              </p>
+              <h1 className="text-3xl font-semibold tracking-tight">{t('login.title')}</h1>
+              <p className="text-lg text-foreground/85">{t('login.lead')}</p>
+              <p className="text-sm text-muted-foreground">{t('login.about')}</p>
               <p className="text-sm text-muted-foreground">
-                Suche, erklärbare Klassifikation und Archiv – aus einer Diplomarbeit an der TGM Wien
-                entstanden.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {demo
-                  ? 'Wähle eine Rolle, um die Demo ohne Passwort zu öffnen.'
-                  : 'Melde dich mit deinem Zugang an.'}
+                {demo ? t('login.pickRole') : t('login.useAccount')}
               </p>
             </header>
 
@@ -242,13 +245,13 @@ export function LoginPage() {
                 role="alert"
                 className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm"
               >
-                Sitzung abgelaufen – bitte erneut anmelden.
+                {t('login.expired')}
               </p>
             )}
 
             {options.isPending && (
               <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="size-4 animate-spin" aria-hidden /> Anmeldung wird vorbereitet…
+                <Loader2 className="size-4 animate-spin" aria-hidden /> {t('login.preparing')}
               </p>
             )}
 
@@ -265,18 +268,14 @@ export function LoginPage() {
                 role="alert"
                 className="flex flex-wrap items-center gap-3 rounded-lg border bg-muted/60 px-3 py-2 text-sm"
               >
-                <span className="flex-1">
-                  Demo-Zugänge konnten nicht geladen werden. Der Server startet eventuell gerade.
-                </span>
+                <span className="flex-1">{t('login.demoFailed')}</span>
                 <Button variant="outline" size="sm" onClick={() => options.refetch()}>
-                  <RotateCw aria-hidden /> Erneut versuchen
+                  <RotateCw aria-hidden /> {t('action.retry')}
                 </Button>
               </div>
             )}
 
-            <p className="text-xs text-muted-foreground md:hidden">
-              Prototyp mit Beispieldaten – keine medizinische Beratung.
-            </p>
+            <p className="text-xs text-muted-foreground md:hidden">{t('notice.prototype')}</p>
 
             {demo ? (
               <details className="group rounded-xl border bg-card px-4 py-3 shadow-sheet">
@@ -285,7 +284,7 @@ export function LoginPage() {
                     className="size-4 transition-transform duration-200 group-open:rotate-90"
                     aria-hidden
                   />
-                  Mit Benutzername anmelden
+                  {t('login.withUsername')}
                 </summary>
                 <PasswordForm />
               </details>

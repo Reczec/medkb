@@ -12,6 +12,7 @@ import {
   CommandSeparator,
 } from '@/components/ui/command'
 import { useAuth } from '@/features/auth/context'
+import { useI18n } from '@/i18n/context'
 import { useDebounced } from '@/hooks/useDebounced'
 import { categoryStyle } from '@/lib/categories'
 import { useDocuments } from '@/lib/queries'
@@ -30,6 +31,7 @@ export function CommandPalette() {
   const debounced = useDebounced(query, 200)
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { t, categoryLabel } = useI18n()
   const { data, isFetching } = useDocuments({ q: debounced, limit: 8 }, open)
 
   useEffect(() => {
@@ -67,15 +69,15 @@ export function CommandPalette() {
     <CommandDialog
       open={open}
       onOpenChange={(next) => (next ? setOpen(true) : close())}
-      title="Befehlspalette"
-      description="Einträge suchen und Aktionen ausführen"
+      title={t('palette.title')}
+      description={t('palette.description')}
     >
       <Command shouldFilter={false}>
-        <CommandInput placeholder="Einträge durchsuchen…" value={query} onValueChange={setQuery} />
+        <CommandInput placeholder={t('palette.placeholder')} value={query} onValueChange={setQuery} />
         <CommandList>
-          <CommandEmpty>{isFetching ? 'Suche läuft…' : 'Keine Einträge gefunden.'}</CommandEmpty>
+          <CommandEmpty>{isFetching ? t('palette.searching') : t('palette.empty')}</CommandEmpty>
           {data && data.items.length > 0 && (
-            <CommandGroup heading={debounced.trim() ? 'Treffer' : 'Zuletzt geändert'}>
+            <CommandGroup heading={debounced.trim() ? t('palette.hits') : t('palette.recent')}>
               {data.items.map((doc) => (
                 <CommandItem
                   key={doc.id}
@@ -89,35 +91,35 @@ export function CommandPalette() {
                   />
                   <span className="truncate">{doc.title}</span>
                   <span className="ml-auto shrink-0 text-xs text-muted-foreground">
-                    {doc.category}
+                    {categoryLabel(doc.category)}
                   </span>
                 </CommandItem>
               ))}
             </CommandGroup>
           )}
           <CommandSeparator />
-          <CommandGroup heading="Aktionen">
+          <CommandGroup heading={t('palette.actions')}>
             {user?.role === 'admin' && (
               <CommandItem value="action-new" onSelect={() => go('/wissen/neu')}>
-                <FilePlus2 /> Neuer Eintrag
+                <FilePlus2 /> {t('action.newEntry')}
               </CommandItem>
             )}
             <CommandItem value="action-list" onSelect={() => go('/wissen')}>
-              <Library /> Wissensdatenbank öffnen
+              <Library /> {t('palette.openKb')}
             </CommandItem>
             <CommandItem value="action-dashboard" onSelect={() => go('/')}>
-              <LayoutDashboard /> Zum Dashboard
+              <LayoutDashboard /> {t('palette.dashboard')}
             </CommandItem>
             <CommandItem value="action-theme" onSelect={toggleTheme}>
-              <SunMoon /> Hell / Dunkel wechseln
+              <SunMoon /> {t('palette.theme')}
             </CommandItem>
           </CommandGroup>
         </CommandList>
         <div className="flex items-center gap-3 border-t px-3 py-2 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
-            <CornerDownLeft className="size-3" aria-hidden /> öffnen
+            <CornerDownLeft className="size-3" aria-hidden /> {t('palette.open')}
           </span>
-          <span>Esc schließen</span>
+          <span>{t('palette.close')}</span>
         </div>
       </Command>
     </CommandDialog>

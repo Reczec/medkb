@@ -1,5 +1,6 @@
 import { RotateCw, TriangleAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useI18n } from '@/i18n/context'
 import { cn } from '@/lib/utils'
 
 interface ErrorStateProps {
@@ -12,10 +13,11 @@ interface ErrorStateProps {
 export function ErrorState({
   error,
   onRetry,
-  title = 'Daten konnten nicht geladen werden',
+  title,
   className,
 }: ErrorStateProps) {
-  const message = error instanceof Error ? error.message : 'Unbekannter Fehler'
+  const { t } = useI18n()
+  const message = error instanceof Error ? error.message : t('error.unknown')
   return (
     <div
       role="alert"
@@ -28,12 +30,12 @@ export function ErrorState({
         <TriangleAlert className="size-5" aria-hidden />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="font-medium">{title}</p>
+        <p className="font-medium">{title ?? t('error.loadFailed')}</p>
         <p className="text-sm break-words text-muted-foreground">{message}</p>
       </div>
       {onRetry && (
         <Button variant="outline" onClick={onRetry}>
-          <RotateCw aria-hidden /> Erneut versuchen
+          <RotateCw aria-hidden /> {t('action.retry')}
         </Button>
       )}
     </div>

@@ -2,16 +2,18 @@ import { FileQuestion } from 'lucide-react'
 import { Link } from 'react-router'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/button'
+import { useI18n } from '@/i18n/context'
 
 export function NotFoundPage() {
+  const { t } = useI18n()
   return (
     <EmptyState
       icon={FileQuestion}
-      title="Seite nicht gefunden"
-      text="Diese Adresse gibt es in MedKB nicht. Vielleicht hilft die Suche weiter."
+      title={t('notFound.title')}
+      text={t('notFound.text')}
       action={
         <Button asChild variant="outline">
-          <Link to="/">Zum Dashboard</Link>
+          <Link to="/">{t('notFound.action')}</Link>
         </Button>
       }
     />
