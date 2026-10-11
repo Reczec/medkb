@@ -399,3 +399,27 @@ def test_prompts_ask_for_the_markdown_subset_the_ui_renders(patient_client, clie
     system = fake.calls[0][0]["content"]
     assert "### " in system and "- " in system and "**fett**" in system
     assert "Beginne direkt mit dem Inhalt" in system
+
+
+def _ask(client, ip=None):
+    headers = {"True-Client-IP": ip} if ip else {}
+    return client.post("/api/ai/ask", json={"question": "Migräne"}, headers=headers)
+
+
+def test_spoofed_ip_header_is_ignored_without_configuration(client, fake, test_settings):
+    make_doc(client, title="Migräne")
+    fake.answer = "Allgemeine Information [1]."
+    test_settings.ai_client_daily_limit = 1
+    assert _ask(client, "203.0.113.1").status_code == 200
+    assert _ask(client, "203.0.113.2").status_code == 429  # same real client, new fake header
+
+
+def test_configured_proxy_header_separates_visitors(client, fake, test_settings):
+    make_doc(client, title="Migräne")
+    fake.answer = "Allgemeine Information [1]."
+    test_settings.ai_client_daily_limit = 1
+    test_settings.client_ip_header = "true-client-ip"
+    assert _ask(client, "203.0.113.1").status_code == 200
+    assert _ask(client, "203.0.113.2").status_code == 200
+    assert _ask(client, "203.0.113.1").status_code == 429
+    assert _ask(client).status_code == 200  # header missing: falls back to the connection
