@@ -3,6 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -39,6 +40,14 @@ class Settings(BaseSettings):
     icd_language: str = "de"
     sources_timeout: float = 8
     source_cache_hours: float = 24
+
+    # Optional OpenAI-compatible AI provider. No key means clearly disabled features.
+    ai_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai"
+    ai_api_key: str = ""
+    ai_model: str = "gemini-3.5-flash-lite"
+    ai_timeout: float = Field(default=30, gt=0, le=120)
+    ai_daily_limit: int = Field(default=500, ge=1)
+    ai_client_daily_limit: int = Field(default=30, ge=1)
 
     # Built React frontend (npm run build). Missing directory = API only, with a hint page at /.
     frontend_dist: Path = Path(__file__).resolve().parent.parent / "frontend" / "dist"
