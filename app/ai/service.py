@@ -20,11 +20,30 @@ from app.seed_data import SEED_DOCUMENTS, SOURCE
 SEED_TITLES = frozenset(item["title"] for item in SEED_DOCUMENTS)
 
 
-def document_inputs(document: Any) -> dict:
-    """Bind to semantic content, not timestamps refreshed by an unchanged demo reset."""
-    return DocumentOut.model_validate(document).model_dump(
-        mode="json", exclude={"id", "created_at", "updated_at"}
-    )
+ENGLISH_FIELDS = {"title_en", "content_en", "sections_en", "keywords_en"}
+
+
+def document_inputs(document: Any, lang: Lang = "de") -> dict:
+    """Bind to semantic content, not timestamps refreshed by an unchanged demo reset.
+
+    The German shape is exactly what it was before the English version existed, so cache keys
+    of warmed German answers stay valid. English requests use the English text field by field,
+    falling back to German.
+    """
+    out = DocumentOut.model_validate(document)
+    data = out.model_dump(mode="json", exclude={"id", "created_at", "updated_at"} | ENGLISH_FIELDS)
+    english_links = [link.label_en or link.label for link in out.further_reading]
+    data["further_reading"] = [
+        {"label": link["label"], "url": link["url"]} for link in data["further_reading"]
+    ]
+    if lang == "en":
+        data["title"] = out.title_en or out.title
+        data["content"] = out.content_en or out.content
+        data["sections"] = out.sections_en or out.sections
+        data["keywords"] = out.keywords_en or out.keywords
+        for link, label in zip(data["further_reading"], english_links, strict=True):
+            link["label"] = label
+    return data
 
 
 def document_cache_identity(document: Any) -> str | None:
@@ -99,7 +118,7 @@ async def execute(
 ) -> Any:
     references = citations or []
     cacheable = feature not in ("ask", "draft", "classify")
-    key = store.cache_key(feature, cache_identity or document_id, inputs, role, settings)
+    key = store.cache_key(feature, cache_identity or document_id, inputs, role, settings, lang)
     found = store.read_cache(db, key) if cacheable else None
     if found is not None:
         result = {**found, "cached": True}
@@ -111,7 +130,7 @@ async def execute(
             return StreamingResponse(cached_events(), media_type="text/event-stream")
         return result
     store.reserve(db, identity, settings, lang)
-    request_messages = prompts.messages(feature, role, inputs)
+    request_messages = prompts.messages(feature, role, inputs, lang)
 
     def finish(text: str) -> dict:
         result = normalize(feature, text, inputs, references, lang)

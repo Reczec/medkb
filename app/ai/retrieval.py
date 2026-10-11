@@ -19,7 +19,14 @@ QUESTION_WORDS = frozenset(
     # everyday question verbs and fillers ("Was hilft gegen …", "was soll ich machen")
     "hilft helfen hilfe gegen soll sollte sollen muss müssen darf dürfen machen mache macht "
     "tun tue kommt bekomme bekommt habe hast gut gute besser schnell am im in auf an "
-    "mein meine meinem meinen dein deine wenn weil denn noch auch so sehr viel".split()
+    "mein meine meinem meinen dein deine wenn weil denn noch auch so sehr viel "
+    # English question words and fillers (entries also contain their section names)
+    "what which who whom whose when where why how is are was were be been am do does did "
+    "a an the of to in on at by for with without from about against and or not no it its "
+    "this that these those there here i me my we our you your he she they them can could "
+    "should would will shall may might must have has had get gets got help helps helping "
+    "treat treats treated treating tell please explain give need needs want symptoms symptom "
+    "cause causes therapy treatment diagnostics definition".split()
 )
 
 

@@ -71,7 +71,7 @@ async def document_assistance(
         provider,
         identity(request, settings),
         feature,
-        service.document_inputs(document),
+        service.document_inputs(document, lang),
         user.role,
         document_id=document_id,
         stream=stream,
@@ -92,7 +92,11 @@ async def ask(
     stream: bool = False,
 ):
     documents = retrieval.find(db, body)
-    references = [{"index": i, "id": d.id, "title": d.title} for i, d in enumerate(documents, 1)]
+    english = lang == "en"
+    references = [
+        {"index": i, "id": d.id, "title": (d.title_en if english and d.title_en else d.title)}
+        for i, d in enumerate(documents, 1)
+    ]
     if not documents:
         result = {
             "text": message("ai_no_entries", lang) + " " + message("notice", lang),
@@ -111,7 +115,8 @@ async def ask(
     inputs = {
         **body.model_dump(),
         "entries": [
-            {**ref, "content": doc.content} for ref, doc in zip(references, documents, strict=True)
+            {**ref, "content": doc.content_en if english and doc.content_en else doc.content}
+            for ref, doc in zip(references, documents, strict=True)
         ],
     }
     return await service.execute(

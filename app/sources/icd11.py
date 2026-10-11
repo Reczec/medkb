@@ -56,11 +56,11 @@ def _access_token(client: httpx.Client, settings: Settings) -> str:
         return token
 
 
-def _headers(token: str, settings: Settings) -> dict[str, str]:
+def _headers(token: str, language: str) -> dict[str, str]:
     return {
         "Authorization": f"Bearer {token}",
         "API-Version": "v2",
-        "Accept-Language": settings.icd_language,
+        "Accept-Language": language,
         "Accept": "application/json",
     }
 
@@ -72,9 +72,13 @@ def _value(field: Any) -> str | None:
     return None
 
 
-def lookup_code(client: httpx.Client, code: str, settings: Settings) -> Icd11Entry | None:
-    """Title and definition for an MMS code; None if the code does not exist."""
-    headers = _headers(_access_token(client, settings), settings)
+def lookup_code(
+    client: httpx.Client, code: str, settings: Settings, language: str | None = None
+) -> Icd11Entry | None:
+    """Title and definition for an MMS code in ``language`` (default: settings.icd_language);
+    None if the code does not exist."""
+    requested = language or settings.icd_language
+    headers = _headers(_access_token(client, settings), requested)
     base = API.format(release=settings.icd_release)
     try:
         info = client.get(f"{base}/codeinfo/{code}", headers=headers)
@@ -94,7 +98,7 @@ def lookup_code(client: httpx.Client, code: str, settings: Settings) -> Icd11Ent
     title = _value(entity.get("title")) if isinstance(entity, dict) else None
     if not title:
         raise SourceUnavailable("ICD-11 entity without title")
-    language = entity["title"].get("@language") or settings.icd_language
+    language = entity["title"].get("@language") or requested
     entity_id = stem_id.split("/mms/", 1)[-1]
     try:
         return Icd11Entry(

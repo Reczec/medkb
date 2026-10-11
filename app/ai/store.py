@@ -30,8 +30,14 @@ def client_identity(ip: str, settings: Settings) -> str:
 
 
 def cache_key(
-    feature: str, document_id: int | str | None, inputs: Any, role: str, settings: Settings
+    feature: str,
+    document_id: int | str | None,
+    inputs: Any,
+    role: str,
+    settings: Settings,
+    lang: Lang = "de",
 ) -> str:
+    """German keeps the key it always had (warmed answers stay valid); English adds the language."""
     identity = [
         PROMPT_VERSION,
         feature,
@@ -41,6 +47,8 @@ def cache_key(
         settings.ai_model,
         settings.ai_base_url.rstrip("/"),
     ]
+    if lang != "de":
+        identity.append(lang)
     return hashlib.sha256(
         json.dumps(identity, sort_keys=True, ensure_ascii=False).encode()
     ).hexdigest()
