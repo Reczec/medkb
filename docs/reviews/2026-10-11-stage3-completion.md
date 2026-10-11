@@ -1,6 +1,6 @@
 # Stage 3 — completion and handoff (2026-10-11)
 
-Original branch: `feat/v2-stage3`. Tasks 1–10 inherited from Claude; tasks 11–13 completed here. On 2026-10-11 the user authorized a local merge into `main`; the branch was integrated by fast-forward through `2977eda`. Nothing was pushed.
+Original branch: `feat/v2-stage3`. Tasks 1–10 inherited from Claude; tasks 11–13 completed here. On 2026-10-11 the user authorized a local merge into `main`; the branch was integrated by fast-forward through `2977eda`. The user subsequently authorized publishing; `main` through the integration documentation commit `309e3b9` was pushed to `origin/main`.
 
 ## Continuation commits
 
@@ -74,3 +74,9 @@ Full post-fix checks passed: pytest 486 tests, Ruff check and format (68 files),
 ## Local integration verification
 
 After the authorized fast-forward into `main`, all checks were rerun successfully: pytest 486 tests; Ruff check and format (68 files); frontend lint, typecheck, Vitest 128 tests, production build and Playwright 25 tests. No conflicts occurred. The fully merged local `feat/v2-stage3` branch was deleted after verification; its commits remain in `main`. No worktree was created or removed, and no remote branch or repository was changed. This integration record, its AGENTS.md link and the plan's completion status are committed separately on `main`.
+
+## Publication and next-step review
+
+The later authorized `git push origin main` succeeded to `https://github.com/Reczec/medkb.git`, advancing the remote from `2af2ec1` to `309e3b9`. An initial attempt returned HTTP 403 with an invalid injected `GITHUB_TOKEN`; retrying with that variable omitted for the child command used the existing Git credential manager successfully. No secrets or persistent authentication configuration were changed.
+
+Reviewed AGENTS.md, PRODUCT.md, BACKLOG.md, v2 spec sections 4–5 and 12, current configuration and available plans. Stage 4 has no implementation plan yet. [NEXT_STEPS.md](../NEXT_STEPS.md) records the sequence, the missing PubMed abstract contract, pending WHO validation and deployment prerequisites. This publication record and next-step documentation are a separate documentation commit.
