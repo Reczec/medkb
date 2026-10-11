@@ -124,3 +124,14 @@ def test_sixteen_specialties_in_tie_order():
 )
 def test_new_specialties_are_recognised(category, title, content):
     assert classify(title, content).category == category
+
+
+def test_neurological_is_not_urological():
+    # "urolog" sits inside "neurologisch"; the Urologie stem must only match at a word start.
+    result = classify("Migräne", "Die Diagnose beruht auf einer neurologischen Untersuchung.")
+    assert "Urologie" not in result.scores
+
+
+def test_methods_are_not_urological():
+    result = classify("Notiz", "Moderne Methoden der Diagnostik und Methoden der Therapie.")
+    assert "Urologie" not in result.scores
