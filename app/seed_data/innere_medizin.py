@@ -1,3 +1,4 @@
+from app.seed_data.english import with_english
 from app.seed_data.links import medlineplus, who
 
 ENTRIES = [
@@ -107,3 +108,115 @@ ENTRIES = [
         "further_reading": [medlineplus("chronickidneydisease", "Chronic Kidney Disease")],
     },
 ]
+
+ENTRIES = with_english(
+    ENTRIES,
+    {
+        "Eisenmangelanämie": {
+            "title_en": "Iron deficiency anaemia",
+            "sections_en": {
+                "definition": (
+                    "In iron deficiency anaemia the body lacks iron to form enough red blood "
+                    "pigment (haemoglobin). It is the most common form of anaemia."
+                ),
+                "symptoms": (
+                    "Typical are tiredness, reduced performance, paleness, headaches, brittle "
+                    "nails and shortness of breath on exertion."
+                ),
+                "causes": (
+                    "Causes are blood loss, for example through heavy periods or in the gut, "
+                    "an increased need in pregnancy and a diet low in iron."
+                ),
+                "diagnostics": (
+                    "A blood count, haemoglobin and ferritin confirm the diagnosis. Finding "
+                    "the cause is important; in adults this often involves gastroscopy and "
+                    "colonoscopy."
+                ),
+                "therapy": (
+                    "Iron is replaced as tablets or an infusion; at the same time the cause "
+                    "is treated."
+                ),
+                "red_flags": (
+                    "Black or bloody stools, chest pain or fainting with anaemia require "
+                    "immediate medical assessment."
+                ),
+            },
+            "keywords_en": [
+                "Anaemia",
+                "Iron deficiency",
+                "Haemoglobin",
+                "Ferritin",
+                "Tiredness",
+                "Blood count",
+            ],
+        },
+        "Gicht": {
+            "title_en": "Gout",
+            "sections_en": {
+                "definition": (
+                    "Gout is a metabolic disease in which uric acid crystals are deposited in "
+                    "joints and trigger inflammation."
+                ),
+                "symptoms": (
+                    "A gout attack often starts at night with severe pain, redness and "
+                    "swelling of a joint, typically the base of the big toe."
+                ),
+                "causes": (
+                    "A raised uric acid level arises from predisposition, reduced excretion "
+                    "by the kidney, alcohol and a purine-rich diet."
+                ),
+                "diagnostics": (
+                    "The clinical picture and uric acid in the blood give hints; crystals in "
+                    "the joint fluid are conclusive."
+                ),
+                "therapy": (
+                    "During an attack, anti-inflammatory medicines and cooling help. In the "
+                    "long term, medicines and a change of diet lower the uric acid."
+                ),
+                "red_flags": (
+                    "Fever with a hot, swollen joint can also be a joint infection and must "
+                    "be assessed at once."
+                ),
+            },
+            "keywords_en": ["Gout", "Uric acid", "Joint", "Big toe", "Attack", "Purines"],
+        },
+        "Chronische Nierenkrankheit": {
+            "title_en": "Chronic kidney disease",
+            "sections_en": {
+                "definition": (
+                    "In chronic kidney disease, kidney function declines for at least three "
+                    "months, often progressing slowly."
+                ),
+                "symptoms": (
+                    "For a long time there are no symptoms. Later, tiredness, fluid retention "
+                    "(oedema), itching and high blood pressure appear."
+                ),
+                "causes": (
+                    "The most common causes are diabetes and high blood pressure, also kidney "
+                    "inflammation and hereditary diseases."
+                ),
+                "diagnostics": (
+                    "The kidney values in the blood (creatinine, estimated filtration rate) "
+                    "and protein in the urine determine the stage."
+                ),
+                "therapy": (
+                    "Good control of blood pressure and blood sugar slows progression. In the "
+                    "final stage dialysis or a kidney transplant is needed."
+                ),
+                "red_flags": (
+                    "A strongly reduced amount of urine, shortness of breath from fluid "
+                    "retention or confusion are emergencies – call the emergency number 144 "
+                    "(Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Kidney",
+                "Kidney failure",
+                "Creatinine",
+                "Dialysis",
+                "Oedema",
+                "Blood pressure",
+            ],
+        },
+    },
+)

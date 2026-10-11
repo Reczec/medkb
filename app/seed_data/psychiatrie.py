@@ -1,3 +1,4 @@
+from app.seed_data.english import with_english
 from app.seed_data.links import medlineplus, who
 
 ENTRIES = [
@@ -116,3 +117,122 @@ ENTRIES = [
         ],
     },
 ]
+
+ENTRIES = with_english(
+    ENTRIES,
+    {
+        "Depressive Episode": {
+            "title_en": "Depressive episode",
+            "sections_en": {
+                "definition": (
+                    "A depressive episode is a mental illness with low mood, lack of drive "
+                    "and loss of interest or pleasure lasting at least two weeks."
+                ),
+                "symptoms": (
+                    "Sleep problems, difficulty concentrating, changes in appetite, feelings "
+                    "of guilt and hopelessness often come on top."
+                ),
+                "causes": (
+                    "Predisposition, stressful life events, chronic stress and physical "
+                    "illnesses act together."
+                ),
+                "diagnostics": (
+                    "Doctors, psychiatrists or psychotherapists make the diagnosis in a "
+                    "conversation, often supported by questionnaires; physical causes are "
+                    "ruled out."
+                ),
+                "therapy": (
+                    "Depression is well treatable, for example with psychotherapy and, if "
+                    "appropriate, antidepressants. Exercise and a regular daily routine "
+                    "support recovery."
+                ),
+                "red_flags": (
+                    "With thoughts of suicide, immediate help is important: in Austria the "
+                    "crisis line 142, in an acute emergency the emergency number 144."
+                ),
+            },
+            "keywords_en": [
+                "Depression",
+                "Low mood",
+                "Lack of drive",
+                "Psychotherapy",
+                "Antidepressants",
+                "Sleep",
+            ],
+        },
+        "Generalisierte Angststörung": {
+            "title_en": "Generalised anxiety disorder",
+            "sections_en": {
+                "definition": (
+                    "In generalised anxiety disorder, excessive worries and fears that are "
+                    "hard to control last for months."
+                ),
+                "symptoms": (
+                    "Typical are constant tension, nervousness, sleep problems, muscle "
+                    "tension, difficulty concentrating and physical complaints such as "
+                    "palpitations."
+                ),
+                "causes": (
+                    "Predisposition, stressful experiences and learned thought patterns "
+                    "contribute to the development of the anxiety disorder."
+                ),
+                "diagnostics": (
+                    "The diagnosis is made in a psychiatric or psychotherapeutic "
+                    "conversation; physical causes such as an overactive thyroid are ruled "
+                    "out."
+                ),
+                "therapy": (
+                    "Cognitive behavioural therapy works best, supplemented by medicines if "
+                    "needed. Relaxation techniques and exercise help in addition."
+                ),
+                "red_flags": (
+                    "Chest pain with shortness of breath should not be dismissed too quickly "
+                    "as panic – if in doubt call the emergency number 144 (Austria). With "
+                    "thoughts of suicide, get help at once."
+                ),
+            },
+            "keywords_en": [
+                "Anxiety",
+                "Worries",
+                "Panic",
+                "Behavioural therapy",
+                "Tension",
+                "Sleep",
+            ],
+        },
+        "Burnout": {
+            "title_en": "Burnout",
+            "sections_en": {
+                "definition": (
+                    "Burnout describes a state of exhaustion resulting from chronic workplace "
+                    "stress that has not been successfully managed. In ICD-11 it is not a "
+                    "mental illness but a factor that influences health."
+                ),
+                "symptoms": (
+                    "Typical are emotional exhaustion, growing distance from work, cynicism "
+                    "and a feeling of reduced performance."
+                ),
+                "diagnostics": (
+                    "It is important to distinguish it from depression and from physical "
+                    "causes of exhaustion through medical and psychiatric assessment."
+                ),
+                "therapy": (
+                    "Relief, changes to the work situation, stress management and, if needed, "
+                    "psychotherapy help."
+                ),
+                "red_flags": (
+                    "Hopelessness or thoughts of suicide are signs of a serious crisis – "
+                    "crisis line 142 in Austria, in an emergency the emergency number 144."
+                ),
+            },
+            "keywords_en": [
+                "Burnout",
+                "Exhaustion",
+                "Work stress",
+                "Cynicism",
+                "Depression",
+                "Stress management",
+            ],
+        },
+    },
+)

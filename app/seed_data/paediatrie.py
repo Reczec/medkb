@@ -1,3 +1,4 @@
+from app.seed_data.english import with_english
 from app.seed_data.links import medlineplus
 
 ENTRIES = [
@@ -105,3 +106,114 @@ ENTRIES = [
         "further_reading": [medlineplus("fever", "Fever")],
     },
 ]
+
+ENTRIES = with_english(
+    ENTRIES,
+    {
+        "Windpocken (Varizellen)": {
+            "title_en": "Chickenpox (varicella)",
+            "sections_en": {
+                "definition": (
+                    "Chickenpox is a highly contagious childhood illness caused by the "
+                    "varicella-zoster virus."
+                ),
+                "symptoms": (
+                    "Typical is an itchy rash with blisters in different stages across the "
+                    "whole body, together with mild fever."
+                ),
+                "causes": (
+                    "It spreads by droplets and the content of the blisters; unvaccinated "
+                    "children of nursery age fall ill most often."
+                ),
+                "diagnostics": (
+                    "The paediatrician usually recognises chickenpox from the typical rash."
+                ),
+                "therapy": (
+                    "The symptoms are treated: itch-relieving lotions, short fingernails and, "
+                    "if needed, fever-lowering medicines. Vaccination is recommended for "
+                    "children."
+                ),
+                "red_flags": (
+                    "Shortness of breath, drowsiness, seizures or strongly reddened, purulent "
+                    "blisters need medical help at once."
+                ),
+            },
+            "keywords_en": [
+                "Chickenpox",
+                "Varicella",
+                "Rash",
+                "Blisters",
+                "Children",
+                "Vaccination",
+            ],
+        },
+        "Scharlach": {
+            "title_en": "Scarlet fever",
+            "sections_en": {
+                "definition": (
+                    "Scarlet fever is a bacterial childhood illness caused by streptococci "
+                    "that mainly affects children of school and nursery age."
+                ),
+                "symptoms": (
+                    "Typical are a sore throat, fever, a raspberry-red tongue and a fine, "
+                    "sandpaper-like rash that starts in the groin."
+                ),
+                "causes": (
+                    "The bacteria spread by droplets. One can get scarlet fever more than once."
+                ),
+                "diagnostics": (
+                    "A throat swab with a rapid test detects the streptococci in the "
+                    "paediatric practice."
+                ),
+                "therapy": (
+                    "Antibiotics shorten the illness and lower the risk of complications. "
+                    "After 24 hours of treatment children are usually no longer contagious."
+                ),
+                "red_flags": (
+                    "Shortness of breath, being unable to swallow, marked swelling of the "
+                    "neck or listlessness need medical help at once."
+                ),
+            },
+            "keywords_en": [
+                "Scarlet fever",
+                "Streptococci",
+                "Sore throat",
+                "Rash",
+                "Antibiotics",
+                "Children",
+            ],
+        },
+        "Fieber bei Säuglingen und Kleinkindern": {
+            "title_en": "Fever in babies and young children",
+            "sections_en": {
+                "definition": (
+                    "Fever is a common and usually useful defence reaction in children. In "
+                    "babies and young children, fever starts at 38.5 °C."
+                ),
+                "symptoms": (
+                    "The child feels warm, is tired or fretful, drinks less and often has a "
+                    "faster pulse."
+                ),
+                "causes": (
+                    "Usually harmless viral infections are behind it, less often bacterial "
+                    "infections such as an ear or urinary tract infection."
+                ),
+                "diagnostics": (
+                    "The child's general condition is decisive. The paediatrician looks for "
+                    "the cause by examination and, if needed, urine or blood tests."
+                ),
+                "therapy": (
+                    "Drinking enough and rest are important. Fever-lowering medicines serve "
+                    "comfort, not lowering the temperature at any price."
+                ),
+                "red_flags": (
+                    "Fever in babies under three months, listlessness, a stiff neck, "
+                    "shortness of breath, a rash that does not fade under pressure or a "
+                    "seizure: see a paediatrician at once or call the emergency number 144 "
+                    "(Austria)."
+                ),
+            },
+            "keywords_en": ["Fever", "Baby", "Child", "Temperature", "Paediatrician", "Seizure"],
+        },
+    },
+)
