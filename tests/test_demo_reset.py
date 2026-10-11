@@ -98,3 +98,34 @@ def test_public_demo_without_client_ip_header_warns(archive_dir):
     configured = make_settings(archive_dir, demo_mode=True, client_ip_header="True-Client-IP")
     assert client_ip_warning(configured) is None
     assert client_ip_warning(make_settings(archive_dir, demo_mode=False)) is None
+
+
+def test_entry_ids_are_stable_across_resets(client, db_session):
+    # Links like /wissen/7 must survive the reset on every cold start of the free host.
+    demo.reset_demo(db_session)
+    first = dict(db_session.execute(select(Document.title, Document.id)).all())
+    make_doc(client, title="Kommt und geht")
+    demo.reset_demo(db_session)
+    db_session.expire_all()
+    second = dict(db_session.execute(select(Document.title, Document.id)).all())
+    assert second == first
+    assert sorted(first.values()) == list(range(1, len(SEED_DOCUMENTS) + 1))
+    # New entries continue after the examples (PostgreSQL's sequence is reset too).
+    assert make_doc(client, title="Danach")["id"] == len(SEED_DOCUMENTS) + 1
+
+
+def test_reset_locks_the_table_on_postgresql(db_session):
+    import pytest
+    from sqlalchemy import event
+
+    if db_session.get_bind().dialect.name != "postgresql":
+        pytest.skip("table lock only on PostgreSQL")
+    statements = []
+    engine = db_session.get_bind()
+    listener = lambda *args: statements.append(args[2])  # noqa: E731
+    event.listen(engine, "before_cursor_execute", listener)
+    try:
+        demo.reset_demo(db_session)
+    finally:
+        event.remove(engine, "before_cursor_execute", listener)
+    assert any("LOCK TABLE documents" in s for s in statements[:3])
