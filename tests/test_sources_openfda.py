@@ -135,6 +135,23 @@ def test_no_medications_is_empty_without_network(doctor_client, client, fda):
     assert not fda.called
 
 
+@pytest.mark.parametrize(
+    "metadata",
+    [["unexpected"], {"brand_name": 123}, {"brand_name": "Glucophage"}],
+    ids=["metadata-not-object", "brands-not-list", "brands-string"],
+)
+def test_malformed_metadata_is_unavailable_and_not_cached(doctor_client, client, fda, metadata):
+    fda.mock(return_value=httpx.Response(200, json=label(openfda=metadata)))
+    doc = med_doc(client)
+    path = f"/api/sources/documents/{doc['id']}/medications"
+    response = doctor_client.get(path)
+    assert response.status_code == 200
+    assert response.json() == {"status": "unavailable", "fetched_at": None, "data": None}
+    fda.mock(return_value=httpx.Response(200, json=label()))
+    assert doctor_client.get(path).json()["status"] == "ok"
+    assert fda.call_count == 2
+
+
 def test_single_ingredient_prescription_label_is_preferred(doctor_client, client, fda):
     combo = {
         "openfda": {

@@ -34,10 +34,14 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 - The main JS chunk is over 500 kB. Lazy-load the routes, the dashboard charts first.
 - The README screenshots still show the old UI. Stage 5 replaces them with new screenshots and a demo GIF.
 
+## Sources (stage 3 review, 2026-10-11)
+
+- Live-check the bundled ICD-11 codes with WHO credentials using `scripts/check_seed_sources.py`; offline tests cannot confirm the code-to-diagnosis mapping.
+- The design sidecar's Neurologie example uses a circle icon and its navigation snippet says "Dashboard". Synchronize these examples when next updating the design documentation.
+
 ## Design ideas (from the finish review, not defects)
 
 - Dark theme rail is near-black. Consider a deep petrol so the shell identity survives in dark mode.
 - On mobile the petrol shell disappears behind an off-white top bar. Consider petrol in the mobile top bar.
 - The detail page leaves the lower half of the left column empty. The classification explanation could sit on the sheet as a margin note.
-- Allgemeinmedizin's hue (196) equals the primary teal, so its tab can read as an action colour.
 - Sheets never overlap like filed records; drawer and stack depth are unused.

@@ -145,3 +145,22 @@ def test_entity_without_title_is_unavailable(doctor_client, client, keys, who):
     doc = icd_doc(client)
     body = doctor_client.get(f"/api/sources/documents/{doc['id']}/icd11").json()
     assert body["status"] == "unavailable"
+
+
+@pytest.mark.parametrize("language", [123, ["de"], {"value": "de"}])
+def test_malformed_entity_language_is_unavailable_and_not_cached(
+    doctor_client, client, keys, who, language
+):
+    who[2].mock(
+        return_value=httpx.Response(
+            200, json={"code": "8A80", "title": {"@language": language, "@value": "Migräne"}}
+        )
+    )
+    doc = icd_doc(client)
+    path = f"/api/sources/documents/{doc['id']}/icd11"
+    response = doctor_client.get(path)
+    assert response.status_code == 200
+    assert response.json() == {"status": "unavailable", "fetched_at": None, "data": None}
+    who[2].mock(return_value=httpx.Response(200, json=ENTITY_JSON))
+    assert doctor_client.get(path).json()["status"] == "ok"
+    assert who[2].call_count == 2
