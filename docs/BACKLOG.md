@@ -46,3 +46,13 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 - Verify concurrent global/client reservations on PostgreSQL and trusted deployment proxy identity. Current concurrency regression uses SQLite; HMAC identities need stable JWT_SECRET.
 - Cache has no automatic retention policy yet. Add bounded cleanup if real demo usage warrants it; successful content/role/model/prompt identities remain persisted across reset.
 - Existing Impeccable surface brief mentions nine specialties; current DESIGN and code correctly contain sixteen. Treat this as pre-existing documentation drift, not a redesign request.
+
+## Deployment (stage 5 review, 2026-10-12)
+
+- `client_ip` takes the leftmost value of `CLIENT_IP_HEADER`; with `X-Forwarded-For` that value is client-controlled (README forbids it). Take the rightmost value or reject that header name.
+- Two overlapping resets (a deploy's startup reset and the old instance's loop) can duplicate the entries until the next reset. On PostgreSQL, lock `documents` in SHARE ROW EXCLUSIVE mode first.
+- Entry IDs change on every cold start (PostgreSQL sequences keep counting), so shared links to an entry break after the service sleeps. Seed with fixed IDs or `TRUNCATE ... RESTART IDENTITY`.
+- An explicit request for `/index.html` is served without `no-cache`.
+- The chunk-reload flag stays set if the reload lands on a non-lazy route; the next stale chunk then shows the error page instead of reloading.
+- `autoDeployTrigger: commit` deploys even when CI fails; consider `checksPass`.
+- The README GIF is 7.7 MB; an MP4 with a poster image would load faster.
