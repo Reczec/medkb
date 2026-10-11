@@ -140,6 +140,35 @@ it('sends English sections in section mode', async () => {
   expect(create.body).not.toHaveProperty('content_en')
 })
 
+it('converts the typed English text when an AI draft switches the layout', async () => {
+  mockFetch({
+    '/api/meta': meta,
+    '/api/classify': classification,
+    '/api/ai/draft': {
+      text: 'Draft.',
+      cached: false,
+      citations: [],
+      draft: {
+        title: 'Herzrasen',
+        sections: { definition: 'Deutscher Entwurf.' },
+        doc_type: 'Symptom',
+        term_en: null,
+        icd11_code: null,
+        medications: [],
+        ai_generated: true,
+      },
+    },
+  })
+  renderEditor()
+  await fillNewEntry()
+  fireEvent.click(screen.getByRole('button', { name: /English version/ }))
+  fireEvent.change(screen.getByLabelText('Content (English)'), { target: { value: 'My English text.' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Create AI draft' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Apply reviewed draft' }))
+  expect(screen.getByRole('button', { name: 'Sections' })).toHaveAttribute('aria-pressed', 'true')
+  expect(screen.getByLabelText('Definition (English)')).toHaveValue('My English text.')
+})
+
 it('opens the English version of a translated entry and clears a field with null', async () => {
   const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification, '/api/documents/9': translated })
   const { router } = renderEditor('/wissen/9/bearbeiten')

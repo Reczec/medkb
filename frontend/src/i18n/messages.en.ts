@@ -433,4 +433,7 @@ export const en: Record<MessageKey, string> = {
   // page loading
   'page.loading': 'Loading page',
 
+  // app
+  'app.title': 'MedKB – Medical knowledge base',
+
 }

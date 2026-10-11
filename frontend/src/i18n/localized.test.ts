@@ -50,6 +50,19 @@ it('falls back to German per field without flagging a partly translated entry', 
   expect(result.fallback).toBe(false)
 })
 
+it('keeps German sections that have no English text, such as the warning signs', () => {
+  const doc = {
+    ...base,
+    sections: { definition: 'Deutsch.', red_flags: 'Sofort Notruf 144.' },
+    sections_en: { definition: 'English.' },
+  }
+  expect(localized(doc, 'en').sections).toEqual({
+    definition: 'English.',
+    red_flags: 'Sofort Notruf 144.',
+  })
+  expect(localized(doc, 'de').sections).toEqual(doc.sections)
+})
+
 it('flags an entry that has no English version at all', () => {
   const result = localized(base, 'en')
   expect(result.title).toBe('Erkältung')

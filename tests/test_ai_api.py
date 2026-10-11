@@ -686,6 +686,28 @@ def test_english_inputs_use_the_english_version_with_german_fallback(client):
         assert document_inputs(db.get(Document, plain["id"]), "en")["title"] == "Nur Deutsch"
 
 
+def test_english_inputs_keep_untranslated_sections_from_german(client):
+    """A half-translated entry must not lose its German warning signs in English."""
+    from app.ai.service import document_inputs
+    from app.database import SessionLocal
+    from app.models import Document
+
+    doc = make_doc(
+        client,
+        title="Teilweise",
+        sections={"definition": "Deutsche Definition.", "red_flags": "Sofort Notruf 144."},
+        sections_en={"definition": "English definition."},
+    )
+    with SessionLocal() as db:
+        english = document_inputs(db.get(Document, doc["id"]), "en")
+    assert english["sections"] == {
+        "definition": "English definition.",
+        "red_flags": "Sofort Notruf 144.",
+    }
+    assert "Sofort Notruf 144." in english["content"]
+    assert english["content"].startswith("Definition\nEnglish definition.")
+
+
 def test_prompt_names_the_answer_language(client, fake):
     doc = client.post("/api/documents", json=ENGLISH_DOC).json()
     client.post(f"/api/ai/documents/{doc['id']}/explain", headers={"Accept-Language": "en"})

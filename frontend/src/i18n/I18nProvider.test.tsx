@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
 import { useI18n } from '@/i18n/context'
 import { I18nProvider } from '@/i18n/I18nProvider'
@@ -31,6 +31,22 @@ it('starts in English', () => {
   )
   expect(document.documentElement.lang).toBe('en')
   expect(getApiLanguage()).toBe('en')
+})
+
+it('keeps the browser tab title in the interface language', () => {
+  render(
+    <I18nProvider lang="en">
+      <Probe />
+    </I18nProvider>,
+  )
+  expect(document.title).toBe('MedKB – Medical knowledge base')
+  cleanup()
+  render(
+    <I18nProvider lang="de">
+      <Probe />
+    </I18nProvider>,
+  )
+  expect(document.title).toBe('MedKB – Medizinische Wissensdatenbank')
 })
 
 it('reads the stored choice', () => {

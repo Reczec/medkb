@@ -20,6 +20,7 @@ export function I18nProvider({ lang: fixed, children }: I18nProviderProps) {
   useLayoutEffect(() => {
     setApiLanguage(lang)
     document.documentElement.lang = lang
+    document.title = translate(lang, 'app.title')
   }, [lang])
 
   const setLang = useCallback(

@@ -41,13 +41,15 @@ def login(data: LoginRequest, db: DbSession, settings: AppSettings, lang: Reques
 
 
 @router.post("/demo", response_model=TokenOut)
-def demo_login(data: DemoLoginRequest, db: DbSession, settings: AppSettings) -> TokenOut:
+def demo_login(
+    data: DemoLoginRequest, db: DbSession, settings: AppSettings, lang: RequestLang
+) -> TokenOut:
     if not settings.demo_mode:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Demo-Zugang ist deaktiviert.")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, message("demo_disabled", lang))
     username = next(name for name, (role, _) in DEMO_USERS.items() if role == data.role)
     user = db.scalar(select(User).where(User.username == username))
     if user is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Demo-Zugang ist nicht eingerichtet.")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, message("demo_missing", lang))
     return _token_for(user, settings)
 
 

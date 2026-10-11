@@ -13,6 +13,7 @@ from app.ai import prompts, store
 from app.ai.provider import AIProvider, AIUnavailable
 from app.ai.schemas import Classification
 from app.config import Settings
+from app.content import SECTION_KEYS, compose_content
 from app.i18n import Lang, message
 from app.schemas import DocumentCreate, DocumentOut
 from app.seed_data import SEED_DOCUMENTS, SOURCE
@@ -39,7 +40,16 @@ def document_inputs(document: Any, lang: Lang = "de") -> dict:
     if lang == "en":
         data["title"] = out.title_en or out.title
         data["content"] = out.content_en or out.content
-        data["sections"] = out.sections_en or out.sections
+        german = out.sections or {}
+        english = out.sections_en or {}
+        if german or english:
+            # Section by section: a half-translated entry keeps its German warning signs.
+            merged = {
+                key: text for key in SECTION_KEYS if (text := english.get(key) or german.get(key))
+            }
+            data["sections"] = merged or None
+            if merged:
+                data["content"] = compose_content(merged, "en")
         data["keywords"] = out.keywords_en or out.keywords
         for link, label in zip(data["further_reading"], english_links, strict=True):
             link["label"] = label

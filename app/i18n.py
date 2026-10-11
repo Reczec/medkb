@@ -39,6 +39,18 @@ MESSAGES: dict[str, dict[Lang, str]] = {
         "en": "No abstract available.",
         "de": "Kein Abstract verfügbar.",
     },
+    "not_signed_in": {
+        "en": "Not signed in or the session has expired.",
+        "de": "Nicht angemeldet oder Sitzung abgelaufen.",
+    },
+    "demo_disabled": {
+        "en": "Demo access is switched off.",
+        "de": "Demo-Zugang ist deaktiviert.",
+    },
+    "demo_missing": {
+        "en": "Demo access is not set up.",
+        "de": "Demo-Zugang ist nicht eingerichtet.",
+    },
     "notice": {
         "en": "Prototype with example data – not medical advice.",
         "de": "Prototyp mit Beispieldaten – keine medizinische Beratung.",

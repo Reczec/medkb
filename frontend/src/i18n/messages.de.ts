@@ -430,6 +430,9 @@ export const de = {
 
   // page loading
   'page.loading': 'Seite wird geladen',
+
+  // app
+  'app.title': 'MedKB – Medizinische Wissensdatenbank',
 } as const
 
 export type MessageKey = keyof typeof de

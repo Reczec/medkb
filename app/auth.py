@@ -63,10 +63,11 @@ def current_user(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
     settings: Annotated[Settings, Depends(get_settings)],
     db: Annotated[Session, Depends(get_db)],
+    lang: RequestLang,
 ) -> User:
     unauthorized = HTTPException(
         status.HTTP_401_UNAUTHORIZED,
-        "Nicht angemeldet oder Sitzung abgelaufen.",
+        message("not_signed_in", lang),
         headers={"WWW-Authenticate": "Bearer"},
     )
     if credentials is None:

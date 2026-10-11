@@ -97,6 +97,14 @@ const englishText = (form: FormState): Sections | string =>
 const isBlank = (value: Sections | string) =>
   typeof value === 'string' ? value === '' : Object.keys(value).length === 0
 
+/** The English text carried over when the layout switches between free text and sections. */
+function englishFor(form: FormState, mode: FormState['mode']): Pick<FormState, 'contentEn' | 'sectionsEn'> {
+  if (mode === form.mode) return { contentEn: form.contentEn, sectionsEn: form.sectionsEn }
+  return mode === 'sections'
+    ? { contentEn: form.contentEn, sectionsEn: form.contentEn.trim() ? { definition: form.contentEn } : {} }
+    : { contentEn: composeContent(form.sectionsEn, 'en'), sectionsEn: form.sectionsEn }
+}
+
 const hasEnglish = (form: FormState) =>
   form.titleEn.trim() !== '' || !isBlank(englishText(form)) || form.keywordsEn.length > 0
 
@@ -196,18 +204,8 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
     setForm((current) => {
       if (mode === current.mode) return current
       return mode === 'sections'
-        ? {
-            ...current,
-            mode,
-            sections: { definition: current.content },
-            sectionsEn: current.contentEn.trim() ? { definition: current.contentEn } : {},
-          }
-        : {
-            ...current,
-            mode,
-            content: composeContent(current.sections, 'de'),
-            contentEn: composeContent(current.sectionsEn, 'en'),
-          }
+        ? { ...current, mode, sections: { definition: current.content }, ...englishFor(current, mode) }
+        : { ...current, mode, content: composeContent(current.sections, 'de'), ...englishFor(current, mode) }
     })
   }
 
@@ -402,7 +400,8 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
           canDraft={!document} onCategory={category => set('category', category)}
           onDraft={draft => setForm(current => ({ ...current,
             content: draft.content ?? '', sections: cleanSections(draft.sections ?? {}),
-            mode: draft.sections ? 'sections' : 'text', docType: draft.doc_type,
+            mode: draft.sections ? 'sections' : 'text', ...englishFor(current, draft.sections ? 'sections' : 'text'),
+            docType: draft.doc_type,
             termEn: draft.term_en ?? '', icd11Code: draft.icd11_code ?? '',
             medications: draft.medications ?? [], aiGenerated: true,
           }))} />

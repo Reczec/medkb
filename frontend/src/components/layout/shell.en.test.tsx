@@ -5,7 +5,7 @@ import { Topbar } from '@/components/layout/Topbar'
 import { ForbiddenPage } from '@/features/auth/guards'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { NotFoundPage } from '@/features/NotFoundPage'
-import { TEST_USERS, mockFetch, renderWithProviders } from '@/test/utils'
+import { PLAIN_FIELDS, TEST_USERS, mockFetch, renderWithProviders } from '@/test/utils'
 
 afterEach(() => vi.unstubAllGlobals())
 
@@ -50,6 +50,28 @@ it('opens the command palette in English', async () => {
   expect(await screen.findByPlaceholderText('Search entries…')).toBeInTheDocument()
   expect(screen.getByText('Open knowledge base')).toBeInTheDocument()
   expect(screen.getByText('Go to dashboard')).toBeInTheDocument()
+})
+
+it('lists entries in the palette with their English titles', async () => {
+  const doc = {
+    id: 7,
+    title: 'Migräne',
+    content: 'Text',
+    category: 'Neurologie',
+    doc_type: 'Diagnose',
+    keywords: [],
+    source: null,
+    auto_classified: true,
+    ...PLAIN_FIELDS,
+    title_en: 'Migraine',
+    created_at: '2026-10-01T10:00:00Z',
+    updated_at: '2026-10-01T10:00:00Z',
+  }
+  mockFetch({ '/api/documents': { items: [doc], total: 1, limit: 8, offset: 0 } })
+  renderWithProviders(<CommandPalette />, { ...en })
+  openCommandPalette()
+  expect(await screen.findByText('Migraine')).toBeInTheDocument()
+  expect(screen.queryByText('Migräne')).not.toBeInTheDocument()
 })
 
 it('shows the login page in English by default', async () => {

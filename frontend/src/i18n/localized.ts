@@ -1,4 +1,5 @@
 import type { Lang } from '@/i18n/lang'
+import { SECTION_ORDER } from '@/lib/sections'
 import type { Document, FurtherReadingLink, Sections } from '@/lib/types'
 
 export interface LocalizedDocument {
@@ -8,6 +9,16 @@ export interface LocalizedDocument {
   keywords: string[]
   /** English was asked for, but the entry has no English version at all (German is shown). */
   fallback: boolean
+}
+
+/** Section by section: English where it exists, so untranslated warning signs stay visible. */
+function mergeSections(german: Sections | null, english: Sections | null): Sections | null {
+  const merged: Sections = {}
+  for (const key of SECTION_ORDER) {
+    const text = english?.[key] || german?.[key]
+    if (text) merged[key] = text
+  }
+  return Object.keys(merged).length > 0 ? merged : null
 }
 
 /**
@@ -28,7 +39,7 @@ export function localized(document: Document, lang: Lang): LocalizedDocument {
   return {
     title: document.title_en || document.title,
     content: document.content_en || document.content,
-    sections: document.sections_en || document.sections,
+    sections: mergeSections(document.sections, document.sections_en),
     keywords: document.keywords_en.length > 0 ? document.keywords_en : document.keywords,
     fallback: !hasEnglish,
   }

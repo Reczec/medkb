@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/command'
 import { useAuth } from '@/features/auth/context'
 import { useI18n } from '@/i18n/context'
+import { localized } from '@/i18n/localized'
 import { useDebounced } from '@/hooks/useDebounced'
 import { categoryStyle } from '@/lib/categories'
 import { useDocuments } from '@/lib/queries'
@@ -31,7 +32,7 @@ export function CommandPalette() {
   const debounced = useDebounced(query, 200)
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { t, categoryLabel } = useI18n()
+  const { t, lang, categoryLabel } = useI18n()
   const { data, isFetching } = useDocuments({ q: debounced, limit: 8 }, open)
 
   useEffect(() => {
@@ -89,7 +90,7 @@ export function CommandPalette() {
                     style={{ background: categoryStyle(doc.category).color }}
                     aria-hidden
                   />
-                  <span className="truncate">{doc.title}</span>
+                  <span className="truncate">{localized(doc, lang).title}</span>
                   <span className="ml-auto shrink-0 text-xs text-muted-foreground">
                     {categoryLabel(doc.category)}
                   </span>
