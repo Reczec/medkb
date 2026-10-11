@@ -7,11 +7,23 @@ from app.classifier import CATEGORIES
 
 NOTICE = "Prototyp mit Beispieldaten – keine medizinische Beratung."
 
+PLAIN = "Einfache Sprache auf Niveau B1."
+PROFESSIONAL = "Fachliche Sprache für medizinisches Personal."
+
+# Answers shown as text in the UI use the small Markdown subset the frontend renders.
+TEXT_FEATURES = {"explain", "red-flags", "summary", "study", "ask"}
+FORMAT = (
+    "Beginne direkt mit dem Inhalt, ohne Einleitung wie 'Hier ist'. Formatiere nur mit: "
+    "Absätzen, **fett** für wenige Schlüsselbegriffe, Aufzählungen mit '- ' und "
+    "Zwischenüberschriften mit '### '. Keine Tabellen, keine Links, keine Trennlinien."
+)
+
 INSTRUCTIONS = {
     "explain": "Erkläre den Eintrag verständlich und allgemein.",
     "red-flags": (
-        "Nenne allgemeine Warnzeichen und wann medizinische Hilfe nötig ist. Bei akuter "
-        "Gefahr: Notruf 144."
+        "Nur Warnzeichen: keine Definition, keine Ursachen, keine Therapie. Gliedere in "
+        "zwei Listen: '### Sofort Notruf 144' für Notfallzeichen und '### Zeitnah ärztlich "
+        "abklären' für Zeichen, die bald untersucht werden sollten. Höchstens je fünf Punkte."
     ),
     "summary": "Fasse den Eintrag fachlich knapp zusammen.",
     "study": (
@@ -39,11 +51,9 @@ INSTRUCTIONS = {
 
 
 def messages(feature: str, role: str, inputs: Any) -> list[dict[str, str]]:
-    audience = (
-        "Einfache Sprache auf Niveau B1."
-        if role == "patient"
-        else "Fachliche Sprache für medizinisches Personal."
-    )
+    # "Einfach erklärt" is plain language for everyone; other features follow the role.
+    audience = PLAIN if role == "patient" or feature == "explain" else PROFESSIONAL
+    style = FORMAT + " " if feature in TEXT_FEATURES else ""
     return [
         {
             "role": "system",
@@ -57,6 +67,7 @@ def messages(feature: str, role: str, inputs: Any) -> list[dict[str, str]]:
                 + " "
                 + INSTRUCTIONS[feature]
                 + " "
+                + style
                 + NOTICE
             ),
         },
