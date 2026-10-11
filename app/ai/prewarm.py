@@ -16,12 +16,19 @@ from app.models import Document
 
 
 async def prewarm(
-    db: Session, settings: Settings, provider: AIProvider, limit: int | None = None
+    db: Session,
+    settings: Settings,
+    provider: AIProvider,
+    limit: int | None = None,
+    pause: float = 0,
 ) -> dict[str, int]:
+    """Warm every role/feature variant. ``pause`` seconds between calls keeps a free provider
+    tier under its per-minute limit (failed calls still use the daily budget)."""
     # This explicit operator job may use the global budget; public client quotas stay unchanged.
     trusted = settings.model_copy(update={"ai_client_daily_limit": settings.ai_daily_limit})
     documents = db.scalars(select(Document).order_by(Document.id).limit(limit)).all()
     counts = {"completed": 0, "failed": 0}
+    first = True
     for document in documents:
         inputs = document_inputs(document)
         for role in ("admin", "doctor", "patient"):
@@ -31,6 +38,9 @@ async def prewarm(
                 else ("explain", "red-flags")
             )
             for feature in features:
+                if pause and not first:
+                    await asyncio.sleep(pause)
+                first = False
                 try:
                     await execute(
                         db,
@@ -53,6 +63,9 @@ async def prewarm(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--limit", type=int, help="Number of documents to warm")
+    parser.add_argument(
+        "--pause", type=float, default=0, help="Seconds between calls (free tiers: about 4)"
+    )
     args = parser.parse_args()
     if args.limit is not None and args.limit < 1:
         parser.error("--limit must be positive")
@@ -63,7 +76,8 @@ def main() -> None:
     Base.metadata.create_all(engine)
     upgrade_schema(engine)
     with SessionLocal() as db:
-        print(asyncio.run(prewarm(db, settings, get_provider(settings), args.limit)))
+        provider = get_provider(settings)
+        print(asyncio.run(prewarm(db, settings, provider, args.limit, args.pause)))
 
 
 if __name__ == "__main__":
