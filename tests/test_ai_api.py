@@ -505,3 +505,22 @@ def test_proxy_header_uses_the_value_the_proxy_appended(client, fake, test_setti
     )
     assert send("203.0.113.1").status_code == 200
     assert send("203.0.113.2").status_code == 429  # same real client behind a new fake prefix
+
+
+def test_prewarm_can_pause_between_calls_for_provider_rate_limits(
+    db_session, fake, test_settings, client, monkeypatch
+):
+    import asyncio
+
+    import app.ai.prewarm as prewarm_module
+
+    make_doc(client)
+    pauses = []
+
+    async def fake_sleep(seconds):
+        pauses.append(seconds)
+
+    monkeypatch.setattr(prewarm_module.asyncio, "sleep", fake_sleep)
+    result = asyncio.run(prewarm_module.prewarm(db_session, test_settings, fake, limit=1, pause=4))
+    assert result == {"completed": 8, "failed": 0}
+    assert pauses == [4] * 7  # between the 8 calls, not after the last
