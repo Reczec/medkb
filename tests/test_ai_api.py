@@ -1,7 +1,8 @@
 import json
 
+import httpx
 import pytest
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from app.ai.provider import AIUnavailable, get_provider
 from app.ai.store import usage_today
@@ -266,8 +267,82 @@ def test_unchanged_seed_reuses_cache_after_reset(client, fake, db_session):
     path = f"/api/ai/documents/{document_id}/explain"
     assert client.post(path).json()["cached"] is False
     reset_demo(db_session)
-    assert client.post(path).json()["cached"] is True
+    replacement_id = db_session.scalar(select(Document.id).order_by(Document.id))
+    # Simulate PostgreSQL's continuing sequence even when this suite uses SQLite.
+    new_id = replacement_id + 10_000
+    db_session.execute(update(Document).where(Document.id == replacement_id).values(id=new_id))
+    db_session.commit()
+    assert client.post(f"/api/ai/documents/{new_id}/explain").json()["cached"] is True
     assert len(fake.calls) == 1
+
+
+@pytest.mark.parametrize("question", ["Was ist Migräne?", "Was sind die Symptome von Migräne?"])
+def test_natural_questions_retrieve_the_relevant_entry(client, fake, question):
+    make_doc(client, title="Migräne")
+    fake.answer = "Allgemeine Information [1]."
+    response = client.post("/api/ai/ask", json={"question": question})
+    assert response.status_code == 200
+    assert len(response.json()["citations"]) == 1
+    assert len(fake.calls) == 1
+
+
+def test_followup_retrieves_the_previous_topic(client, fake):
+    make_doc(client, title="Migräne")
+    fake.answer = "Allgemeine Information [1]."
+    response = client.post(
+        "/api/ai/ask",
+        json={
+            "question": "Und wie wird das behandelt?",
+            "history": [
+                {"role": "user", "content": "Was ist Migräne?"},
+                {"role": "assistant", "content": "Information [1]."},
+            ],
+        },
+    )
+    assert len(response.json()["citations"]) == 1
+    assert len(fake.calls) == 1
+
+
+def test_slow_abstract_does_not_block_unrelated_requests(client, fake, monkeypatch):
+    import asyncio
+    import threading
+    import time
+
+    import app.routers.ai as ai_router
+
+    release = threading.Event()
+    started = threading.Event()
+    started_at = []
+
+    def slow_fetch(*args):
+        started_at.append(time.monotonic())
+        started.set()
+        release.wait(0.5)
+        return "Abstract fixture."
+
+    monkeypatch.setattr(ai_router, "fetch_abstract", slow_fetch)
+
+    async def exercise():
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(
+            transport=transport, base_url="http://test", headers=client.headers
+        ) as concurrent:
+
+            async def health():
+                while not started.is_set():
+                    await asyncio.sleep(0.001)
+                response = await concurrent.get("/api/health")
+                release.set()
+                assert response.status_code == 200
+                return time.monotonic() - started_at[0]
+
+            results = await asyncio.gather(
+                concurrent.post("/api/ai/studies/summarize", json={"pmid": "123456"}), health()
+            )
+            assert results[0].status_code == 200
+            assert results[1] < 0.3
+
+    asyncio.run(exercise())
 
 
 @pytest.mark.parametrize("role", ["doctor", "patient", None])

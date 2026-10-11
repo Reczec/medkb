@@ -14,13 +14,24 @@ from app.ai.provider import AIProvider, AIUnavailable
 from app.ai.schemas import Classification
 from app.config import Settings
 from app.schemas import DocumentCreate, DocumentOut
+from app.seed_data import SEED_DOCUMENTS, SOURCE
+
+SEED_TITLES = frozenset(item["title"] for item in SEED_DOCUMENTS)
 
 
 def document_inputs(document: Any) -> dict:
     """Bind to semantic content, not timestamps refreshed by an unchanged demo reset."""
     return DocumentOut.model_validate(document).model_dump(
-        mode="json", exclude={"created_at", "updated_at"}
+        mode="json", exclude={"id", "created_at", "updated_at"}
     )
+
+
+def document_cache_identity(document: Any) -> str | None:
+    # Seed IDs change on PostgreSQL reset. Content still independently binds the cache key;
+    # a changed/restored/imitated seed title cannot receive another content snapshot's answer.
+    if document.source == SOURCE and document.title in SEED_TITLES:
+        return "seed:" + document.title
+    return None
 
 
 def normalize(feature: str, text: str, inputs: Any, citations: list[dict]) -> dict:
@@ -80,10 +91,11 @@ async def execute(
     document_id: int | None = None,
     citations: list[dict] | None = None,
     stream: bool = False,
+    cache_identity: str | None = None,
 ) -> Any:
     references = citations or []
     cacheable = feature not in ("ask", "draft", "classify")
-    key = store.cache_key(feature, document_id, inputs, role, settings)
+    key = store.cache_key(feature, cache_identity or document_id, inputs, role, settings)
     found = store.read_cache(db, key) if cacheable else None
     if found is not None:
         result = {**found, "cached": True}

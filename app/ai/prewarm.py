@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.ai.provider import AIProvider, AIUnavailable, get_provider
-from app.ai.service import document_inputs, execute
+from app.ai.service import document_cache_identity, document_inputs, execute
 from app.ai.store import client_identity
 from app.config import Settings, get_settings
 from app.database import Base, SessionLocal, engine, upgrade_schema
@@ -41,6 +41,7 @@ async def prewarm(
                         inputs,
                         role,
                         document_id=document.id,
+                        cache_identity=document_cache_identity(document),
                     )
                     counts["completed"] += 1
                 except (AIUnavailable, HTTPException):

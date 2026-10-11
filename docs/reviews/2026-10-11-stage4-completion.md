@@ -48,4 +48,22 @@ Code/finish reviewer findings and documenter outcome are appended here before co
 
 ## Next steps
 
+## Final independent review and fixes
+
+Fresh isolated code review: no Critical findings; all five Important findings accepted and fixed in one grouped pass:
+
+- PostgreSQL seed IDs change after reset: canonical source/title seed identity plus complete semantic snapshot now reuses unchanged cache entries. IDs and timestamps are excluded from snapshots; ordinary entries retain their ID identity. Reset regression forces a changed ID; RED then GREEN. Cache version is stage4-v2.
+- Blocking PubMed work: fetch/cache runs in asyncio.to_thread with sequential session use. Concurrent health-request regression: RED then GREEN.
+- Natural questions and generic follow-ups: bounded German question-word normalization and latest user-topic fallback. Three regression cases: RED then GREEN. Retrieval remains lexical.
+- Compose configuration: all six AI settings forwarded; synthetic-key configuration validation RED then GREEN, without printing secrets.
+- Assistant retry history: successful retries update conversation history and clear the submitted question. Frontend regression RED then GREEN.
+
+Final full checks: 551 backend tests, 142 frontend tests, 30 browser tests; Ruff check/format (80 files), lint, typecheck and production build green. Docker CLI configuration validation passes; Docker Desktop daemon unavailable, so PostgreSQL runtime verification remains pending.
+
+Minor accepted/deferred: staff “Einfach erklären” uses professional tone; tracked in BACKLOG. Review focus exclusions: real provider/model/free-tier access and quality without credentials, PostgreSQL concurrency/proxy runtime without deployment, and live WHO/clinical truth beyond deterministic contracts. None is claimed verified.
+
+Fresh visual finish review disposition: ship, no material fixes. Sixteen desktop/phone light/dark captures reviewed; runtime behavior and every integration file were outside its scope. Named reviewer types unavailable: generic fresh isolated agents received their contracts. The [documenter report](2026-10-11-stage4-design-documentation.md) records unchanged DESIGN.md/design.json and rechecks behavior-only retry changes.
+
+Integration follows the user's explicit local-main and push instructions. Grouped fixes are recorded as “fix(ai): address stage 4 review findings” in git log. No worktree created. Stage 4 ignored execution scratch is removed after preserving this record.
+
 [Next steps](../NEXT_STEPS.md): configure one real provider smoke test, optionally warm seeded results, resolve auth/reset/archive follow-ups, then plan stage5 Render/Neon deployment and public demo evidence. [BACKLOG](../BACKLOG.md) retains deferred issues and live verification boundaries.

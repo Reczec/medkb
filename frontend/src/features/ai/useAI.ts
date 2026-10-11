@@ -21,7 +21,7 @@ export function useAI() {
       if (!current.signal.aborted) setState({ pending: false, partial: '', error: (error as Error).message })
     }
   }
-  const retry = () => { if (last.current) void run(last.current.path, last.current.body, last.current.stream) }
+  const retry = () => last.current ? run(last.current.path, last.current.body, last.current.stream) : Promise.resolve(undefined)
   const clear = () => { controller.current?.abort(); setState({ pending: false, partial: '' }) }
   return { ...state, run, retry, clear }
 }
