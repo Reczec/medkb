@@ -7,7 +7,8 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 - **v2 spec** (the whole target, 5 stages): [docs/superpowers/specs/2026-10-10-medkb-v2-design.md](docs/superpowers/specs/2026-10-10-medkb-v2-design.md)
 - **Open follow-ups** from the stage 1 reviews: [docs/BACKLOG.md](docs/BACKLOG.md)
 - **Stage 3 completion and handoff** (commits, reviews, decisions and remaining verification): [docs/reviews/2026-10-11-stage3-completion.md](docs/reviews/2026-10-11-stage3-completion.md)
-- **Next steps** (stage 4 sequence and pre-deployment follow-ups): [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)
+- **Stage 4 completion** (AI contracts, decisions, tests and verification boundaries): [docs/reviews/2026-10-11-stage4-completion.md](docs/reviews/2026-10-11-stage4-completion.md)
+- **Next steps** (stage 5 and pre-deployment follow-ups): [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)
 
 ## Status
 
@@ -16,7 +17,7 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 | 1 React frontend, redesign, dashboard | done, merged into `main` ([plan](docs/superpowers/plans/2026-10-10-etappe-1-frontend-redesign.md)) |
 | 2 Roles and auth (admin / doctor / patient, demo login, demo reset) | done ([plan](docs/superpowers/plans/2026-10-10-etappe-2-rollen-auth.md)) |
 | 3 Data model, 47 realistic entries, PubMed / WHO ICD-11 / openFDA | done, merged into `main` and pushed ([plan](docs/superpowers/plans/2026-10-11-etappe-3-inhalte-quellen.md)) |
-| 4 AI features (free OpenAI-compatible provider, cache, rate limit) | open |
+| 4 AI features (free OpenAI-compatible provider, cache, rate limit) | implemented; live provider smoke test pending ([plan](docs/superpowers/plans/2026-10-11-etappe-4-ki.md)) |
 | 5 Deployment (Render + Neon), README, demo GIF | open |
 
 Continue a stage by writing its plan next to the stage 1 plan (same structure: file map, tasks with failing test first, commit per task), then implement it task by task.
@@ -30,6 +31,8 @@ Continue a stage by writing its plan next to the stage 1 plan (same structure: f
 - Every view keeps the notice "Prototyp mit Beispieldaten – keine medizinische Beratung." There is no patient data, ever.
 
 ## Gotchas (not visible from config)
+
+- **AI tests/setup.** No key means HTTP503 `ai_not_configured`; override `get_provider` with a fake or intercept `/api/ai/**` in browser tests. Never call a paid/live model in tests. SSE partial text is provisional until `done`. Bump `app.ai.store.PROMPT_VERSION` after prompt changes. Quotas and cache survive demo reset; successful semantic content snapshots exclude reset timestamps. Explicit CLI: `python -m app.ai.prewarm --limit 1`; trusted warmup still respects the global budget.
 
 - **e2e** needs a fresh `npm run build`, and `PYTHON` pointing at the venv's Python. From `frontend/` in PowerShell: `$env:PYTHON = (Resolve-Path ../.venv/Scripts/python.exe).Path; npm run e2e`. Use an absolute path: Playwright launches from the repository root. It starts its own uvicorn on port 8765 with a throwaway seeded SQLite DB.
 - **Sources in tests.** The autouse respx fixture `network` blocks real outbound HTTP in backend tests; register mock responses there. Browser tests intercept every `/api/sources/**` request with `page.route`, including dashboard studies. Keep these mocks when adding tests.
