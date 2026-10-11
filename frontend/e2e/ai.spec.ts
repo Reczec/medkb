@@ -63,6 +63,10 @@ test('assistant streams an answer and links its knowledge source', async ({ page
 
 test('admin reviews, applies and saves a draft with its AI marker', async ({ page }) => {
   const token = await login(page, 'admin'); await page.goto('/wissen/neu')
+  // A slow CPU, like the CI runner: the route change after saving once left the page blank
+  // because the page transition waited for an exit animation that never finished.
+  const cdp = await page.context().newCDPSession(page)
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 8 })
   const setup = async () => {
     await page.getByLabel('Titel', { exact: true }).fill('KI-Testentwurf')
     await page.getByRole('button', { name: 'KI-Entwurf erstellen' }).click()
@@ -74,6 +78,7 @@ test('admin reviews, applies and saves a draft with its AI marker', async ({ pag
   await expect(page.getByLabel('Inhalt', { exact: true })).toHaveValue(draft.content)
   await page.getByRole('button', { name: 'Speichern', exact: true }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'KI-Testentwurf' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: 'Neuer Eintrag' })).toHaveCount(0)
   await expect(page.getByText('KI-generiert', { exact: true })).toBeVisible()
   const id = new URL(page.url()).pathname.split('/').at(-1)
   expect((await page.request.delete(`/api/documents/${id}`, { headers: { Authorization: `Bearer ${token}` } })).ok()).toBe(true)
