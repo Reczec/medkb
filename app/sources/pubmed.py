@@ -7,6 +7,7 @@ import re
 import threading
 import time
 from typing import Any
+from xml.etree import ElementTree
 
 import httpx
 
@@ -16,6 +17,37 @@ from app.sources.cache import SourceUnavailable
 
 EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 MAX_AUTHORS = 3
+
+
+def fetch_abstract(client: httpx.Client, pmid: str, settings: Settings) -> str | None:
+    """Fetch one bounded, PMID-checked XML abstract through the fixed NCBI endpoint."""
+    for attempt in (1, 2):
+        throttle(settings)
+        try:
+            response = client.get(
+                EUTILS + "efetch.fcgi", params=_params(settings, id=pmid, retmode="xml")
+            )
+            if response.status_code == 429 and attempt == 1:
+                time.sleep(RETRY_AFTER_429)
+                continue
+            response.raise_for_status()
+            if len(response.content) > 500_000 or b"<!ENTITY" in response.content:
+                raise ValueError("Oversized or unsafe XML")
+            root = ElementTree.fromstring(response.content)
+            if root.findtext(".//MedlineCitation/PMID") != pmid:
+                raise ValueError("Unexpected PMID")
+            text = "\n".join(
+                "".join(node.itertext()).strip()
+                for node in root.findall(".//Abstract/AbstractText")
+            )
+            if len(text) > 20_000:
+                raise ValueError("Oversized abstract")
+            return text or None
+        except (httpx.HTTPError, ValueError, ElementTree.ParseError) as exc:
+            raise SourceUnavailable("Abstract unavailable") from exc
+    raise AssertionError("unreachable")
+
+
 # NCBI allows 3 requests per second without an API key and 10 with one; it counts strictly,
 # so keep a margin, and retry once after a pause if it still answers 429.
 MIN_INTERVAL = 0.4
