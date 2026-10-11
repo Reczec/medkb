@@ -73,7 +73,7 @@ def test_missing_dist_shows_hint(tmp_path):
     mount_frontend(app, tmp_path / "nope")
     response = TestClient(app).get("/")
     assert response.status_code == 200
-    assert "Frontend nicht gebaut" in response.text
+    assert "Frontend not built" in response.text
 
 
 def test_hashed_assets_are_cached_for_a_year(spa_client):

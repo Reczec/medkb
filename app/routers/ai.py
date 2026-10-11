@@ -7,12 +7,13 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.ai import prompts, retrieval, service, store
+from app.ai import retrieval, service, store
 from app.ai.provider import AIProvider, get_provider
 from app.ai.schemas import AskRequest, DraftRequest, StudyRequest
 from app.auth import CurrentUser, require_role
 from app.config import Settings, get_settings
 from app.database import get_db
+from app.i18n import RequestLang, message
 from app.models import Document
 from app.schemas import ClassifyRequest
 from app.sources.cache import cached
@@ -41,9 +42,9 @@ def identity(request: Request, settings: Settings) -> str:
     return store.client_identity(client_ip(request, settings), settings)
 
 
-def document_access(feature: str, user: CurrentUser):
+def document_access(feature: str, user: CurrentUser, lang: RequestLang):
     if feature == "summary" and user.role == "patient":
-        raise HTTPException(403, "Keine Berechtigung für diese Aktion.")
+        raise HTTPException(403, message("forbidden", lang))
     return user
 
 
@@ -56,13 +57,14 @@ async def document_assistance(
     settings: Config,
     user: Annotated[Any, Depends(document_access)],
     provider: Provider,
+    lang: RequestLang,
     stream: bool = False,
 ):
     document = db.get(Document, document_id)
     if document is None:
         raise HTTPException(404, "Document not found.")
     if stream and feature == "red-flags":
-        raise HTTPException(422, "Diese Funktion unterstützt kein Streaming.")
+        raise HTTPException(422, message("ai_no_streaming", lang))
     return await service.execute(
         db,
         settings,
@@ -74,6 +76,7 @@ async def document_assistance(
         document_id=document_id,
         stream=stream,
         cache_identity=service.document_cache_identity(document),
+        lang=lang,
     )
 
 
@@ -85,13 +88,14 @@ async def ask(
     db: Db,
     settings: Config,
     provider: Provider,
+    lang: RequestLang,
     stream: bool = False,
 ):
     documents = retrieval.find(db, body)
     references = [{"index": i, "id": d.id, "title": d.title} for i, d in enumerate(documents, 1)]
     if not documents:
         result = {
-            "text": "Es gibt keine passenden Einträge in der Wissensdatenbank. " + prompts.NOTICE,
+            "text": message("ai_no_entries", lang) + " " + message("notice", lang),
             "cached": False,
             "citations": [],
         }
@@ -120,6 +124,7 @@ async def ask(
         user.role,
         citations=references,
         stream=stream,
+        lang=lang,
     )
 
 
@@ -131,6 +136,7 @@ async def draft(
     db: Db,
     settings: Config,
     provider: Provider,
+    lang: RequestLang,
     stream: bool = False,
 ):
     return await service.execute(
@@ -142,6 +148,7 @@ async def draft(
         body.model_dump(),
         user.role,
         stream=stream,
+        lang=lang,
     )
 
 
@@ -153,6 +160,7 @@ async def classify(
     db: Db,
     settings: Config,
     provider: Provider,
+    lang: RequestLang,
 ):
     return await service.execute(
         db,
@@ -162,6 +170,7 @@ async def classify(
         "classify",
         body.model_dump(),
         user.role,
+        lang=lang,
     )
 
 
@@ -174,6 +183,7 @@ async def study_summary(
     settings: Config,
     provider: Provider,
     client: Annotated[httpx.Client, Depends(http_client)],
+    lang: RequestLang,
 ):
     # The session is used sequentially: no DB operation overlaps this awaited worker.
     abstract = await asyncio.to_thread(
@@ -186,7 +196,7 @@ async def study_summary(
     if abstract.status == "unavailable":
         raise HTTPException(503, "ai_source_unavailable")
     if not abstract.data:
-        raise HTTPException(404, "Kein Abstract verfügbar.")
+        raise HTTPException(404, message("ai_no_abstract", lang))
     return await service.execute(
         db,
         settings,
@@ -195,6 +205,7 @@ async def study_summary(
         "study",
         {"pmid": body.pmid, "abstract": abstract.data},
         user.role,
+        lang=lang,
     )
 
 

@@ -38,9 +38,7 @@ def reset_demo(db: Session) -> int:
         count = seed_if_empty(db, force=True, commit=False)
         db.flush()  # the seed's own audit entries must exist before the log is cleared
         db.execute(delete(AuditLog))
-        log_audit(
-            db, "demo_reset", None, f"Beispieldaten wiederhergestellt ({count} Einträge)", "system"
-        )
+        log_audit(db, "demo_reset", None, f"Example data restored ({count} entries)", "system")
         db.commit()
     except BaseException:
         db.rollback()

@@ -4,8 +4,9 @@ import json
 from typing import Any
 
 from app.classifier import CATEGORIES
+from app.i18n import message
 
-NOTICE = "Prototyp mit Beispieldaten – keine medizinische Beratung."
+NOTICE = message("notice", "de")
 
 PLAIN = "Einfache Sprache auf Niveau B1."
 PROFESSIONAL = "Fachliche Sprache für medizinisches Personal."

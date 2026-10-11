@@ -60,7 +60,7 @@ def test_document_roles(client, doctor_client, patient_client, anon_client, fake
     expected = 401 if role is None else 403 if role == "patient" and feature == "summary" else 200
     assert response.status_code == expected
     if expected == 200:
-        assert "keine medizinische Beratung" in response.json()["text"]
+        assert "not medical advice" in response.json()["text"]
 
 
 def test_cache_hit_costs_no_quota_and_edit_or_role_changes_cache(
@@ -107,7 +107,11 @@ def test_interrupted_stream_is_not_cached(client, fake, db_session):
 
 
 def test_ask_no_context_is_honest_and_uses_no_provider(client, fake, db_session):
-    response = client.post("/api/ai/ask", json={"question": "KeinePassendenEinträge"})
+    response = client.post(
+        "/api/ai/ask",
+        json={"question": "KeinePassendenEinträge"},
+        headers={"Accept-Language": "de"},
+    )
     assert response.status_code == 200
     assert response.json()["citations"] == []
     assert "keine passenden" in response.json()["text"].lower()
@@ -524,3 +528,47 @@ def test_prewarm_can_pause_between_calls_for_provider_rate_limits(
     result = asyncio.run(prewarm_module.prewarm(db_session, test_settings, fake, limit=1, pause=4))
     assert result == {"completed": 8, "failed": 0}
     assert pauses == [4] * 7  # between the 8 calls, not after the last
+
+
+@pytest.mark.parametrize(
+    ("header", "limit_text", "notice"),
+    [
+        (
+            "de",
+            "KI-Tageslimit erreicht. Bitte morgen erneut versuchen.",
+            "Prototyp mit Beispieldaten",
+        ),
+        ("en", "Daily AI limit reached. Please try again tomorrow.", "Prototype with example data"),
+        (None, "Daily AI limit reached. Please try again tomorrow.", "Prototype with example data"),
+    ],
+)
+def test_ai_messages_follow_the_request_language(
+    client, fake, test_settings, header, limit_text, notice
+):
+    make_doc(client, title="Migräne")
+    fake.answer = "Allgemeine Information [1]."
+    test_settings.ai_client_daily_limit = 1
+    headers = {"Accept-Language": header} if header else {}
+    first = client.post("/api/ai/ask", json={"question": "Migräne"}, headers=headers)
+    assert first.status_code == 200
+    assert notice in first.json()["text"]
+    second = client.post("/api/ai/ask", json={"question": "Migräne"}, headers=headers)
+    assert second.status_code == 429
+    assert second.json()["detail"] == limit_text
+
+
+def test_no_matching_entries_is_english_without_a_header(client, fake):
+    response = client.post("/api/ai/ask", json={"question": "KeinePassendenEinträge"})
+    assert "no matching entries" in response.json()["text"].lower()
+    assert "Prototype with example data" in response.json()["text"]
+
+
+def test_stream_error_message_follows_the_request_language(client, fake):
+    doc = make_doc(client)
+    fake.stream_fail = True
+    de = client.post(
+        f"/api/ai/documents/{doc['id']}/explain?stream=true", headers={"Accept-Language": "de"}
+    )
+    en = client.post(f"/api/ai/documents/{doc['id']}/explain?stream=true")
+    assert "nicht vollständig erstellt" in de.text
+    assert "could not be completed" in en.text

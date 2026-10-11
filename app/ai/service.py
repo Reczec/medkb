@@ -13,6 +13,7 @@ from app.ai import prompts, store
 from app.ai.provider import AIProvider, AIUnavailable
 from app.ai.schemas import Classification
 from app.config import Settings
+from app.i18n import Lang, message
 from app.schemas import DocumentCreate, DocumentOut
 from app.seed_data import SEED_DOCUMENTS, SOURCE
 
@@ -34,7 +35,9 @@ def document_cache_identity(document: Any) -> str | None:
     return None
 
 
-def normalize(feature: str, text: str, inputs: Any, citations: list[dict]) -> dict:
+def normalize(
+    feature: str, text: str, inputs: Any, citations: list[dict], lang: Lang = "de"
+) -> dict:
     try:
         if not text.strip() or len(text) > 20_000:
             raise ValueError("Invalid output size")
@@ -70,7 +73,7 @@ def normalize(feature: str, text: str, inputs: Any, citations: list[dict]) -> di
             marks = [int(n) for n in re.findall(r"\[(\d+)\]", text)]
             if not marks or any(n < 1 or n > len(citations) for n in marks):
                 raise ValueError("Unverifiable citation")
-        result["text"] += "\n\n" + prompts.NOTICE
+        result["text"] += "\n\n" + message("notice", lang)
         return result
     except (ValueError, TypeError, AttributeError, ValidationError) as exc:
         raise AIUnavailable("ai_invalid_output") from exc
@@ -92,6 +95,7 @@ async def execute(
     citations: list[dict] | None = None,
     stream: bool = False,
     cache_identity: str | None = None,
+    lang: Lang = "de",
 ) -> Any:
     references = citations or []
     cacheable = feature not in ("ask", "draft", "classify")
@@ -106,11 +110,11 @@ async def execute(
 
             return StreamingResponse(cached_events(), media_type="text/event-stream")
         return result
-    store.reserve(db, identity, settings)
+    store.reserve(db, identity, settings, lang)
     request_messages = prompts.messages(feature, role, inputs)
 
     def finish(text: str) -> dict:
-        result = normalize(feature, text, inputs, references)
+        result = normalize(feature, text, inputs, references, lang)
         if cacheable:
             store.write_cache(db, key, feature, document_id, settings, result)
         return result
@@ -133,10 +137,7 @@ async def execute(
                 "error",
                 {
                     "code": str(exc),
-                    "message": (
-                        "KI-Antwort konnte nicht vollständig erstellt werden. "
-                        "Bitte erneut versuchen."
-                    ),
+                    "message": message("ai_incomplete", lang),
                 },
             )
 

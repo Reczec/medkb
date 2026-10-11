@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
 from app.database import get_db
+from app.i18n import RequestLang, message
 from app.models import User
 
 Role = Literal["admin", "doctor", "patient"]
@@ -86,9 +87,9 @@ CurrentUser = Annotated[User, Depends(current_user)]
 def require_role(*roles: Role):
     """Dependency: the logged-in user must have one of the given roles (else 403)."""
 
-    def check(user: CurrentUser) -> User:
+    def check(user: CurrentUser, lang: RequestLang) -> User:
         if user.role not in roles:
-            raise HTTPException(status.HTTP_403_FORBIDDEN, "Keine Berechtigung für diese Aktion.")
+            raise HTTPException(status.HTTP_403_FORBIDDEN, message("forbidden", lang))
         return user
 
     return check

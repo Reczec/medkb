@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from app.auth import CurrentUser, create_token, hash_password, verify_password
 from app.config import Settings, get_settings
 from app.database import get_db
+from app.i18n import RequestLang, message
 from app.models import User
 from app.schemas import AuthOptions, DemoLoginRequest, LoginRequest, TokenOut, UserOut
 from app.users import DEMO_USERS
@@ -30,12 +31,12 @@ def _token_for(user: User, settings: Settings) -> TokenOut:
 
 
 @router.post("/login", response_model=TokenOut)
-def login(data: LoginRequest, db: DbSession, settings: AppSettings) -> TokenOut:
+def login(data: LoginRequest, db: DbSession, settings: AppSettings, lang: RequestLang) -> TokenOut:
     user = db.scalar(select(User).where(User.username == data.username))
     # Same message for unknown users and wrong passwords: nothing to learn from the answer.
     valid = verify_password(data.password, user.password_hash if user else _DUMMY_HASH)
     if user is None or not valid:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Benutzername oder Passwort falsch")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, message("invalid_login", lang))
     return _token_for(user, settings)
 
 

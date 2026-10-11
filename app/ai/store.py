@@ -14,6 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import Settings
+from app.i18n import Lang, message
 from app.models import AICache, AIUsage, utcnow
 
 GLOBAL = "global"
@@ -83,7 +84,7 @@ def _ensure_row(db: Session, identity: str, today: str) -> None:
         pass  # another request (or earlier reservation) created it
 
 
-def reserve(db: Session, identity: str, settings: Settings) -> None:
+def reserve(db: Session, identity: str, settings: Settings, lang: Lang = "de") -> None:
     """Reserve once before contacting a provider. Failed attempts still cost an API call.
 
     Lock/update global before client in every request; either both increments commit or neither.
@@ -106,7 +107,7 @@ def reserve(db: Session, identity: str, settings: Settings) -> None:
             retry = max(1, int((midnight - now).total_seconds()))
             raise HTTPException(
                 429,
-                "KI-Tageslimit erreicht. Bitte morgen erneut versuchen.",
+                message("ai_limit", lang),
                 headers={"Retry-After": str(retry)},
             )
     db.commit()

@@ -86,7 +86,9 @@ def test_password_login(anon_client):
 @pytest.mark.parametrize("username,password", [("admin", "falsch"), ("niemand", ADMIN_PASSWORD)])
 def test_wrong_credentials_give_the_same_401(anon_client, username, password):
     response = anon_client.post(
-        "/api/auth/login", json={"username": username, "password": password}
+        "/api/auth/login",
+        json={"username": username, "password": password},
+        headers={"Accept-Language": "de"},
     )
     assert response.status_code == 401
     assert response.json()["detail"] == "Benutzername oder Passwort falsch"
