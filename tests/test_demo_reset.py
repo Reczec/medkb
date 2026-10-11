@@ -42,3 +42,49 @@ def test_reset_loop_runs_the_reset_periodically(monkeypatch, archive_dir):
 
     asyncio.run(run())
     assert len(calls) >= 2
+
+
+def test_reset_is_one_transaction(client, db_session, monkeypatch):
+    make_doc(client, title="Bleibt bei einem Fehler erhalten")
+    before = db_session.scalars(select(Document.title)).all()
+    log_before = db_session.scalar(select(func.count(AuditLog.id)))
+
+    import app.services as services
+
+    real_create = services.create_document
+    calls = []
+
+    def failing_create(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 5:
+            raise RuntimeError("Abbruch mitten im Reset")
+        return real_create(*args, **kwargs)
+
+    monkeypatch.setattr("app.seed.create_document", failing_create)
+    try:
+        demo.reset_demo(db_session)
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("reset should have failed")
+
+    db_session.expire_all()
+    assert db_session.scalars(select(Document.title)).all() == before
+    assert db_session.scalar(select(func.count(AuditLog.id))) == log_before
+
+
+def test_reader_never_sees_an_empty_base_during_reset(client, db_session, monkeypatch):
+    from app.database import SessionLocal
+
+    make_doc(client, title="Alter Stand")
+    seen = []
+    real_commit = db_session.commit
+
+    def look_then_commit():
+        with SessionLocal() as reader:
+            seen.append(reader.scalar(select(func.count(Document.id))))
+        real_commit()
+
+    monkeypatch.setattr(db_session, "commit", look_then_commit)
+    demo.reset_demo(db_session)
+    assert seen and min(seen) > 0

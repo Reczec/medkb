@@ -25,15 +25,21 @@ def reset_demo(db: Session) -> int:
     """Replace all entries with the example entries and start a fresh change log.
 
     Logins and archives are kept. Returns the number of entries.
+    One transaction: readers see the old or the new state, never an empty knowledge base, and a
+    failure part-way leaves the old state in place.
     """
-    db.execute(delete(Document))
-    db.commit()
-    count = seed_if_empty(db, force=True)
-    db.execute(delete(AuditLog))
-    log_audit(
-        db, "demo_reset", None, f"Beispieldaten wiederhergestellt ({count} Einträge)", "system"
-    )
-    db.commit()
+    try:
+        db.execute(delete(Document))
+        count = seed_if_empty(db, force=True, commit=False)
+        db.flush()  # the seed's own audit entries must exist before the log is cleared
+        db.execute(delete(AuditLog))
+        log_audit(
+            db, "demo_reset", None, f"Beispieldaten wiederhergestellt ({count} Einträge)", "system"
+        )
+        db.commit()
+    except BaseException:
+        db.rollback()
+        raise
     return count
 
 

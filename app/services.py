@@ -44,7 +44,10 @@ def log_audit(
 # --------------------------------------------------------------------------- CRUD
 
 
-def create_document(db: Session, data: DocumentCreate, actor: str | None = None) -> Document:
+def create_document(
+    db: Session, data: DocumentCreate, actor: str | None = None, commit: bool = True
+) -> Document:
+    """Insert one entry. ``commit=False`` leaves the transaction open (atomic demo reset)."""
     content = data.content or ""  # the schema guarantees content (or composes it from sections)
     suggestion = classify(data.title, content)
     manual_category = data.category is not None
@@ -67,7 +70,8 @@ def create_document(db: Session, data: DocumentCreate, actor: str | None = None)
     db.add(document)
     db.flush()  # assigns the id for the audit entry
     log_audit(db, "create", document.id, document.title, actor)
-    db.commit()
+    if commit:
+        db.commit()
     return document
 
 

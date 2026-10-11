@@ -66,7 +66,8 @@ export async function api<T = unknown>(path: string, opts: ApiOptions = {}): Pro
     throw new ApiError(0, 'Server nicht erreichbar')
   }
 
-  if (res.status === 401 && token) {
+  // Only the token this request carried is stale; a login made meanwhile stays.
+  if (res.status === 401 && token && tokenStore.get() === token) {
     tokenStore.clear()
     window.dispatchEvent(new Event(UNAUTHORIZED_EVENT))
   }
