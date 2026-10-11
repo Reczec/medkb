@@ -5,7 +5,7 @@ Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onr
 ## Still to verify live
 
 1. **Cold start:** open the demo after 15+ minutes without visitors and time the first page (Render: about a minute).
-2. **Visitor IP header:** confirm Render's edge overwrites a client-sent `True-Client-IP`. Test: send 30 uncached AI questions with one spoofed value, then one with another spoofed value; the last must answer 429. This uses up the tester's own 30-call AI quota until UTC midnight. If it answers 200, the header is spoofable: switch `CLIENT_IP_HEADER` to a header Render does overwrite, or leave it empty (all visitors then share one quota).
+2. **Visitor IP header:** a spoofed `True-Client-IP` is not honoured (tested 2026-10-12, see the record). Still open: ask one AI question from a second network (phone on mobile data) while the first network is at its daily limit; an answer confirms per-visitor buckets.
 
 ## Optional improvements
 
