@@ -27,25 +27,29 @@ import { ClassificationExplainer } from '@/features/documents/ClassificationExpl
 import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
 import { FurtherReading } from '@/features/documents/FurtherReading'
 import { SectionedContent } from '@/features/documents/SectionedContent'
+import { useI18n } from '@/i18n/context'
+import { localized } from '@/i18n/localized'
+import type { TranslationKey } from '@/i18n/translate'
 import { ApiError } from '@/lib/api'
 import { formatDate, formatRelative } from '@/lib/format'
 import { useDeleteDocument, useDocument } from '@/lib/queries'
 import type { Document } from '@/lib/types'
 
-function Details({ document }: { document: Document }) {
+function Details({ document, keywords }: { document: Document; keywords: string[] }) {
   const id = useId()
+  const { t, lang, docTypeLabel } = useI18n()
   const rows: [string, string][] = [
-    ['Dokumenttyp', document.doc_type],
-    ...(document.term_en ? [['Fachbegriff (en)', document.term_en] as [string, string]] : []),
-    ...(document.icd11_code ? [['ICD-11', document.icd11_code] as [string, string]] : []),
-    ['Quelle', document.source ?? '—'],
-    ['Erstellt', formatDate(document.created_at)],
-    ['Geändert', formatDate(document.updated_at)],
+    [t('doc.docType'), docTypeLabel(document.doc_type)],
+    ...(document.term_en ? [[t('doc.termEn'), document.term_en] as [string, string]] : []),
+    ...(document.icd11_code ? [[t('doc.icd11'), document.icd11_code] as [string, string]] : []),
+    [t('doc.source'), document.source ?? '—'],
+    [t('doc.created'), formatDate(document.created_at, lang)],
+    [t('doc.changedAt'), formatDate(document.updated_at, lang)],
   ]
   return (
     <section aria-labelledby={id} className="rounded-xl border bg-card p-5 shadow-sheet">
       <h2 id={id} className="text-base font-semibold">
-        Details
+        {t('doc.details')}
       </h2>
       <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
         {rows.map(([label, value]) => (
@@ -55,11 +59,11 @@ function Details({ document }: { document: Document }) {
           </div>
         ))}
       </dl>
-      {document.keywords.length > 0 && (
+      {keywords.length > 0 && (
         <>
-          <h3 className="mt-5 text-xs font-medium text-muted-foreground">Schlagwörter</h3>
+          <h3 className="mt-5 text-xs font-medium text-muted-foreground">{t('card.keywords')}</h3>
           <ul className="mt-2 flex flex-wrap gap-1.5">
-            {document.keywords.map((keyword) => (
+            {keywords.map((keyword) => (
               <li key={keyword} className="max-w-full rounded-md bg-muted px-2 py-0.5 text-xs break-all">
                 {keyword}
               </li>
@@ -74,12 +78,14 @@ function Details({ document }: { document: Document }) {
 function DeleteButton({ document }: { document: Document }) {
   const remove = useDeleteDocument()
   const navigate = useNavigate()
+  const { t, lang } = useI18n()
+  const title = localized(document, lang).title
 
   const confirm = (event: React.MouseEvent) => {
     event.preventDefault()
     remove.mutate(document.id, {
       onSuccess: () => {
-        toast.success(`„${document.title}“ wurde gelöscht.`)
+        toast.success(t('doc.deleted', { title }))
         navigate('/wissen')
       },
       onError: (error) => toast.error(error.message),
@@ -90,21 +96,18 @@ function DeleteButton({ document }: { document: Document }) {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" className="text-destructive hover:text-destructive">
-          <Trash2 aria-hidden /> Löschen
+          <Trash2 aria-hidden /> {t('doc.delete')}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eintrag endgültig löschen?</AlertDialogTitle>
-          <AlertDialogDescription>
-            „{document.title}“ wird gelöscht. Im Änderungsprotokoll bleibt der Vorgang sichtbar;
-            wiederherstellen lässt er sich nur über ein Archiv.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t('doc.deleteTitle')}</AlertDialogTitle>
+          <AlertDialogDescription>{t('doc.deleteText', { title })}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+          <AlertDialogCancel>{t('doc.cancel')}</AlertDialogCancel>
           <AlertDialogAction variant="destructive" onClick={confirm} disabled={remove.isPending}>
-            Endgültig löschen
+            {t('doc.deleteConfirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -112,17 +115,18 @@ function DeleteButton({ document }: { document: Document }) {
   )
 }
 
-const VIEWS = [
-  { value: 'inhalt', label: 'Inhalt', icon: FileText },
-  { value: 'ki', label: 'KI-Zusammenfassung', icon: MessageSquareText },
-  { value: 'icd11', label: 'ICD-11', icon: Hash },
-  { value: 'studien', label: 'Studien', icon: BookOpenText },
-  { value: 'medikamente', label: 'Medikamente', icon: Pill },
-] as const
+const VIEWS: { value: string; label: TranslationKey; icon: typeof FileText }[] = [
+  { value: 'inhalt', label: 'view.content', icon: FileText },
+  { value: 'ki', label: 'view.ai', icon: MessageSquareText },
+  { value: 'icd11', label: 'view.icd11', icon: Hash },
+  { value: 'studien', label: 'view.studies', icon: BookOpenText },
+  { value: 'medikamente', label: 'view.medications', icon: Pill },
+]
 
 /** Staff view: the sheet carries tabs; each source loads when its tab is first opened. */
 function SourceTabs({ document, content }: { document: Document; content: React.ReactNode }) {
   const [params, setParams] = useSearchParams()
+  const { t } = useI18n()
   const views = VIEWS.filter((v) => v.value !== 'medikamente' || document.medications.length > 0)
   const requested = params.get('tab')
   const tab = views.some((v) => v.value === requested) ? requested! : 'inhalt'
@@ -144,12 +148,12 @@ function SourceTabs({ document, content }: { document: Document; content: React.
       <article className="rounded-xl border bg-card shadow-sheet">
         <TabsList
           variant="line"
-          aria-label="Ansicht"
+          aria-label={t('view.label')}
           className="h-12! w-full justify-start gap-1 overflow-x-auto border-b px-4"
         >
           {views.map(({ value, label, icon: Icon }) => (
             <TabsTrigger key={value} value={value} className="flex-none px-3">
-              <Icon aria-hidden /> {label}
+              <Icon aria-hidden /> {t(label)}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -177,6 +181,7 @@ export function DocumentPage() {
   const id = Number(useParams().id)
   const { data: document, error, isPending, refetch } = useDocument(id)
   const { user } = useAuth()
+  const { t, lang, categoryLabel, docTypeLabel } = useI18n()
   const isAdmin = user?.role === 'admin'
   const showsClassification = user?.role === 'admin' || user?.role === 'doctor'
 
@@ -193,9 +198,10 @@ export function DocumentPage() {
     )
   }
 
-  const paragraphs = document.content.split(/\n\s*\n/).filter((p) => p.trim())
-  const content = document.sections ? (
-    <SectionedContent sections={document.sections} />
+  const text = localized(document, lang)
+  const paragraphs = text.content.split(/\n\s*\n/).filter((p) => p.trim())
+  const content = text.sections ? (
+    <SectionedContent sections={text.sections} />
   ) : (
     <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
       {paragraphs.map((paragraph, index) => (
@@ -208,42 +214,50 @@ export function DocumentPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <nav aria-label="Pfad" className="flex items-center gap-1 text-sm text-muted-foreground">
+      <nav aria-label={t('doc.path')} className="flex items-center gap-1 text-sm text-muted-foreground">
         <Link to="/wissen" className="hover:text-foreground">
-          Wissensdatenbank
+          {t('nav.knowledge')}
         </Link>
         <ChevronRight className="size-3.5" aria-hidden />
         <Link
           to={`/wissen?category=${encodeURIComponent(document.category)}`}
           className="hover:text-foreground"
         >
-          {document.category}
+          {categoryLabel(document.category)}
         </Link>
       </nav>
 
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex min-w-0 flex-col gap-2">
           <h1 className="text-3xl font-semibold tracking-tight [overflow-wrap:anywhere] lg:text-4xl">
-            {document.title}
+            {text.title}
           </h1>
           <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground/80">{document.doc_type}</span>
-            {document.ai_generated && <span className="rounded-md bg-muted px-2 py-0.5 text-xs">KI-generiert</span>}
+            <span className="font-medium text-foreground/80">{docTypeLabel(document.doc_type)}</span>
+            {document.ai_generated && (
+              <span className="rounded-md bg-muted px-2 py-0.5 text-xs">{t('doc.aiGenerated')}</span>
+            )}
             <span aria-hidden>·</span>
-            <span>geändert {formatRelative(document.updated_at)}</span>
+            <span>{t('card.changed', { time: formatRelative(document.updated_at, lang) })}</span>
           </p>
         </div>
         {isAdmin && (
         <div className="flex shrink-0 gap-2">
           <Button asChild variant="outline">
             <Link to={`/wissen/${document.id}/bearbeiten`}>
-              <Pencil aria-hidden /> Bearbeiten
+              <Pencil aria-hidden /> {t('doc.edit')}
             </Link>
           </Button>
           <DeleteButton document={document} />
         </div>
         )}
       </header>
+
+      {text.fallback && (
+        <p role="status" className="w-fit rounded-lg bg-muted px-3 py-1.5 text-sm text-muted-foreground">
+          {t('doc.onlyGerman')}
+        </p>
+      )}
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
         <div className="flex min-w-0 flex-col lg:col-span-2">
@@ -259,7 +273,7 @@ export function DocumentPage() {
 
         <aside className="flex min-w-0 flex-col gap-6">
           {showsClassification && <ClassificationExplainer document={document} />}
-          <Details document={document} />
+          <Details document={document} keywords={text.keywords} />
           <div className="rounded-xl border bg-card p-5 shadow-sheet"><DocumentAI key={document.id} documentId={document.id} /></div>
           <FurtherReading links={document.further_reading} />
         </aside>

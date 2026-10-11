@@ -76,6 +76,7 @@ export const TEST_USERS: Record<'admin' | 'doctor' | 'patient', AuthUser> = {
 
 type Stage3Field =
   | 'term_en' | 'icd11_code' | 'medications' | 'sections' | 'further_reading' | 'ai_generated'
+  | 'title_en' | 'content_en' | 'sections_en' | 'keywords_en'
 
 /** A plain free-text entry's values for the fields added in stage 3. */
 export const PLAIN_FIELDS: Pick<Document, Stage3Field> = {
@@ -85,4 +86,8 @@ export const PLAIN_FIELDS: Pick<Document, Stage3Field> = {
   sections: null,
   further_reading: [],
   ai_generated: false,
+  title_en: null,
+  content_en: null,
+  sections_en: null,
+  keywords_en: [],
 }

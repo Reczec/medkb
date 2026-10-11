@@ -1,5 +1,8 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { SectionedContent } from '@/features/documents/SectionedContent'
+import { renderWithProviders } from '@/test/utils'
+
+const render = (ui: React.ReactElement) => renderWithProviders(ui)
 
 it('renders the sections in their fixed order and skips empty ones', () => {
   render(

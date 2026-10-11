@@ -39,9 +39,10 @@ it.each(['Create', 'Update', 'Delete', 'Restore'])('refreshes previously cached 
   const client = makeQueryClient()
   const oldTime = '2026-10-10T10:00:00Z'
   const newTime = '2026-10-11T10:00:00Z'
-  for (const source of ['studies', 'icd11', 'medications']) {
-    client.setQueryData(['source', source, 5], { status: 'empty', data: null, fetched_at: oldTime })
-  }
+  const cached = { status: 'empty', data: null, fetched_at: oldTime }
+  client.setQueryData(['source', 'studies', 5], cached)
+  client.setQueryData(['source', 'icd11', 5, 'de'], cached) // WHO answers per language
+  client.setQueryData(['source', 'medications', 5], cached)
   client.setQueryData(['source', 'latest-studies'], { status: 'empty', data: null, fetched_at: oldTime })
   const fetchMock = mockFetch({
     '/api/sources/': { status: 'empty', data: null, fetched_at: newTime },

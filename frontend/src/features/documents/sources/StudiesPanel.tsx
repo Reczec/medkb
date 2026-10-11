@@ -1,6 +1,7 @@
 import { ArrowUpRight } from 'lucide-react'
 import { StudyAI } from '@/features/ai/StudyAI'
 import { SourcePanel } from '@/features/documents/sources/SourcePanel'
+import { useI18n } from '@/i18n/context'
 import { useStudies } from '@/lib/queries'
 import type { Study } from '@/lib/types'
 
@@ -11,6 +12,7 @@ export function authorLine(study: Pick<Study, 'authors' | 'more_authors'>): stri
 
 /** One study as a list row; shared with the dashboard tile. */
 export function StudyItem({ study }: { study: Study }) {
+  const { t } = useI18n()
   return (
     <li>
       <a
@@ -31,7 +33,7 @@ export function StudyItem({ study }: { study: Study }) {
           {study.authors.length > 0 && (
             <span className="mt-0.5 block text-xs text-muted-foreground">{authorLine(study)}</span>
           )}
-          <span className="sr-only"> (PubMed, öffnet in neuem Tab)</span>
+          <span className="sr-only">{t('studies.opens')}</span>
         </span>
         <ArrowUpRight
           className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary"
@@ -53,17 +55,14 @@ export function StudiesPanel({
   enabled: boolean
 }) {
   const query = useStudies(documentId, enabled)
+  const { t } = useI18n()
   return (
     <SourcePanel
       source="PubMed · NCBI"
       shortName="PubMed"
       query={query}
-      caption={termEn ? <>Neueste Artikel mit Abstract zu „{termEn}“</> : undefined}
-      emptyText={
-        termEn
-          ? 'Keine Studien gefunden.'
-          : 'Keine Studien gefunden: Für diesen Eintrag ist kein englischer Fachbegriff hinterlegt.'
-      }
+      caption={termEn ? t('studies.caption', { term: termEn }) : undefined}
+      emptyText={termEn ? t('studies.empty') : t('studies.noTerm')}
     >
       {(studies) => (
         <ul className="flex flex-col gap-0.5">

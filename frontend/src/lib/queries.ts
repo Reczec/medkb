@@ -5,6 +5,7 @@ import {
   useQueryClient,
   type QueryClient,
 } from '@tanstack/react-query'
+import { useI18n } from '@/i18n/context'
 import { api } from '@/lib/api'
 import type {
   ArchiveInfo,
@@ -164,9 +165,9 @@ export const useAudit = (limit = 50, enabled = true) =>
 const SOURCE_STALE_MS = 10 * 60 * 1000
 
 /** A document's live data from an external source; fetched only while `enabled`. */
-function useDocumentSource<T>(source: string, id: number, enabled: boolean) {
+function useDocumentSource<T>(source: string, id: number, enabled: boolean, lang?: string) {
   return useQuery({
-    queryKey: ['source', source, id],
+    queryKey: lang ? ['source', source, id, lang] : ['source', source, id],
     queryFn: ({ signal }) =>
       api<SourceResult<T>>(`/api/sources/documents/${id}/${source}`, { signal }),
     enabled: enabled && Number.isInteger(id) && id > 0,
@@ -178,8 +179,11 @@ function useDocumentSource<T>(source: string, id: number, enabled: boolean) {
 export const useStudies = (id: number, enabled: boolean) =>
   useDocumentSource<Study[]>('studies', id, enabled)
 
-export const useIcd11 = (id: number, enabled: boolean) =>
-  useDocumentSource<Icd11Entry>('icd11', id, enabled)
+// WHO answers in the interface language, so the language is part of the cache key.
+export function useIcd11(id: number, enabled: boolean) {
+  const { lang } = useI18n()
+  return useDocumentSource<Icd11Entry>('icd11', id, enabled, lang)
+}
 
 export const useMedications = (id: number, enabled: boolean) =>
   useDocumentSource<MedicationsOut>('medications', id, enabled)

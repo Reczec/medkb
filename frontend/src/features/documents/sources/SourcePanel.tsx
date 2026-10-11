@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useI18n } from '@/i18n/context'
 import { formatRelative } from '@/lib/format'
 import type { SourceResult } from '@/lib/types'
 
@@ -43,12 +44,13 @@ export function SourcePanel<T>({
   children,
 }: SourcePanelProps<T>) {
   const result = query.data
+  const { t, lang } = useI18n()
   const retry = () => query.refetch()
 
   let body: ReactNode
   if (query.isPending) {
     body = (
-      <div aria-busy="true" aria-label={`${shortName} wird geladen`} className="flex flex-col gap-4">
+      <div aria-busy="true" aria-label={t('source.loading', { name: shortName })} className="flex flex-col gap-4">
         {[0, 1, 2].map((i) => (
           <div key={i} className="flex flex-col gap-2">
             <Skeleton className="h-4 w-11/12" />
@@ -62,20 +64,18 @@ export function SourcePanel<T>({
   } else if (!result || result.status === 'unavailable') {
     body = (
       <Notice icon={<CloudOff />}>
-        <p className="font-medium">{shortName} ist gerade nicht erreichbar.</p>
-        <p className="mt-0.5 text-muted-foreground">
-          Die Abfrage läuft live gegen die Quelle. Meist hilft ein zweiter Versuch.
-        </p>
+        <p className="font-medium">{t('source.unreachable', { name: shortName })}</p>
+        <p className="mt-0.5 text-muted-foreground">{t('source.unreachableHint')}</p>
         <Button variant="outline" size="sm" className="mt-3" onClick={retry} disabled={query.isFetching}>
-          <RotateCw aria-hidden className={query.isFetching ? 'animate-spin' : undefined} /> Erneut
-          versuchen
+          <RotateCw aria-hidden className={query.isFetching ? 'animate-spin' : undefined} />{' '}
+          {t('action.retry')}
         </Button>
       </Notice>
     )
   } else if (result.status === 'not_configured') {
     body = (
       <Notice icon={<Settings2 />}>
-        <p>{notConfiguredText ?? `${shortName} ist auf diesem Server nicht eingerichtet.`}</p>
+        <p>{notConfiguredText ?? t('source.notConfigured', { name: shortName })}</p>
       </Notice>
     )
   } else if (result.status === 'empty' || result.data === null) {
@@ -94,7 +94,7 @@ export function SourcePanel<T>({
         <p className="text-xs font-medium text-muted-foreground">{source}</p>
         {result?.fetched_at && (
           <p className="text-xs text-muted-foreground">
-            abgerufen {formatRelative(result.fetched_at)}
+            {t('source.retrieved', { time: formatRelative(result.fetched_at, lang) })}
           </p>
         )}
       </div>

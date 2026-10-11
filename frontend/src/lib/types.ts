@@ -7,6 +7,8 @@ export type Sections = Partial<Record<SectionKey, string | null>>
 
 export interface FurtherReadingLink {
   label: string
+  /** English label; the German one is shown when it is missing. */
+  label_en?: string | null
   url: string
 }
 
@@ -25,6 +27,11 @@ export interface Document {
   sections: Sections | null
   further_reading: FurtherReadingLink[]
   ai_generated: boolean
+  /** Optional English version; German above is canonical. */
+  title_en: string | null
+  content_en: string | null
+  sections_en: Sections | null
+  keywords_en: string[]
   created_at: string
   updated_at: string
 }
@@ -49,6 +56,10 @@ export interface DocumentCreate {
   term_en?: string | null
   icd11_code?: string | null
   medications?: string[]
+  title_en?: string | null
+  content_en?: string | null
+  sections_en?: Sections
+  keywords_en?: string[]
 }
 
 export interface DocumentUpdate {
@@ -63,6 +74,10 @@ export interface DocumentUpdate {
   term_en?: string | null
   icd11_code?: string | null
   medications?: string[]
+  title_en?: string | null
+  content_en?: string | null
+  sections_en?: Sections
+  keywords_en?: string[] | null
   reclassify?: boolean
 }
 

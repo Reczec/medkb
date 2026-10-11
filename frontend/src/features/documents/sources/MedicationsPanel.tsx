@@ -1,15 +1,18 @@
 import { ChevronDown, Info, Pill } from 'lucide-react'
 import { SourcePanel } from '@/features/documents/sources/SourcePanel'
+import { useI18n } from '@/i18n/context'
+import type { TranslationKey } from '@/i18n/translate'
 import { useMedications } from '@/lib/queries'
 import type { MedicationLabel } from '@/lib/types'
 
-const FIELDS: [keyof MedicationLabel, string][] = [
-  ['indications', 'Anwendungsgebiet'],
-  ['warnings', 'Warnhinweise'],
-  ['adverse_reactions', 'Nebenwirkungen'],
+const FIELDS: [keyof MedicationLabel, TranslationKey][] = [
+  ['indications', 'meds.indications'],
+  ['warnings', 'meds.warnings'],
+  ['adverse_reactions', 'meds.adverse'],
 ]
 
 function LabelCard({ label, open }: { label: MedicationLabel; open: boolean }) {
+  const { t } = useI18n()
   return (
     <details open={open} className="group rounded-xl border bg-card">
       <summary className="flex cursor-pointer list-none items-center gap-3 rounded-xl px-4 py-3 hover:bg-accent/50 [&::-webkit-details-marker]:hidden">
@@ -20,7 +23,7 @@ function LabelCard({ label, open }: { label: MedicationLabel; open: boolean }) {
           <span className="block font-medium">{label.ingredient}</span>
           {label.brand_names.length > 0 && (
             <span className="block truncate text-xs text-muted-foreground">
-              z. B. {label.brand_names.join(', ')}
+              {t('meds.brands', { names: label.brand_names.join(', ') })}
             </span>
           )}
         </span>
@@ -30,12 +33,12 @@ function LabelCard({ label, open }: { label: MedicationLabel; open: boolean }) {
         />
       </summary>
       <dl className="flex flex-col gap-3 border-t px-4 py-3.5 text-sm">
-        {FIELDS.map(([key, title]) => {
+        {FIELDS.map(([key, titleKey]) => {
           const text = label[key]
           if (!text || typeof text !== 'string') return null
           return (
             <div key={key}>
-              <dt className="text-xs font-medium text-muted-foreground">{title}</dt>
+              <dt className="text-xs font-medium text-muted-foreground">{t(titleKey)}</dt>
               <dd lang="en" className="mt-0.5 leading-relaxed [overflow-wrap:anywhere]">
                 {text}
               </dd>
@@ -49,26 +52,26 @@ function LabelCard({ label, open }: { label: MedicationLabel; open: boolean }) {
 
 export function MedicationsPanel({ documentId, enabled }: { documentId: number; enabled: boolean }) {
   const query = useMedications(documentId, enabled)
+  const { t } = useI18n()
   return (
     <SourcePanel
       source="openFDA · U.S. Food and Drug Administration"
       shortName="openFDA"
       query={query}
-      emptyText="Für diesen Eintrag sind keine Wirkstoffe hinterlegt."
+      emptyText={t('meds.empty')}
     >
       {(data) => (
         <div className="flex flex-col gap-3">
           <p className="flex items-start gap-2 rounded-lg bg-muted/70 px-3 py-2 text-xs text-muted-foreground">
             <Info className="mt-px size-3.5 shrink-0" aria-hidden />
-            US-FDA-Produktinformation, englisch und gekürzt – nicht für Dosierungs- oder
-            Therapieentscheidungen.
+            {t('meds.banner')}
           </p>
           {data.found.map((label, index) => (
             <LabelCard key={label.ingredient} label={label} open={index === 0} />
           ))}
           {data.missing.length > 0 && (
             <p className="text-sm text-muted-foreground">
-              Kein FDA-Label gefunden für: {data.missing.join(', ')}
+              {t('meds.missing', { names: data.missing.join(', ') })}
             </p>
           )}
         </div>
