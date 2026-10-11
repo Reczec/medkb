@@ -2,7 +2,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.spa import mount_frontend
+from app.spa import install_security_headers, mount_frontend
 
 
 @pytest.fixture
@@ -23,6 +23,7 @@ def spa_client(dist):
     def ping():
         return {"pong": True}
 
+    install_security_headers(app)
     mount_frontend(app, dist)
     return TestClient(app)
 
@@ -73,3 +74,36 @@ def test_missing_dist_shows_hint(tmp_path):
     response = TestClient(app).get("/")
     assert response.status_code == 200
     assert "Frontend nicht gebaut" in response.text
+
+
+def test_hashed_assets_are_cached_for_a_year(spa_client):
+    response = spa_client.get("/assets/app.js")
+    assert response.headers["cache-control"] == "public, max-age=31536000, immutable"
+
+
+def test_the_shell_is_never_cached(spa_client):
+    for path in ("/", "/wissen/12"):
+        assert spa_client.get(path).headers["cache-control"] == "no-cache"
+
+
+def test_missing_asset_is_404_not_the_shell(spa_client):
+    # An old tab asking for a replaced bundle must not get HTML instead of JavaScript.
+    response = spa_client.get("/assets/app-old123.js")
+    assert response.status_code == 404
+    assert "root" not in response.text
+
+
+def test_head_on_the_shell(spa_client):
+    assert spa_client.head("/").status_code == 200
+
+
+@pytest.mark.parametrize("path", ["/", "/assets/app.js", "/api/ping"])
+def test_security_headers_on_every_response(spa_client, path):
+    headers = spa_client.get(path).headers
+    assert headers["x-content-type-options"] == "nosniff"
+    assert headers["referrer-policy"] == "strict-origin-when-cross-origin"
+    assert headers["x-frame-options"] == "DENY"
+
+
+def test_the_real_app_sends_security_headers(client):
+    assert client.get("/api/health").headers["x-content-type-options"] == "nosniff"

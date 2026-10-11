@@ -25,7 +25,6 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 
 ## Build and ops
 
-- `/assets` has no `Cache-Control: immutable` header (the comment in `app/spa.py` claims long caching). `HEAD /` returns 405.
 - Move `shadcn` from dependencies to devDependencies. It is only needed at build time for `tailwind.css`.
 - The CI docker job only builds the image. Also run it and curl `/api/health` and `/`.
 - The main JS chunk is over 500 kB. Lazy-load the routes, the dashboard charts first.
