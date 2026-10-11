@@ -5,7 +5,7 @@ Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onr
 ## Still to verify live
 
 1. **Cold start:** open the demo after 15+ minutes without visitors and time the first page (Render: about a minute).
-2. **Visitor IP header:** a spoofed `True-Client-IP` is not honoured (tested 2026-10-12, see the record). Still open: ask one AI question from a second network (phone on mobile data) while the first network is at its daily limit; an answer confirms per-visitor buckets.
+2. ~~Visitor IP header~~: confirmed 2026-10-12 (spoof test plus a second network).
 
 ## Optional improvements
 

@@ -423,3 +423,69 @@ def test_configured_proxy_header_separates_visitors(client, fake, test_settings)
     assert _ask(client, "203.0.113.2").status_code == 200
     assert _ask(client, "203.0.113.1").status_code == 429
     assert _ask(client).status_code == 200  # header missing: falls back to the connection
+
+
+COLD = "Eine Erkältung wird durch Viren ausgelöst. Ruhe und ausreichend trinken lindern Schnupfen."
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Was hilft bei Erkältung?",
+        "Was kann man gegen eine Erkältung tun?",
+        "Erkältung – was soll ich machen?",
+    ],
+)
+def test_everyday_questions_find_the_entry(client, fake, question):
+    make_doc(client, title="Erkältung (grippaler Infekt)", content=COLD)
+    fake.answer = "Allgemeine Information [1]."
+    response = client.post("/api/ai/ask", json={"question": question})
+    assert response.status_code == 200, response.text
+    assert [c["title"] for c in response.json()["citations"]] == ["Erkältung (grippaler Infekt)"]
+
+
+def test_unknown_extra_words_fall_back_to_the_best_partial_matches(client, fake):
+    make_doc(client, title="Erkältung (grippaler Infekt)", content=COLD)
+    make_doc(client, title="Migräne", content="Anfallsartige Kopfschmerzen mit Übelkeit.")
+    fake.answer = "Allgemeine Information [1]."
+    response = client.post("/api/ai/ask", json={"question": "Erkältung Schnupfen Wadenkrampf"})
+    assert response.status_code == 200, response.text
+    context = fake.calls[0][1]["content"]
+    assert "Erkältung" in context and "Migräne" not in context
+
+
+def test_partial_matches_rank_entries_with_more_hits_first(client):
+    from app.ai.retrieval import find
+    from app.ai.schemas import AskRequest
+    from app.database import SessionLocal
+
+    make_doc(client, title="Nur Schnupfen", content="Ein Text über Schnupfen allein.")
+    make_doc(client, title="Erkältung (grippaler Infekt)", content=COLD)
+    with SessionLocal() as db:
+        found = find(db, AskRequest(question="Erkältung Schnupfen Wadenkrampf"))
+    assert [d.title for d in found][:2] == ["Erkältung (grippaler Infekt)", "Nur Schnupfen"]
+
+
+def test_rare_words_outweigh_common_ones_in_partial_matches(client):
+    from app.ai.retrieval import find
+    from app.ai.schemas import AskRequest
+    from app.database import SessionLocal
+
+    for title in ("Eins", "Zwei", "Drei"):
+        make_doc(client, title=title, content="Das kann gefährlich werden, sagt der Text.")
+    make_doc(client, title="Sepsis (Blutvergiftung)", content="Eine lebensbedrohliche Reaktion.")
+    with SessionLocal() as db:
+        found = find(db, AskRequest(question="Wie gefährlich ist eine Blutvergiftung?"))
+    assert found[0].title == "Sepsis (Blutvergiftung)"
+
+
+def test_title_hits_break_ties_in_partial_matches(client):
+    from app.ai.retrieval import find
+    from app.ai.schemas import AskRequest
+    from app.database import SessionLocal
+
+    make_doc(client, title="Neurodermitis", content="Eine gefährliche Herpes-Infektion der Haut.")
+    make_doc(client, title="Sepsis (Blutvergiftung)", content="Eine lebensbedrohliche Reaktion.")
+    with SessionLocal() as db:
+        found = find(db, AskRequest(question="Wie gefährlich ist eine Blutvergiftung?"))
+    assert found[0].title == "Sepsis (Blutvergiftung)"

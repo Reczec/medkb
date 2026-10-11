@@ -2,14 +2,24 @@
 
 import re
 
+from sqlalchemy.orm import Session
+
 from app.ai.schemas import AskRequest
+from app.models import Document
+from app.services import search_documents
+
+MAX_ENTRIES = 5
 
 QUESTION_WORDS = frozenset(
     "was wie warum wann wo wer welche welcher welches ist sind ein eine einer einem einen "
     "der die das den dem des von zu zur zum und oder bei für mit ohne nach als es sie er "
     "ich man mir mich kann können wird werden hat haben gibt tun bitte erkläre erklären "
     "diese dieser dieses dazu dabei dagegen davon symptome symptom ursachen ursache "
-    "warnzeichen therapie behandlung behandelt behandeln diagnostik diagnostiziert".split()
+    "warnzeichen therapie behandlung behandelt behandeln diagnostik diagnostiziert "
+    # everyday question verbs and fillers ("Was hilft gegen …", "was soll ich machen")
+    "hilft helfen hilfe gegen soll sollte sollen muss müssen darf dürfen machen mache macht "
+    "tun tue kommt bekomme bekommt habe hast gut gute besser schnell am im in auf an "
+    "mein meine meinem meinen dein deine wenn weil denn noch auch so sehr viel".split()
 )
 
 
@@ -27,3 +37,26 @@ def query(body: AskRequest) -> str:
                 break
     # Do not turn punctuation/empty generic questions into an unfiltered database dump.
     return " ".join(focus)[:200]
+
+
+def find(db: Session, body: AskRequest) -> list[Document]:
+    """Entries for the question: all terms must match; if no entry has them all, the entries
+    with the best partial match. A term found in few entries weighs more than a common one,
+    so an unknown extra word or a vague one ("gefährlich") cannot hide the obvious entry."""
+    q = query(body)
+    if not q:
+        return []
+    documents, _ = search_documents(db, q=q, limit=MAX_ENTRIES)
+    if documents or " " not in q:
+        return list(documents)
+    score: dict[int, float] = {}
+    by_id: dict[int, Document] = {}
+    for term in q.split():
+        matches, total = search_documents(db, q=term, limit=MAX_ENTRIES)
+        for document in matches:
+            in_title = 2 if term in document.title.lower() else 1  # like the search ranking
+            score[document.id] = score.get(document.id, 0.0) + in_title / total
+            by_id.setdefault(document.id, document)
+    # sorted() is stable: equal scores keep the search's own ranking order.
+    ranked = sorted(score, key=lambda doc_id: -score[doc_id])
+    return [by_id[doc_id] for doc_id in ranked[:MAX_ENTRIES]]
