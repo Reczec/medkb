@@ -1,3 +1,4 @@
+from app.seed_data.english import with_english
 from app.seed_data.links import gesundheit_gv, medlineplus, who
 
 ENTRIES = [
@@ -117,3 +118,124 @@ ENTRIES = [
         "further_reading": [medlineplus("heartfailure", "Heart Failure")],
     },
 ]
+
+ENTRIES = with_english(
+    ENTRIES,
+    {
+        "Bluthochdruck (arterielle Hypertonie)": {
+            "title_en": "High blood pressure (arterial hypertension)",
+            "sections_en": {
+                "definition": (
+                    "High blood pressure is a persistently raised pressure in the arteries, "
+                    "from values of 140/90 mmHg on repeated measurements."
+                ),
+                "symptoms": (
+                    "High blood pressure often goes unnoticed for a long time. Some people "
+                    "feel headaches, dizziness or palpitations."
+                ),
+                "causes": (
+                    "Usually a predisposition, overweight, lack of exercise, a salty diet, "
+                    "alcohol and stress act together. Less often another illness is behind "
+                    "it."
+                ),
+                "diagnostics": (
+                    "The diagnosis is made by repeated blood pressure measurements, "
+                    "supplemented by long-term measurement, an ECG and laboratory tests."
+                ),
+                "therapy": (
+                    "Lifestyle changes are the basis; if they are not enough, medicines lower "
+                    "the blood pressure. Untreated, the risk of heart attack, stroke and "
+                    "kidney damage rises."
+                ),
+                "red_flags": (
+                    "Very high values with chest pain, shortness of breath, vision problems "
+                    "or paralysis are an emergency – call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Hypertension",
+                "Blood pressure",
+                "Heart attack",
+                "Stroke",
+                "ECG",
+                "Lifestyle",
+            ],
+        },
+        "Vorhofflimmern": {
+            "title_en": "Atrial fibrillation",
+            "sections_en": {
+                "definition": (
+                    "Atrial fibrillation is the most common persistent heart rhythm disorder: "
+                    "the upper chambers of the heart beat in a disorganised way and the pulse "
+                    "becomes irregular."
+                ),
+                "symptoms": (
+                    "Affected people feel a racing heart, skipped beats, shortness of breath "
+                    "or reduced exercise capacity; some notice no symptoms."
+                ),
+                "causes": (
+                    "Common causes are high blood pressure, heart failure, heart valve "
+                    "disease, an overactive thyroid and higher age."
+                ),
+                "diagnostics": (
+                    "An ECG confirms the diagnosis; for intermittent atrial fibrillation a "
+                    "long-term ECG helps. A heart ultrasound shows possible causes."
+                ),
+                "therapy": (
+                    "Blood-thinning medicines lower the risk of stroke. In addition, the "
+                    "heart rate is controlled or the normal rhythm is restored."
+                ),
+                "red_flags": (
+                    "Chest pain, fainting, severe shortness of breath or signs of a stroke "
+                    "require the emergency number 144 (Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Atrial fibrillation",
+                "Heart rhythm",
+                "Palpitations",
+                "ECG",
+                "Stroke risk",
+                "Blood thinners",
+            ],
+        },
+        "Herzinsuffizienz (Herzschwäche)": {
+            "title_en": "Heart failure",
+            "sections_en": {
+                "definition": (
+                    "With heart failure, the heart no longer pumps enough blood to supply the "
+                    "body adequately."
+                ),
+                "symptoms": (
+                    "Typical are shortness of breath on exertion or when lying down, quick "
+                    "tiredness and fluid retention in the legs."
+                ),
+                "causes": (
+                    "The most common causes are coronary heart disease after a heart attack "
+                    "and long-standing high blood pressure, less often heart valve defects or "
+                    "inflammation of the heart muscle."
+                ),
+                "diagnostics": (
+                    "A heart ultrasound, an ECG and a blood test for the heart hormone BNP "
+                    "confirm the diagnosis and show its severity."
+                ),
+                "therapy": (
+                    "Medicines relieve the heart and improve the outlook. Daily weighing, an "
+                    "adjusted fluid intake and exercise under medical guidance are important."
+                ),
+                "red_flags": (
+                    "Sudden severe shortness of breath, rattling breathing or chest pain are "
+                    "an emergency – call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Heart failure",
+                "Shortness of breath",
+                "Fluid retention",
+                "Heart ultrasound",
+                "BNP",
+                "Diuretics",
+            ],
+        },
+    },
+)

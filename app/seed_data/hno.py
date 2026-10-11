@@ -1,3 +1,4 @@
+from app.seed_data.english import with_english
 from app.seed_data.links import medlineplus, who
 
 ENTRIES = [
@@ -115,3 +116,118 @@ ENTRIES = [
         "further_reading": [medlineplus("sinusitis", "Sinusitis")],
     },
 ]
+
+ENTRIES = with_english(
+    ENTRIES,
+    {
+        "Akute Mittelohrentzündung (Otitis media)": {
+            "title_en": "Acute middle ear infection (otitis media)",
+            "sections_en": {
+                "definition": (
+                    "Acute otitis media is a usually bacterial or viral inflammation of the "
+                    "lining of the middle ear that often follows an infection of the upper "
+                    "airways."
+                ),
+                "symptoms": (
+                    "Typical signs are severe, often throbbing ear pain, fever and reduced "
+                    "hearing. Young children often tug at the ear and are restless."
+                ),
+                "causes": (
+                    "Germs travel from the nose and throat through the Eustachian tube into "
+                    "the middle ear. Children are affected more often because their "
+                    "Eustachian tube is shorter."
+                ),
+                "diagnostics": (
+                    "Looking into the ear shows a reddened, bulging eardrum; sometimes fluid "
+                    "runs out of the ear canal."
+                ),
+                "therapy": (
+                    "Pain relievers and decongestant nose drops ease the symptoms. "
+                    "Antibiotics are used only for severe or persistent courses."
+                ),
+                "red_flags": (
+                    "Swelling and redness behind the ear, severe headache, stiff neck or "
+                    "drowsiness can point to complications and need immediate medical "
+                    "assessment."
+                ),
+            },
+            "keywords_en": [
+                "Ear infection",
+                "Otitis media",
+                "Earache",
+                "Eardrum",
+                "Fever",
+                "Hearing loss",
+            ],
+        },
+        "Tinnitus – Ohrgeräusche": {
+            "title_en": "Tinnitus – ringing in the ears",
+            "sections_en": {
+                "definition": (
+                    "With tinnitus, affected people perceive sounds such as ringing, buzzing "
+                    "or hissing although there is no external sound source."
+                ),
+                "symptoms": (
+                    "The noises can be in one or both ears, constant or intermittent. Many "
+                    "people also suffer from sleep problems and difficulty concentrating."
+                ),
+                "causes": (
+                    "Common triggers are noise exposure, sudden hearing loss, age-related "
+                    "hearing loss or stress. Often no clear cause can be found."
+                ),
+                "diagnostics": (
+                    "The ENT examination includes looking at the ear canal and eardrum and a "
+                    "hearing test to rule out treatable causes."
+                ),
+                "therapy": (
+                    "The cause is treated if it is known. For chronic tinnitus, education, "
+                    "hearing aids for hearing loss and behavioural therapy help people cope "
+                    "better with the noises."
+                ),
+                "red_flags": (
+                    "Sudden hearing loss, a pulse-synchronous noise or accompanying dizziness "
+                    "should be examined by an ENT specialist promptly."
+                ),
+            },
+            "keywords_en": ["Tinnitus", "Ringing", "Hearing loss", "Noise", "Eardrum", "Stress"],
+        },
+        "Akute Nasennebenhöhlenentzündung (Sinusitis)": {
+            "title_en": "Acute sinusitis",
+            "sections_en": {
+                "definition": (
+                    "Acute sinusitis is an inflammation of the lining of the paranasal "
+                    "sinuses that usually develops during a cold."
+                ),
+                "symptoms": (
+                    "Typical signs are pressure and pain over the forehead or cheeks that "
+                    "worsens when bending forward, a blocked nose, purulent nasal discharge "
+                    "and a reduced sense of smell."
+                ),
+                "causes": (
+                    "Viruses are usually the cause, bacteria less often. Narrow passages such "
+                    "as a crooked nasal septum or polyps promote the inflammation."
+                ),
+                "diagnostics": (
+                    "The diagnosis is usually made clinically. For complications or recurrent "
+                    "sinusitis, nasal endoscopy or imaging follows."
+                ),
+                "therapy": (
+                    "Saline nasal rinses, decongestant nasal sprays for a few days and pain "
+                    "relievers ease the symptoms. Most cases clear up within two weeks."
+                ),
+                "red_flags": (
+                    "Swelling around the eye, vision problems, very severe headache or high "
+                    "fever require an immediate ENT examination."
+                ),
+            },
+            "keywords_en": [
+                "Sinusitis",
+                "Sinuses",
+                "Blocked nose",
+                "Facial pain",
+                "Cold",
+                "Nasal discharge",
+            ],
+        },
+    },
+)
