@@ -28,9 +28,13 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { AUTO, CategoryPicker } from '@/features/editor/CategoryPicker'
+import { EnglishVersion } from '@/features/editor/EnglishVersion'
+import { Field } from '@/features/editor/Field'
 import { KeywordInput, mergeKeywords } from '@/features/editor/KeywordInput'
 import { SectionFields } from '@/features/editor/SectionFields'
 import { useDebounced } from '@/hooks/useDebounced'
+import { useI18n } from '@/i18n/context'
+import { localized } from '@/i18n/localized'
 import { ApiError } from '@/lib/api'
 import {
   useClassify,
@@ -55,11 +59,16 @@ interface FormState {
   medications: string[]
   mode: 'text' | 'sections'
   sections: Sections
+  // English version (optional; the classifier never reads it)
+  titleEn: string
+  contentEn: string
+  sectionsEn: Sections
+  keywordsEn: string[]
 }
 
 function initialState(meta: Meta, document?: Document): FormState {
   if (!document) {
-    return { title: '', content: '', docType: meta.doc_types[0] ?? '', category: AUTO, keywords: [], source: '', termEn: '', icd11Code: '', medications: [], mode: 'text', sections: {} }
+    return { title: '', content: '', docType: meta.doc_types[0] ?? '', category: AUTO, keywords: [], source: '', termEn: '', icd11Code: '', medications: [], mode: 'text', sections: {}, titleEn: '', contentEn: '', sectionsEn: {}, keywordsEn: [] }
   }
   return {
     title: document.title,
@@ -74,8 +83,22 @@ function initialState(meta: Meta, document?: Document): FormState {
     mode: document.sections ? 'sections' : 'text',
     sections: cleanSections(document.sections ?? {}),
     aiGenerated: document.ai_generated,
+    titleEn: document.title_en ?? '',
+    contentEn: document.content_en ?? '',
+    sectionsEn: cleanSections(document.sections_en ?? {}),
+    keywordsEn: document.keywords_en,
   }
 }
+
+/** The English text as the API takes it: cleaned sections in section mode, trimmed text otherwise. */
+const englishText = (form: FormState): Sections | string =>
+  form.mode === 'sections' ? cleanSections(form.sectionsEn) : form.contentEn.trim()
+
+const isBlank = (value: Sections | string) =>
+  typeof value === 'string' ? value === '' : Object.keys(value).length === 0
+
+const hasEnglish = (form: FormState) =>
+  form.titleEn.trim() !== '' || !isBlank(englishText(form)) || form.keywordsEn.length > 0
 
 function createPayload(form: FormState): DocumentCreate {
   const payload: DocumentCreate = {
@@ -90,6 +113,15 @@ function createPayload(form: FormState): DocumentCreate {
   if (form.category !== AUTO) payload.category = form.category
   if (form.keywords.length > 0) payload.keywords = form.keywords
   if (form.source.trim()) payload.source = form.source.trim()
+  // Without an English version nothing is sent, so the entry stays German-only.
+  if (form.titleEn.trim()) payload.title_en = form.titleEn.trim()
+  const english = englishText(form)
+  if (typeof english === 'string') {
+    if (english) payload.content_en = english
+  } else if (!isBlank(english)) {
+    payload.sections_en = english
+  }
+  if (form.keywordsEn.length > 0) payload.keywords_en = form.keywordsEn
   return payload
 }
 
@@ -110,6 +142,18 @@ function updatePayload(form: FormState, initial: FormState): DocumentUpdate {
   if (form.docType !== initial.docType) payload.doc_type = form.docType
   if (form.source.trim() !== initial.source) payload.source = form.source.trim() || null
   if (form.keywords.join('\n') !== initial.keywords.join('\n')) payload.keywords = form.keywords
+  // English version: a cleared field goes out as null, which the API reads as "remove".
+  if (form.titleEn.trim() !== initial.titleEn) payload.title_en = form.titleEn.trim() || null
+  const english = englishText(form)
+  const wasEnglish = englishText(initial)
+  if (JSON.stringify(english) !== JSON.stringify(wasEnglish) && !(isBlank(english) && isBlank(wasEnglish))) {
+    if (isBlank(english)) payload.content_en = null
+    else if (typeof english === 'string') payload.content_en = english
+    else payload.sections_en = english
+  }
+  if (form.keywordsEn.join('\n') !== initial.keywordsEn.join('\n')) {
+    payload.keywords_en = form.keywordsEn.length > 0 ? form.keywordsEn : null
+  }
   if (form.category !== initial.category) {
     if (form.category === AUTO) payload.reclassify = true
     else payload.category = form.category
@@ -122,20 +166,9 @@ function updatePayload(form: FormState, initial: FormState): DocumentUpdate {
   return payload
 }
 
-function Field({ id, label, hint, children }: { id: string; label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </label>
-      {children}
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-    </div>
-  )
-}
-
 function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
   const navigate = useNavigate()
+  const { t, lang, categoryLabel, docTypeLabel } = useI18n()
   const [initial] = useState(() => initialState(meta, document))
   const [form, setForm] = useState(initial)
   const leaving = useRef(false)
@@ -163,8 +196,18 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
     setForm((current) => {
       if (mode === current.mode) return current
       return mode === 'sections'
-        ? { ...current, mode, sections: { definition: current.content } }
-        : { ...current, mode, content: composeContent(current.sections) }
+        ? {
+            ...current,
+            mode,
+            sections: { definition: current.content },
+            sectionsEn: current.contentEn.trim() ? { definition: current.contentEn } : {},
+          }
+        : {
+            ...current,
+            mode,
+            content: composeContent(current.sections, 'de'),
+            contentEn: composeContent(current.sectionsEn, 'en'),
+          }
     })
   }
 
@@ -185,7 +228,7 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
     const onError = (error: Error) =>
       toast.error(
         error instanceof ApiError && error.status === 404
-          ? 'Eintrag existiert nicht mehr (Demo wurde zurückgesetzt)'
+          ? t('editor.gone')
           : error.message,
       )
     if (document) {
@@ -194,10 +237,10 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
         navigate(`/wissen/${document.id}`)
         return
       }
-      update.mutate(changes!, { onSuccess: (saved) => finish(saved, 'Änderungen gespeichert.'), onError })
+      update.mutate(changes!, { onSuccess: (saved) => finish(saved, t('editor.saved')), onError })
     } else {
       create.mutate(createPayload(form), {
-        onSuccess: (saved) => finish(saved, `„${saved.title}“ angelegt.`),
+        onSuccess: (saved) => finish(saved, t('editor.created', { title: localized(saved, lang).title })),
         onError,
       })
     }
@@ -210,19 +253,19 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
   return (
     <form onSubmit={submit} className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3" noValidate>
       <div className="flex min-w-0 flex-col gap-5 rounded-xl border bg-card p-5 shadow-sheet sm:p-6 lg:col-span-2">
-        <Field id="title" label="Titel" hint="Mindestens 3 Zeichen.">
+        <Field id="title" label={t('editor.title')} hint={t('editor.titleHint')}>
           <Input
             id="title"
             value={form.title}
             onChange={(event) => set('title', event.target.value)}
             maxLength={200}
             className="h-11 text-base"
-            placeholder="z. B. Herzrasen bei Belastung"
+            placeholder={t('editor.titlePlaceholder')}
           />
         </Field>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field id="doc-type" label="Dokumenttyp">
+          <Field id="doc-type" label={t('doc.docType')}>
             <Select value={form.docType} onValueChange={(value) => set('docType', value)}>
               <SelectTrigger id="doc-type" className="h-11! w-full">
                 <SelectValue />
@@ -230,61 +273,61 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
               <SelectContent position="popper">
                 {meta.doc_types.map((type) => (
                   <SelectItem key={type} value={type}>
-                    {type}
+                    {docTypeLabel(type)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Field>
-          <Field id="source" label="Quelle (optional)">
+          <Field id="source" label={t('editor.source')}>
             <Input
               id="source"
               value={form.source}
               onChange={(event) => set('source', event.target.value)}
               maxLength={200}
               className="h-11"
-              placeholder="z. B. Leitlinie, Lehrbuch"
+              placeholder={t('editor.sourcePlaceholder')}
             />
           </Field>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field id="term-en" label="Fachbegriff (en)" hint="Optional, für die PubMed-Suche.">
-            <Input id="term-en" value={form.termEn} onChange={(event) => set('termEn', event.target.value)} maxLength={200} className="h-11" placeholder="z. B. Migraine" />
+          <Field id="term-en" label={t('doc.termEn')} hint={t('editor.termHint')}>
+            <Input id="term-en" value={form.termEn} onChange={(event) => set('termEn', event.target.value)} maxLength={200} className="h-11" placeholder={t('editor.termPlaceholder')} />
           </Field>
-          <Field id="icd11-code" label="ICD-11-Code" hint="Optional, z. B. 8A80 oder 8A80.1.">
+          <Field id="icd11-code" label={t('editor.icd')} hint={t('editor.icdHint')}>
             <Input id="icd11-code" value={form.icd11Code} onChange={(event) => set('icd11Code', event.target.value)} maxLength={20} className="h-11" />
           </Field>
         </div>
 
-        <Field id="medications" label="Wirkstoffe (en)">
-          <KeywordInput id="medications" value={form.medications} onChange={(value) => set('medications', value)} maxItems={10} maxLength={60} addLabel="Wirkstoff hinzufügen" emptyHint="Optional: bis zu 10 Wirkstoffe auf Englisch, für die openFDA-Abfrage." />
+        <Field id="medications" label={t('editor.ingredients')}>
+          <KeywordInput id="medications" value={form.medications} onChange={(value) => set('medications', value)} maxItems={10} maxLength={60} noun="ingredient" addLabel={t('editor.addIngredient')} emptyHint={t('editor.ingredientsHint')} />
         </Field>
 
         <div className="flex flex-col gap-2">
-          <span id="content-mode-label" className="text-sm font-medium">Textaufbau</span>
+          <span id="content-mode-label" className="text-sm font-medium">{t('editor.layout')}</span>
           <div role="group" aria-labelledby="content-mode-label" className="flex w-fit gap-1 rounded-lg border bg-muted p-1">
-            <Button type="button" variant={form.mode === 'text' ? 'outline' : 'ghost'} aria-pressed={form.mode === 'text'} onClick={() => changeMode('text')}>Freitext</Button>
-            <Button type="button" variant={form.mode === 'sections' ? 'outline' : 'ghost'} aria-pressed={form.mode === 'sections'} onClick={() => changeMode('sections')}>Abschnitte</Button>
+            <Button type="button" variant={form.mode === 'text' ? 'outline' : 'ghost'} aria-pressed={form.mode === 'text'} onClick={() => changeMode('text')}>{t('editor.modeText')}</Button>
+            <Button type="button" variant={form.mode === 'sections' ? 'outline' : 'ghost'} aria-pressed={form.mode === 'sections'} onClick={() => changeMode('sections')}>{t('editor.modeSections')}</Button>
           </div>
         </div>
 
         {form.mode === 'sections' ? (
           <SectionFields value={form.sections} onChange={(value) => set('sections', value)} />
-        ) : <Field id="content" label="Inhalt" hint="Mindestens 10 Zeichen. Leerzeilen trennen Absätze.">
+        ) : <Field id="content" label={t('editor.content')} hint={t('editor.contentHint')}>
           <Textarea
             id="content"
             value={form.content}
             onChange={(event) => set('content', event.target.value)}
             maxLength={50_000}
             className="min-h-56 w-full min-w-0 text-base leading-relaxed [field-sizing:content] [overflow-wrap:anywhere]"
-            placeholder="Beschreibung, Symptome, Ursachen, Diagnostik, Therapie …"
+            placeholder={t('editor.contentPlaceholder')}
           />
         </Field>}
 
         <div className="flex flex-col gap-2">
           <span id="category-label" className="text-sm font-medium">
-            Fachgebiet
+            {t('editor.category')}
           </span>
           <CategoryPicker
             categories={meta.categories}
@@ -294,48 +337,51 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
           />
         </div>
 
-        <Field id="keywords" label="Schlagwörter">
+        <Field id="keywords" label={t('card.keywords')}>
           <KeywordInput id="keywords" value={form.keywords} onChange={(value) => set('keywords', value)} />
         </Field>
 
+        <EnglishVersion
+          value={{ titleEn: form.titleEn, contentEn: form.contentEn, sectionsEn: form.sectionsEn, keywordsEn: form.keywordsEn }}
+          mode={form.mode}
+          onChange={(patch) => setForm((current) => ({ ...current, ...patch }))}
+          defaultOpen={hasEnglish(initial)}
+        />
+
         <div className="flex flex-wrap items-center justify-end gap-3 border-t pt-5">
           <Button asChild variant="ghost">
-            <Link to={document ? `/wissen/${document.id}` : '/wissen'}>Abbrechen</Link>
+            <Link to={document ? `/wissen/${document.id}` : '/wissen'}>{t('doc.cancel')}</Link>
           </Button>
           <Button type="submit" disabled={!valid || saving}>
             {saving ? <Loader2 className="animate-spin" aria-hidden /> : <Save aria-hidden />}
-            Speichern
+            {t('editor.save')}
           </Button>
         </div>
       </div>
 
       <aside
-        aria-label="Live-Klassifikation"
+        aria-label={t('editor.live')}
         className="flex min-w-0 flex-col gap-4 rounded-xl border bg-card p-5 shadow-sheet lg:sticky lg:top-24"
       >
         <div>
-          <h2 className="text-base font-semibold">Live-Klassifikation</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Regelbasiert, aktualisiert sich beim Tippen.
-          </p>
+          <h2 className="text-base font-semibold">{t('editor.live')}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t('editor.liveHint')}</p>
         </div>
         {!suggestion && (
           <p className="rounded-lg bg-muted px-3 py-3 text-sm text-muted-foreground">
-            {form.mode === 'sections'
-              ? 'Titel und mindestens einen Abschnitt ausfüllen, dann erscheint ein Vorschlag.'
-              : 'Titel und mindestens 10 Zeichen Inhalt eingeben, dann erscheint ein Vorschlag.'}
+            {form.mode === 'sections' ? t('editor.needSections') : t('editor.needText')}
           </p>
         )}
         {suggestion && (
           <>
             <p className="text-sm" aria-live="polite">
               {suggestion.fallback ? (
-                <>Zu wenige Fachbegriffe – Rückfall auf <strong>{suggestion.category}</strong></>
+                t('cls.fallback', { category: categoryLabel(suggestion.category) })
               ) : (
                 <>
-                  Vorschlag: <strong>{suggestion.category}</strong>{' '}
+                  {t('editor.suggestion')} <strong>{categoryLabel(suggestion.category)}</strong>{' '}
                   <span className="text-muted-foreground">
-                    (Konfidenz {Math.round(suggestion.confidence * 100)} %)
+                    {t('editor.confidence', { percent: Math.round(suggestion.confidence * 100) })}
                   </span>
                 </>
               )}
@@ -347,12 +393,12 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
                 variant="outline"
                 onClick={() => set('keywords', mergeKeywords(form.keywords, fresh))}
               >
-                <ListPlus aria-hidden /> {fresh.length} Schlagwörter übernehmen
+                <ListPlus aria-hidden /> {t('editor.adoptKeywords', { count: fresh.length })}
               </Button>
             )}
           </>
         )}
-        <EditorAI title={form.title} content={form.mode === 'sections' ? composeContent(form.sections) : form.content}
+        <EditorAI title={form.title} content={form.mode === 'sections' ? composeContent(form.sections, 'de') : form.content}
           canDraft={!document} onCategory={category => set('category', category)}
           onDraft={draft => setForm(current => ({ ...current,
             content: draft.content ?? '', sections: cleanSections(draft.sections ?? {}),
@@ -365,15 +411,13 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
       <AlertDialog open={blocker.state === 'blocked'}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Änderungen verwerfen?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Du hast ungespeicherte Änderungen. Wenn du die Seite verlässt, gehen sie verloren.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{t('editor.discardTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('editor.discardText')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => blocker.reset?.()}>Weiter bearbeiten</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => blocker.reset?.()}>{t('editor.keepEditing')}</AlertDialogCancel>
             <AlertDialogAction variant="destructive" onClick={() => blocker.proceed?.()}>
-              Verwerfen
+              {t('editor.discard')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -384,6 +428,7 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
 
 export function EditorPage() {
   const params = useParams()
+  const { t } = useI18n()
   const id = params.id ? Number(params.id) : undefined
   const meta = useMeta()
   const document = useDocument(id ?? 0)
@@ -402,11 +447,12 @@ export function EditorPage() {
           to={editing ? `/wissen/${id}` : '/wissen'}
           className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="size-4" aria-hidden /> Zurück
+          <ArrowLeft className="size-4" aria-hidden /> {t('editor.back')}
         </Link>
         <h1 className="text-3xl font-semibold tracking-tight">
-          {editing ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
+          {editing ? t('editor.titleEdit') : t('editor.titleNew')}
         </h1>
+        <p className="max-w-3xl text-sm text-muted-foreground">{t('editor.note')}</p>
       </header>
 
       {error && <ErrorState error={error} onRetry={() => (meta.error ? meta.refetch() : document.refetch())} />}

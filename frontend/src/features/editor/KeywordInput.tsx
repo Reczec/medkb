@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { useState } from 'react'
+import { useI18n } from '@/i18n/context'
 import { cn } from '@/lib/utils'
 
 export const MAX_KEYWORDS = 20
@@ -12,8 +13,11 @@ interface KeywordInputProps {
   className?: string
   maxItems?: number
   maxLength?: number
+  /** Accessible name of the text field; defaults to the keyword wording. */
   addLabel?: string
   emptyHint?: string
+  /** Which noun the "maximum reached" hint names. */
+  noun?: 'keyword' | 'ingredient'
 }
 
 /** Adds keywords not yet in `list` (case-insensitive), stopping at MAX_KEYWORDS. */
@@ -29,7 +33,8 @@ export function mergeKeywords(list: string[], additions: string[], maxItems = MA
   return result
 }
 
-export function KeywordInput({ value, onChange, id, className, maxItems = MAX_KEYWORDS, maxLength = MAX_KEYWORD_LENGTH, addLabel = 'Schlagwort hinzufügen', emptyHint = 'Leer lassen, dann werden Schlagwörter automatisch erzeugt.' }: KeywordInputProps) {
+export function KeywordInput({ value, onChange, id, className, maxItems = MAX_KEYWORDS, maxLength = MAX_KEYWORD_LENGTH, addLabel, emptyHint, noun = 'keyword' }: KeywordInputProps) {
+  const { t } = useI18n()
   const [draft, setDraft] = useState('')
   const full = value.length >= maxItems
 
@@ -77,11 +82,11 @@ export function KeywordInput({ value, onChange, id, className, maxItems = MAX_KE
                 <button
                   type="button"
                   onClick={() => onChange(value.filter((k) => k !== keyword))}
-                  aria-label={`${keyword} entfernen`}
+                  aria-label={t('kw.remove', { keyword })}
                   className="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-background hover:text-foreground"
                 >
                   <X className="size-3.5" aria-hidden />
-                  <span className="sr-only">entfernen</span>
+                  <span className="sr-only">{t('kw.removeShort')}</span>
                 </button>
               </li>
             ))}
@@ -99,16 +104,16 @@ export function KeywordInput({ value, onChange, id, className, maxItems = MAX_KE
               setDraft('')
             }
           }}
-          aria-label={addLabel}
-          placeholder={value.length === 0 ? 'Enter oder Komma fügt hinzu' : ''}
+          aria-label={addLabel ?? t('kw.add')}
+          placeholder={value.length === 0 ? t('kw.placeholder') : ''}
           maxLength={maxLength}
           className="h-7 min-w-32 flex-1 bg-transparent px-1 text-sm outline-none placeholder:text-muted-foreground"
         />
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground">
         {full
-          ? `Maximal ${maxItems} ${addLabel === 'Schlagwort hinzufügen' ? 'Schlagwörter' : 'Wirkstoffe'} erreicht.`
-          : emptyHint}
+          ? t(noun === 'ingredient' ? 'kw.fullIngredients' : 'kw.fullKeywords', { max: maxItems })
+          : (emptyHint ?? t('kw.empty'))}
       </p>
     </div>
   )

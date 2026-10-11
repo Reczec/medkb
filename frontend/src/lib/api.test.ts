@@ -110,7 +110,7 @@ describe('api', () => {
     const error = await api('/api/stats').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(ApiError)
     expect((error as ApiError).status).toBe(0)
-    expect((error as ApiError).message).toBe('Server nicht erreichbar')
+    expect((error as ApiError).message).toBe('Server unreachable')
   })
 })
 

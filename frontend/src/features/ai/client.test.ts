@@ -1,6 +1,11 @@
+import { setApiLanguage } from '@/i18n/lang'
 import { requestAI } from './client'
 
-afterEach(() => vi.unstubAllGlobals())
+beforeEach(() => setApiLanguage('de'))
+afterEach(() => {
+  vi.unstubAllGlobals()
+  setApiLanguage('en')
+})
 
 const result = { text: 'Migräne erklärt.', cached: false, citations: [] }
 

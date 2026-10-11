@@ -1,3 +1,5 @@
+import { getApiLanguage } from '@/i18n/lang'
+import { translate, type TranslationKey } from '@/i18n/translate'
 import { api, ApiError } from '@/lib/api'
 import type { DocumentCreate } from '@/lib/types'
 
@@ -14,10 +16,13 @@ export interface AIOptions {
   onToken?: (text: string) => void
 }
 
+/** Texts of this module are looked up when the error happens, in the language of the request. */
+const msg = (key: TranslationKey) => translate(getApiLanguage(), key)
+
 function result(value: unknown): AIResult {
   const data = value as AIResult
   if (!data || typeof data.text !== 'string' || typeof data.cached !== 'boolean' || !Array.isArray(data.citations)) {
-    throw new Error('Die KI-Antwort ist ungültig. Bitte erneut versuchen.')
+    throw new Error(msg('ai.err.invalid'))
   }
   return data
 }
@@ -28,7 +33,7 @@ export async function requestAI(path: string, body?: unknown, options: AIOptions
       method: 'POST', body, raw: true, signal: options.signal,
     })
     if (!response.headers.get('content-type')?.includes('text/event-stream')) return result(await response.json())
-    if (!response.body) throw new Error('KI-Antwort konnte nicht geladen werden.')
+    if (!response.body) throw new Error(msg('ai.err.load'))
     const reader = response.body.getReader()
     const decoder = new TextDecoder('utf-8', { fatal: true })
     let buffer = ''
@@ -39,7 +44,7 @@ export async function requestAI(path: string, body?: unknown, options: AIOptions
         if (options.signal?.aborted) throw new DOMException('Aborted', 'AbortError')
         buffer = (buffer + decoder.decode(value, { stream: !done })).replace(/\r\n/g, '\n')
         size += value?.length ?? 0
-        if (size > 200_000) throw new Error('Die KI-Antwort ist zu lang.')
+        if (size > 200_000) throw new Error(msg('ai.err.tooLong'))
         let boundary: number
         while ((boundary = buffer.indexOf('\n\n')) >= 0) {
           const frame = buffer.slice(0, boundary); buffer = buffer.slice(boundary + 2)
@@ -48,21 +53,21 @@ export async function requestAI(path: string, body?: unknown, options: AIOptions
           const data = lines.filter(line => line.startsWith('data:')).map(line => line.slice(5).trimStart()).join('\n')
           if (!data) continue
           const parsed = JSON.parse(data)
-          if (event === 'error') throw new Error(parsed.message || 'KI-Antwort abgebrochen. Bitte erneut versuchen.')
+          if (event === 'error') throw new Error(parsed.message || msg('ai.err.stopped'))
           if (event === 'done') return result(parsed)
           if (event === 'token') {
-            if (typeof parsed.text !== 'string') throw new Error('Ungültiger KI-Stream.')
+            if (typeof parsed.text !== 'string') throw new Error(msg('ai.err.stream'))
             options.onToken?.(parsed.text)
           }
         }
-        if (done) throw new Error('KI-Antwort wurde unterbrochen. Bitte erneut versuchen.')
+        if (done) throw new Error(msg('ai.err.interrupted'))
       }
     } finally { await reader.cancel(); reader.releaseLock() }
   } catch (error) {
     if (error instanceof ApiError) {
-      if (error.status === 429) throw new Error('KI-Tageslimit erreicht. Bitte morgen erneut versuchen.')
-      if (error.message === 'ai_not_configured') throw new Error('Die KI ist noch nicht eingerichtet. Bitte später erneut versuchen.')
-      if (error.status === 503) throw new Error('KI momentan nicht verfügbar. Bitte später erneut versuchen.')
+      if (error.status === 429) throw new Error(msg('ai.err.limit'))
+      if (error.message === 'ai_not_configured') throw new Error(msg('ai.err.notConfigured'))
+      if (error.status === 503) throw new Error(msg('ai.err.unavailable'))
     }
     throw error
   }

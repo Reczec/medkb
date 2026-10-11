@@ -66,7 +66,7 @@ export async function api<T = unknown>(path: string, opts: ApiOptions = {}): Pro
     })
   } catch (error) {
     if ((error as Error)?.name === 'AbortError') throw error
-    throw new ApiError(0, 'Server nicht erreichbar')
+    throw new ApiError(0, translate(getApiLanguage(), 'error.unreachable'))
   }
 
   // Only the token this request carried is stale; a login made meanwhile stays.
