@@ -216,6 +216,11 @@ service in Frankfurt, health check `/api/health`, demo mode with a reset every 3
 2. **Service:** in [Render](https://render.com) choose *New → Blueprint* and connect this
    repository. Render asks for the secrets once: `DATABASE_URL` (the Neon string), `AI_API_KEY`
    and optionally `ICD_CLIENT_ID`, `ICD_CLIENT_SECRET`, `NCBI_API_KEY`. `JWT_SECRET` is generated.
+   Enter `True-Client-IP` for `CLIENT_IP_HEADER`, then confirm on the live service that a
+   client-sent value is overwritten: repeated AI requests with `-H 'True-Client-IP: 1.2.3.4'`
+   must keep counting against your own visitor quota. Left empty, all visitors share one AI
+   quota (the server logs a warning). Never use `X-Forwarded-For`: its first entry is
+   client-controlled.
 3. Every push to `main` deploys again.
 
 Free-tier behaviour: the service sleeps after 15 minutes without requests and needs about a

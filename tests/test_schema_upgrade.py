@@ -65,3 +65,12 @@ def test_adds_document_columns_to_an_old_database(tmp_path):
         out = DocumentOut.model_validate(db.get(Document, 1))
     assert out.medications == [] and out.further_reading == []
     assert out.sections is None and out.ai_generated is False
+
+
+def test_server_databases_check_pooled_connections_before_use():
+    # Neon suspends after 5 idle minutes and drops pooled connections; without a ping the next
+    # request after a reading pause fails once with OperationalError.
+    from app.database import make_engine
+
+    assert make_engine("postgresql://user:pw@example.neon.tech/medkb").pool._pre_ping is True
+    assert make_engine("sqlite://").pool._pre_ping is False

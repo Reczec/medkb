@@ -39,6 +39,11 @@ def make_engine(url: str) -> Engine:
         kwargs["connect_args"] = {"check_same_thread": False}
         if url in {"sqlite://", "sqlite:///:memory:"}:
             kwargs["poolclass"] = StaticPool  # one shared in-memory database
+    else:
+        # Serverless Postgres (Neon) suspends after a few idle minutes and drops pooled
+        # connections: test each one before use and replace connections older than 4 minutes.
+        kwargs["pool_pre_ping"] = True
+        kwargs["pool_recycle"] = 240
 
     engine = create_engine(url, **kwargs)
 

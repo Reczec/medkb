@@ -33,6 +33,7 @@ services:
         sync: false
       - key: NCBI_API_KEY
         sync: false
-      # Header carrying the visitor's IP, set by Render's edge (confirmed during the live check).
+      # Header carrying the visitor's IP, written by Render's edge: enter True-Client-IP and
+      # spoof-test it live (README, Deployment). Empty = all visitors share one AI quota.
       - key: CLIENT_IP_HEADER
         sync: false
