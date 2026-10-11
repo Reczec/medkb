@@ -10,27 +10,31 @@ interface KeywordInputProps {
   onChange: (value: string[]) => void
   id?: string
   className?: string
+  maxItems?: number
+  maxLength?: number
+  addLabel?: string
+  emptyHint?: string
 }
 
 /** Adds keywords not yet in `list` (case-insensitive), stopping at MAX_KEYWORDS. */
-export function mergeKeywords(list: string[], additions: string[]): string[] {
+export function mergeKeywords(list: string[], additions: string[], maxItems = MAX_KEYWORDS, maxLength = MAX_KEYWORD_LENGTH): string[] {
   const result = [...list]
   const seen = new Set(list.map((k) => k.toLowerCase()))
   for (const raw of additions) {
-    const word = raw.trim().slice(0, MAX_KEYWORD_LENGTH)
-    if (!word || seen.has(word.toLowerCase()) || result.length >= MAX_KEYWORDS) continue
+    const word = raw.trim().slice(0, maxLength)
+    if (!word || seen.has(word.toLowerCase()) || result.length >= maxItems) continue
     seen.add(word.toLowerCase())
     result.push(word)
   }
   return result
 }
 
-export function KeywordInput({ value, onChange, id, className }: KeywordInputProps) {
+export function KeywordInput({ value, onChange, id, className, maxItems = MAX_KEYWORDS, maxLength = MAX_KEYWORD_LENGTH, addLabel = 'Schlagwort hinzufügen', emptyHint = 'Leer lassen, dann werden Schlagwörter automatisch erzeugt.' }: KeywordInputProps) {
   const [draft, setDraft] = useState('')
-  const full = value.length >= MAX_KEYWORDS
+  const full = value.length >= maxItems
 
   const commit = (words: string[]) => {
-    const next = mergeKeywords(value, words)
+    const next = mergeKeywords(value, words, maxItems, maxLength)
     if (next.length !== value.length) onChange(next)
   }
 
@@ -95,16 +99,16 @@ export function KeywordInput({ value, onChange, id, className }: KeywordInputPro
               setDraft('')
             }
           }}
-          aria-label="Schlagwort hinzufügen"
+          aria-label={addLabel}
           placeholder={value.length === 0 ? 'Enter oder Komma fügt hinzu' : ''}
-          maxLength={MAX_KEYWORD_LENGTH}
+          maxLength={maxLength}
           className="h-7 min-w-32 flex-1 bg-transparent px-1 text-sm outline-none placeholder:text-muted-foreground"
         />
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground">
         {full
-          ? `Maximal ${MAX_KEYWORDS} Schlagwörter erreicht.`
-          : 'Leer lassen, dann werden Schlagwörter automatisch erzeugt.'}
+          ? `Maximal ${maxItems} ${addLabel === 'Schlagwort hinzufügen' ? 'Schlagwörter' : 'Wirkstoffe'} erreicht.`
+          : emptyHint}
       </p>
     </div>
   )
