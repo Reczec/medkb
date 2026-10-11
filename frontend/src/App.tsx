@@ -1,16 +1,22 @@
 import type { ReactNode } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { AppShell } from '@/components/layout/AppShell'
-import { AdminPage } from '@/features/admin/AdminPage'
-import { AssistantPage } from '@/features/ai/AssistantPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth, RequireRole } from '@/features/auth/guards'
-import { HomePage } from '@/features/home/HomePage'
-import { DocumentPage } from '@/features/documents/DocumentPage'
-import { KnowledgeBasePage } from '@/features/documents/KnowledgeBasePage'
-import { EditorPage } from '@/features/editor/EditorPage'
 import { NotFoundPage } from '@/features/NotFoundPage'
 import { RouteError } from '@/features/RouteError'
+import { lazyPage } from '@/lib/lazyPage'
+
+// Pages load on demand, so the first visit only downloads the shell and its page.
+const HomePage = lazyPage(() => import('@/features/home/HomePage'), 'HomePage')
+const KnowledgeBasePage = lazyPage(
+  () => import('@/features/documents/KnowledgeBasePage'),
+  'KnowledgeBasePage',
+)
+const DocumentPage = lazyPage(() => import('@/features/documents/DocumentPage'), 'DocumentPage')
+const EditorPage = lazyPage(() => import('@/features/editor/EditorPage'), 'EditorPage')
+const AssistantPage = lazyPage(() => import('@/features/ai/AssistantPage'), 'AssistantPage')
+const AdminPage = lazyPage(() => import('@/features/admin/AdminPage'), 'AdminPage')
 
 const adminOnly = (element: ReactNode) => <RequireRole roles={['admin']}>{element}</RequireRole>
 

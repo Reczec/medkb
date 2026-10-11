@@ -1,5 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { Suspense } from 'react'
 import { useLocation, useOutlet } from 'react-router'
+import { PageSkeleton } from '@/components/layout/PageSkeleton'
 
 /**
  * Fades route content in; with reduced motion only the opacity changes.
@@ -21,7 +23,7 @@ export function PageTransition() {
         initial={{ opacity: 0, y: reduced ? 0 : 10 }}
         animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } }}
       >
-        {outlet}
+        <Suspense fallback={<PageSkeleton />}>{outlet}</Suspense>
       </motion.div>
     </AnimatePresence>
   )
