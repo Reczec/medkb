@@ -8,7 +8,8 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 - **Open follow-ups** from the stage 1 reviews: [docs/BACKLOG.md](docs/BACKLOG.md)
 - **Stage 3 completion and handoff** (commits, reviews, decisions and remaining verification): [docs/reviews/2026-10-11-stage3-completion.md](docs/reviews/2026-10-11-stage3-completion.md)
 - **Stage 4 completion** (AI contracts, decisions, tests and verification boundaries): [docs/reviews/2026-10-11-stage4-completion.md](docs/reviews/2026-10-11-stage4-completion.md)
-- **Next steps** (stage 5 and pre-deployment follow-ups): [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)
+- **Stage 5 deployment record** (live checks, decisions): [docs/reviews/2026-10-12-stage5-deployment.md](docs/reviews/2026-10-12-stage5-deployment.md)
+- **Next steps** (after the public launch): [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)
 
 ## Status
 
@@ -18,7 +19,7 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 | 2 Roles and auth (admin / doctor / patient, demo login, demo reset) | done ([plan](docs/superpowers/plans/2026-10-10-etappe-2-rollen-auth.md)) |
 | 3 Data model, 47 realistic entries, PubMed / WHO ICD-11 / openFDA | done, merged into `main` and pushed ([plan](docs/superpowers/plans/2026-10-11-etappe-3-inhalte-quellen.md)) |
 | 4 AI features (free OpenAI-compatible provider, cache, rate limit) | done; live-checked with Gemini 2026-10-12 ([plan](docs/superpowers/plans/2026-10-11-etappe-4-ki.md)) |
-| 5 Deployment (Render + Neon), README, demo GIF | planned ([plan](docs/superpowers/plans/2026-10-12-etappe-5-deployment.md)) |
+| 5 Deployment (Render + Neon), README, demo GIF | done, live at https://medkb.onrender.com ([plan](docs/superpowers/plans/2026-10-12-etappe-5-deployment.md), [record](docs/reviews/2026-10-12-stage5-deployment.md)) |
 
 Continue a stage by writing its plan next to the stage 1 plan (same structure: file map, tasks with failing test first, commit per task), then implement it task by task.
 
@@ -31,6 +32,8 @@ Continue a stage by writing its plan next to the stage 1 plan (same structure: f
 - Every view keeps the notice "Prototyp mit Beispieldaten – keine medizinische Beratung." There is no patient data, ever.
 
 ## Gotchas (not visible from config)
+
+- **Deployment.** `main` auto-deploys to Render (Blueprint `render.yaml`); every deploy restarts the service and resets the demo data. Secrets live only in the Render dashboard. Neon uses the direct (non-pooler) endpoint. `node frontend/scripts/record-demo.mjs` re-records the README media against a running instance.
 
 - **AI tests/setup.** No key means HTTP503 `ai_not_configured`; override `get_provider` with a fake or intercept `/api/ai/**` in browser tests. Never call a paid/live model in tests. SSE partial text is provisional until `done`. Bump `app.ai.store.PROMPT_VERSION` after prompt changes. Quotas and cache survive demo reset; successful semantic content snapshots exclude IDs/reset timestamps; canonical source/title seed identity also survives PostgreSQL resets. Explicit CLI: `python -m app.ai.prewarm --limit 1`; trusted warmup still respects the global budget.
 

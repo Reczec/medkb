@@ -5,7 +5,7 @@ entries in 16 specialties, an explainable rule-based classifier, live data from 
 ICD-11 API and openFDA, and AI assistance that stays grounded in the entries. Three roles
 (admin, doctor, patient) see the same knowledge at different depths.
 
-**Live demo:** <!-- LIVE_URL --> _follows after deployment_ · one click per role, no sign-up.
+**Live demo: [medkb.onrender.com](https://medkb.onrender.com)** · one click per role, no sign-up.
 The free hosting sleeps after 15 minutes without visitors; the first request then takes up to a
 minute.
 
