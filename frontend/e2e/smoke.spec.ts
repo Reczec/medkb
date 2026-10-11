@@ -2,6 +2,26 @@ import { expect, test, type Page } from '@playwright/test'
 
 type Role = 'admin' | 'doctor' | 'patient'
 
+const study = {
+  pmid: '123456', title: 'Demo study on migraine', journal: 'Demo Journal', year: 2026,
+  authors: ['A Example'], more_authors: false, url: 'https://pubmed.ncbi.nlm.nih.gov/123456/',
+}
+
+// Keep browser tests independent of upstream APIs, credentials and rate limits.
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/sources/**', async (route) => {
+    const path = new URL(route.request().url()).pathname
+    const result = path.endsWith('/latest-studies')
+      ? { status: 'ok', data: [{ category: 'Neurologie', studies: [study] }, { category: 'Kardiologie', studies: [study] }] }
+      : path.endsWith('/studies')
+        ? { status: 'ok', data: [study] }
+        : path.endsWith('/icd11')
+          ? { status: 'not_configured', data: null }
+          : { status: 'empty', data: null }
+    await route.fulfill({ json: { ...result, fetched_at: '2026-10-11T10:00:00Z' } })
+  })
+})
+
 /** Demo login through the API; the token is put into sessionStorage before any page script runs. */
 async function loginAs(page: Page, role: Role): Promise<string> {
   const response = await page.request.post('/api/auth/demo', { data: { role } })
@@ -21,8 +41,8 @@ test('dashboard summarises the seeded knowledge base', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Überblick' })).toBeVisible()
   const summary = page.getByTestId('summary')
-  await expect(summary).toContainText('16')
-  await expect(page.getByRole('navigation', { name: 'Fachgebiete' }).getByRole('link')).toHaveCount(9)
+  await expect(summary).toContainText('47')
+  await expect(page.getByRole('navigation', { name: 'Fachgebiete' }).getByRole('link')).toHaveCount(16)
 })
 
 test('every filing tab shows its full name and the drawer edge shows the share', async ({ page }) => {
@@ -33,7 +53,7 @@ test('every filing tab shows its full name and the drawer edge shows the share',
     labels.filter((label) => label.scrollWidth > label.clientWidth + 1).map((l) => l.textContent),
   )
   expect(truncated).toEqual([])
-  await expect(strip.locator('[data-tab-label]')).toHaveCount(9)
+  await expect(strip.locator('[data-tab-label]')).toHaveCount(16)
   const tops = await strip.getByRole('link').evaluateAll((links) =>
     links.map((link) => Math.round(link.getBoundingClientRect().top)),
   )
@@ -41,11 +61,11 @@ test('every filing tab shows its full name and the drawer edge shows the share',
   const share = (name: string) =>
     strip.locator(`[data-share="${name}"]`).evaluate((el) => el.getBoundingClientRect().width)
   const neuro = await share('Neurologie') // 3 entries
-  const hno = await share('HNO') // 2
-  const derma = await share('Dermatologie') // 1
-  expect(neuro).toBeGreaterThan(hno)
-  expect(hno).toBeGreaterThan(derma)
-  expect(neuro / derma).toBeCloseTo(3, 0)
+  const hno = await share('HNO') // 3
+  const general = await share('Allgemeinmedizin') // 2
+  expect(neuro).toBeCloseTo(hno, 0)
+  expect(neuro).toBeGreaterThan(general)
+  expect(neuro / general).toBeCloseTo(1.5, 1)
   // The share bar is its own labelled element, not the edge the tabs stand on.
   const tabsBottom = await strip.getByRole('list').evaluate((el) => el.getBoundingClientRect().bottom)
   const barTop = await strip.locator('[data-share]').first().evaluate((el) => el.getBoundingClientRect().top)
@@ -133,7 +153,8 @@ test.describe('phone width', () => {
   test('specialty names stay readable on a phone', async ({ page }) => {
     await page.goto('/')
     const labels = page.getByRole('navigation', { name: 'Fachgebiete' }).locator('[data-tab-label]')
-    await expect(labels.first()).toHaveText('Neurologie')
+    await expect(labels).toHaveCount(16)
+    await expect(labels.filter({ hasText: /^HNO$/ })).toBeVisible()
     const truncated = await labels.evaluateAll((all) =>
       all.filter((label) => label.scrollWidth > label.clientWidth + 1).length,
     )
