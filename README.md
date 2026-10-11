@@ -38,6 +38,10 @@ a CI setup.
 - **Dashboard** with a 30-day activity chart, document types and the specialties as colour-coded
   filing tabs; command palette (Ctrl+K), animated transitions, light/dark theme, responsive down
   to phone width, `prefers-reduced-motion` respected
+- **AI assistance**: simple explanations and warning signs for every role, professional entry
+  and PubMed abstract summaries for staff, grounded questions with entry links, and admin-only
+  drafts and category second opinions. Drafts require explicit review/apply/save. The thesis
+  rule classifier remains separate. Persistent content-aware cache and atomic daily quotas.
 
 | Search & dashboard | Classification suggestion | Admin: archives & change log |
 |---|---|---|
@@ -68,6 +72,7 @@ app/
   archive.py       JSON export / list / restore
   models.py, schemas.py, database.py, config.py, security.py
   seed.py, seed_data.py   example entries
+  ai/              compatible provider, prompts, cache/quotas, validated execution, prewarm CLI
 frontend/
   src/features/    dashboard, documents (list, detail), editor, admin
   src/components/  layout (shell, command palette), specialty (filing tabs, score bars), ui (shadcn)
@@ -135,6 +140,51 @@ with WHO credentials configured, ICD codes. The codes require that live verifica
 their source mapping can be considered confirmed. See [.env.example](.env.example) for all
 source variables.
 
+## Configuration: AI assistance
+
+Set `AI_API_KEY` in your local/server environment and restart the backend. The default is
+`AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/` and
+`AI_MODEL=gemini-3.5-flash-lite`. The endpoint follows Google's
+[OpenAI compatibility documentation](https://ai.google.dev/gemini-api/docs/openai).
+The model is configurable; the older 2.5 Flash is restricted for new projects according to
+its [model documentation](https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash).
+The [pricing page](https://ai.google.dev/gemini-api/docs/pricing) lists a free tier for the
+default model, subject to availability and provider quotas. Free-tier content may be used
+to improve Google's products. Send example data only. No key was used for the offline tests;
+real model output and account limits still need a configured smoke test.
+
+Other compatible providers can replace the base URL/key/model, for example
+[Groq's compatibility endpoint](https://console.groq.com/docs/openai). Choose a model that
+the account currently supports. Without a key, requests return `503 ai_not_configured` and
+the UI explains that setup is pending. There are no fabricated offline AI responses.
+
+`AI_TIMEOUT=30` is the upstream timeout in seconds (maximum 120).
+`AI_DAILY_LIMIT=500` and `AI_CLIENT_DAILY_LIMIT=30` limit uncached calls per UTC day.
+A begun failed call still consumes its reservation. Cache hits are free of these quotas;
+429 includes `Retry-After` until UTC midnight. HMAC of the direct client IP is stored, salted
+with `JWT_SECRET`; set a stable secret. Configure trusted proxy handling at deployment:
+the app does not parse user-supplied forwarded headers itself.
+
+Cached successful document results bind to content, role, provider, model and prompt version,
+and survive an unchanged demo reset. Questions and admin opinions/drafts are uncached.
+Prompt changes require bumping `PROMPT_VERSION` in `app/ai/store.py`. Errors and interrupted
+streams are never successful cache entries. Streamed tokens are provisional; only `done`
+contains the validated final result. `ask` uses the existing keyword search's top five
+entries, validates source indices, and accepts six bounded previous messages. Try short
+topics such as “Migräne”; this is keyword retrieval, not semantic search. Source-index
+validation and prompts do not certify factual correctness or clinical safety.
+
+Optional explicit cache warmup (never automatic on startup):
+
+```powershell
+.venv/Scripts/python.exe -m app.ai.prewarm --limit 1
+# Omit --limit for all entries: 47 × 8 role/feature variants = 376 potential calls.
+```
+
+The trusted operator job uses the global budget, while public clients keep their separate
+30-call limit. Repeated warmup reuses cached results; failures are counted in its summary.
+Without a key it exits without requests. Run after example seeding; respect provider rate limits.
+
 ## API overview
 
 | Method | Path | Who | Description |
@@ -151,6 +201,16 @@ source variables.
 | GET | `/api/archives/{name}` | admin | Download an archive |
 | POST | `/api/archives/{name}/restore` | admin | Replace all entries with an archive |
 | GET | `/api/audit`, `/api/users` | admin | Change log; login accounts |
+| POST | `/api/ai/documents/{id}/explain`, `/red-flags` | logged in | Simple explanation / general warning signs |
+| POST | `/api/ai/documents/{id}/summary` | doctor, admin | Professional summary |
+| POST | `/api/ai/studies/summarize` | doctor, admin | `{pmid}` → summary of the actual NCBI abstract |
+| POST | `/api/ai/ask` | logged in | `{question, history?}` → grounded answer and entry references |
+| POST | `/api/ai/draft`, `/api/ai/classify` | admin | Validated draft / separate category opinion, no save |
+| GET | `/api/ai/usage` | doctor, admin | Global UTC-day reservations and configured limit |
+
+AI results contain `{text, cached, citations, draft?, classification?}`. Explain, summary,
+ask and draft accept `?stream=true`: SSE `token` carries `{text}`, `done` carries the complete
+result, and `error` carries `{code,message}`. Red flags, classification and studies return JSON.
 
 Send the token as `Authorization: Bearer <token>`. Missing or expired token → 401, wrong role → 403.
 

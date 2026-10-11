@@ -228,6 +228,7 @@ export function DocumentPage() {
           </h1>
           <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground/80">{document.doc_type}</span>
+            {document.ai_generated && <span className="rounded-md bg-muted px-2 py-0.5 text-xs">KI-generiert</span>}
             <span aria-hidden>·</span>
             <span>geändert {formatRelative(document.updated_at)}</span>
           </p>

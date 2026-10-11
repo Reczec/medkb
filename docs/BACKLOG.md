@@ -45,3 +45,10 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 - On mobile the petrol shell disappears behind an off-white top bar. Consider petrol in the mobile top bar.
 - The detail page leaves the lower half of the left column empty. The classification explanation could sit on the sheet as a margin note.
 - Sheets never overlap like filed records; drawer and stack depth are unused.
+
+## AI (stage 4)
+
+- Live provider smoke test requires a real configured key; verify available model, account limits and output quality before deployment. Offline tests prove contracts, not medical correctness.
+- Verify concurrent global/client reservations on PostgreSQL and trusted deployment proxy identity. Current concurrency regression uses SQLite; HMAC identities need stable JWT_SECRET.
+- Cache has no automatic retention policy yet. Add bounded cleanup if real demo usage warrants it; successful content/role/model/prompt identities remain persisted across reset.
+- Existing Impeccable surface brief mentions nine specialties; current DESIGN and code correctly contain sixteen. Treat this as pre-existing documentation drift, not a redesign request.
