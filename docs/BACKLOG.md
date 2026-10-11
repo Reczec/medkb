@@ -36,7 +36,6 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 
 ## Sources (stage 3 review, 2026-10-11)
 
-- Live-check the bundled ICD-11 codes with WHO credentials using `scripts/check_seed_sources.py`; offline tests cannot confirm the code-to-diagnosis mapping.
 - The design sidecar's Neurologie example uses a circle icon and its navigation snippet says "Dashboard". Synchronize these examples when next updating the design documentation.
 
 ## Design ideas (from the finish review, not defects)

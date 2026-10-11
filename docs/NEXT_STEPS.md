@@ -4,7 +4,9 @@ Updated 2026-10-11. Stages 1–4 are integrated into main; stage 4 implementatio
 
 ## AI live check (done 2026-10-12)
 
-A real Gemini key (local `.env` only) answered all seven features through the app with demo roles: explain, red-flags, summary, ask with citation, draft, classify, PubMed study summary; second explain came from the cache; usage counted. Two findings were fixed in `09ff56b`: raw Markdown in the UI (now a safe Markdown subset renderer) and an unfocused red-flags answer. Seed warmup was not run. WHO ICD codes remain unverified (no WHO keys).
+A real Gemini key (local `.env` only) answered all seven features through the app with demo roles: explain, red-flags, summary, ask with citation, draft, classify, PubMed study summary; second explain came from the cache; usage counted. Two findings were fixed in `09ff56b`: raw Markdown in the UI (now a safe Markdown subset renderer) and an unfocused red-flags answer. Seed warmup was not run.
+
+WHO ICD-11 (done 2026-10-12): with local WHO keys, `scripts/check_seed_sources.py` resolved all 44 bundled codes (release 2026-01, German titles) and each WHO title matches its entry; 69/69 further-reading links answered 200.
 
 ## Next: stage 5 — public deployment
 
