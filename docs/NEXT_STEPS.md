@@ -2,15 +2,13 @@
 
 Updated 2026-10-11. Stages 1–4 are integrated into main; stage 4 implementation ends at c65c0f1. See [stage 4 record](reviews/2026-10-11-stage4-completion.md) for checks and integration status.
 
-## Configure and smoke-test AI
+## AI live check (done 2026-10-12)
 
-1. Put a provider key in local/server configuration, never Git. Defaults and official references are in [README](../README.md#configuration-ai-assistance).
-2. Restart the backend. Try one explanation, a staff summary, a grounded question and one reviewed draft; inspect provider output and rate limits. No real provider key was supplied during implementation, so only deterministic fake transport tests were run.
-3. Optionally warm one entry with `python -m app.ai.prewarm --limit 1`, then warm all after checking the account's limits. Full seed warmup may need 376 uncached calls; the global budget still applies. Run `scripts/check_seed_sources.py` with WHO credentials before claiming code mappings verified.
+A real Gemini key (local `.env` only) answered all seven features through the app with demo roles: explain, red-flags, summary, ask with citation, draft, classify, PubMed study summary; second explain came from the cache; usage counted. Two findings were fixed in `09ff56b`: raw Markdown in the UI (now a safe Markdown subset renderer) and an unfocused red-flags answer. Seed warmup was not run. WHO ICD codes remain unverified (no WHO keys).
 
 ## Next: stage 5 — public deployment
 
-Write a plan next to the stage 4 plan, with a file map, failing tests first and full checks per task. The user shares this checkout; coordinate edits and inspect changes before committing.
+Plan: [etappe-5-deployment](superpowers/plans/2026-10-12-etappe-5-deployment.md). The user shares this checkout; inspect changes before committing.
 
 1. Resolve the relevant auth/reset/archive correctness follow-ups in [BACKLOG](BACKLOG.md).
 2. Verify current Render/Neon hosting behavior and limits from official documentation; prepare deployment configuration, persistent PostgreSQL/archives and environment secrets.
