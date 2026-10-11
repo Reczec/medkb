@@ -17,7 +17,7 @@ from app.config import Settings
 from app.models import AICache, AIUsage, utcnow
 
 GLOBAL = "global"
-PROMPT_VERSION = "stage4-v2"
+PROMPT_VERSION = "stage4-v3"
 
 
 def day() -> str:

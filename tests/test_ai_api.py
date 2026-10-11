@@ -370,3 +370,32 @@ def test_prewarm_reuses_cache_and_keeps_global_limit(db_session, fake, test_sett
         "failed": 0,
     }
     assert len(fake.calls) == 8 and usage_today(db_session) == 8
+
+
+def test_explain_is_plain_language_for_every_role(client, fake):
+    # "Einfach erklärt" means plain language, also when a doctor or admin asks for it.
+    doc = make_doc(client)
+    client.post(f"/api/ai/documents/{doc['id']}/explain")
+    assert "B1" in fake.calls[0][0]["content"]
+
+
+def test_summary_stays_professional(doctor_client, client, fake):
+    doc = make_doc(client)
+    doctor_client.post(f"/api/ai/documents/{doc['id']}/summary")
+    assert "Fachliche Sprache" in fake.calls[0][0]["content"]
+
+
+def test_red_flags_answer_only_with_warning_signs(patient_client, client, fake):
+    doc = make_doc(client)
+    patient_client.post(f"/api/ai/documents/{doc['id']}/red-flags")
+    system = fake.calls[0][0]["content"]
+    assert "Nur Warnzeichen" in system
+    assert "Sofort Notruf 144" in system
+
+
+def test_prompts_ask_for_the_markdown_subset_the_ui_renders(patient_client, client, fake):
+    doc = make_doc(client)
+    patient_client.post(f"/api/ai/documents/{doc['id']}/explain")
+    system = fake.calls[0][0]["content"]
+    assert "### " in system and "- " in system and "**fett**" in system
+    assert "Beginne direkt mit dem Inhalt" in system

@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
+import { AIText } from './AIText'
 import type { useAI } from './useAI'
 
 export function AIResponse({ ai, structured = false, onRetry }: { ai: ReturnType<typeof useAI>; structured?: boolean; onRetry?: () => void }) {
@@ -14,9 +15,7 @@ export function AIResponse({ ai, structured = false, onRetry }: { ai: ReturnType
         {ai.pending && <span role="status">· Antwort wird erstellt …</span>}
       </p>
       {ai.pending && <p className="mb-3 text-xs text-muted-foreground">Vorläufige Antwort – noch nicht geprüft.</p>}
-      <p className="max-w-[68ch] whitespace-pre-wrap text-base leading-relaxed [overflow-wrap:anywhere]">
-        {ai.result?.text ?? (structured ? 'Entwurf wird vorbereitet …' : ai.partial)}
-      </p>
+      <AIText text={ai.result?.text ?? (structured ? 'Entwurf wird vorbereitet …' : ai.partial)} />
       {!!ai.result?.citations.length && <nav aria-label="Quellen der KI-Antwort" className="mt-4 flex flex-wrap gap-3 text-sm">
         {ai.result.citations.map(ref => <Link key={ref.index} to={`/wissen/${ref.id}`} className="text-primary underline underline-offset-4 [overflow-wrap:anywhere]">[{ref.index}] {ref.title}</Link>)}
       </nav>}
