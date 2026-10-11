@@ -1,6 +1,6 @@
 import { PhoneCall, Search } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { SpecialtyStrip } from '@/components/specialty/SpecialtyStrip'
 import { Button } from '@/components/ui/button'
@@ -67,6 +67,8 @@ export function PatientHome() {
           ))}
         </div>
       </section>
+
+      <p className="max-w-3xl text-sm text-muted-foreground">Ein Thema besser verstehen? <Link to="/assistent" className="text-primary underline underline-offset-4">Dem KI-Assistenten eine Frage stellen</Link></p>
 
       <aside
         role="note"

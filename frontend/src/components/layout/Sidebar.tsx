@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Library,
+  MessagesSquare,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
@@ -17,6 +18,7 @@ import { cn } from '@/lib/utils'
 const NAV: { to: string; label: string; icon: typeof Library; end: boolean; roles?: Role[] }[] = [
   { to: '/', label: 'Startseite', icon: LayoutDashboard, end: true },
   { to: '/wissen', label: 'Wissensdatenbank', icon: Library, end: false },
+  { to: '/assistent', label: 'KI-Assistent', icon: MessagesSquare, end: false },
   { to: '/admin', label: 'Admin', icon: ShieldCheck, end: false, roles: ['admin'] },
 ]
 

@@ -21,6 +21,15 @@ const classification = {
   matched_terms: ['herz', 'atemnot'], keywords: ['Herz'],
 }
 
+it('offers the staff AI summary as its own tab', async () => {
+  mockFetch({ '/api/documents/5': document5, '/api/classify': classification })
+  render()
+  const tab = await screen.findByRole('tab', { name: 'KI-Zusammenfassung' })
+  fireEvent.mouseDown(tab)
+  fireEvent.click(tab)
+  expect(await screen.findByRole('button', { name: 'KI-Zusammenfassung' })).toBeInTheDocument()
+})
+
 const render = () =>
   renderWithProviders(<DocumentPage />, {
     path: '/wissen/5',

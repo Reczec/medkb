@@ -38,6 +38,7 @@ export interface DocumentList {
 
 /** Send `content` for free text or `sections` for a structured entry. */
 export interface DocumentCreate {
+  ai_generated?: boolean
   title: string
   content?: string
   sections?: Sections

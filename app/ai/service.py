@@ -13,7 +13,14 @@ from app.ai import prompts, store
 from app.ai.provider import AIProvider, AIUnavailable
 from app.ai.schemas import Classification
 from app.config import Settings
-from app.schemas import DocumentCreate
+from app.schemas import DocumentCreate, DocumentOut
+
+
+def document_inputs(document: Any) -> dict:
+    """Bind to semantic content, not timestamps refreshed by an unchanged demo reset."""
+    return DocumentOut.model_validate(document).model_dump(
+        mode="json", exclude={"created_at", "updated_at"}
+    )
 
 
 def normalize(feature: str, text: str, inputs: Any, citations: list[dict]) -> dict:

@@ -8,12 +8,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.ai.provider import AIProvider, AIUnavailable, get_provider
-from app.ai.service import execute
+from app.ai.service import document_inputs, execute
 from app.ai.store import client_identity
 from app.config import Settings, get_settings
 from app.database import Base, SessionLocal, engine, upgrade_schema
 from app.models import Document
-from app.schemas import DocumentOut
 
 
 async def prewarm(
@@ -24,7 +23,7 @@ async def prewarm(
     documents = db.scalars(select(Document).order_by(Document.id).limit(limit)).all()
     counts = {"completed": 0, "failed": 0}
     for document in documents:
-        inputs = DocumentOut.model_validate(document).model_dump(mode="json")
+        inputs = document_inputs(document)
         for role in ("admin", "doctor", "patient"):
             features = (
                 ("explain", "red-flags", "summary")

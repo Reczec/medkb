@@ -258,6 +258,18 @@ def test_cached_stream_sends_done_without_provider_or_quota(client, fake, db_ses
     assert len(fake.calls) == 1 and usage_today(db_session) == 1
 
 
+def test_unchanged_seed_reuses_cache_after_reset(client, fake, db_session):
+    from app.demo import reset_demo
+
+    reset_demo(db_session)
+    document_id = db_session.scalar(select(Document.id).order_by(Document.id))
+    path = f"/api/ai/documents/{document_id}/explain"
+    assert client.post(path).json()["cached"] is False
+    reset_demo(db_session)
+    assert client.post(path).json()["cached"] is True
+    assert len(fake.calls) == 1
+
+
 @pytest.mark.parametrize("role", ["doctor", "patient", None])
 def test_admin_endpoints_reject_other_roles_before_provider(
     doctor_client, patient_client, anon_client, role

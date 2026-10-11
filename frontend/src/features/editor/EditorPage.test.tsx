@@ -23,6 +23,39 @@ const classification = {
   matched_terms: ['herz'],
   keywords: ['Herzrasen', 'Brustschmerz'],
 }
+
+it('reviews and explicitly applies a draft, then saves its AI provenance', async () => {
+  const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification,
+    '/api/ai/draft': { text: 'Allgemeiner Entwurf.', cached: false, citations: [], draft: {
+      title: 'Herzrasen', content: 'Allgemeiner Entwurf zu Herzrasen.', doc_type: 'Diagnose',
+      term_en: 'Palpitations', icd11_code: 'BC81', medications: [], ai_generated: true,
+    } }, '/api/documents': saved,
+  })
+  renderEditor()
+  fireEvent.change(await screen.findByLabelText('Titel'), { target: { value: 'Herzrasen' } })
+  fireEvent.click(screen.getByRole('button', { name: 'KI-Entwurf erstellen' }))
+  expect(await screen.findByText('Allgemeiner Entwurf.')).toBeInTheDocument()
+  expect(screen.getByLabelText('Inhalt')).toHaveValue('')
+  fireEvent.click(screen.getByRole('button', { name: 'Geprüften Entwurf übernehmen' }))
+  expect(screen.getByLabelText('Inhalt')).toHaveValue('Allgemeiner Entwurf zu Herzrasen.')
+  expect(screen.getByLabelText('Fachbegriff (en)')).toHaveValue('Palpitations')
+  fireEvent.click(screen.getByRole('button', { name: 'Speichern' }))
+  await screen.findByText('Detailseite')
+  expect(bodies(fetchMock, 'POST').find(call => call.url === '/api/documents')?.body.ai_generated).toBe(true)
+})
+
+it('shows an AI category opinion separately and applies it only on request', async () => {
+  mockFetch({ '/api/meta': meta, '/api/classify': classification,
+    '/api/ai/classify': { text: 'Separate Meinung.', cached: false, citations: [], classification: { category: 'HNO', confidence: 0.6, reasoning: 'Separate Meinung.' } },
+  })
+  renderEditor()
+  await fillNewEntry()
+  fireEvent.click(screen.getByRole('button', { name: 'KI-Zweitmeinung anfordern' }))
+  expect(await screen.findByText('Separate Meinung.')).toBeInTheDocument()
+  expect(screen.getByRole('radio', { name: /Automatisch/ })).toBeChecked()
+  fireEvent.click(screen.getByRole('button', { name: 'Fachgebiet HNO übernehmen' }))
+  expect(screen.getByRole('radio', { name: 'HNO' })).toBeChecked()
+})
 const saved = {
   id: 9,
   title: 'Herzrasen',
