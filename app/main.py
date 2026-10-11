@@ -9,12 +9,14 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 from app import __version__
+from app.ai.provider import AIUnavailable
 from app.config import get_settings
 from app.database import Base, SessionLocal, engine, upgrade_schema
 from app.demo import demo_reset_loop, reset_demo
-from app.routers import admin, auth, documents, sources, users
+from app.routers import admin, ai, auth, documents, sources, users
 from app.seed import seed_if_empty
 from app.spa import mount_frontend
 from app.users import ensure_users
@@ -69,6 +71,13 @@ app.include_router(documents.router)
 app.include_router(admin.router)
 app.include_router(users.router)
 app.include_router(sources.router)
+app.include_router(ai.router)
+
+
+@app.exception_handler(AIUnavailable)
+async def ai_unavailable(_request, exc: AIUnavailable):
+    code = str(exc) if str(exc) in {"ai_not_configured", "ai_invalid_output"} else "ai_unavailable"
+    return JSONResponse(status_code=503, content={"detail": code})
 
 
 @app.get("/api/health", tags=["system"])
