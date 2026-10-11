@@ -28,8 +28,17 @@ Staff = Annotated[Any, Depends(require_role("admin", "doctor"))]
 Admin = Annotated[Any, Depends(require_role("admin"))]
 
 
+def client_ip(request: Request, settings: Settings) -> str:
+    """The visitor's address: the trusted proxy header if configured, else the connection."""
+    if settings.client_ip_header:
+        forwarded = request.headers.get(settings.client_ip_header, "").split(",")[0].strip()
+        if forwarded:
+            return forwarded
+    return request.client.host if request.client else "unknown"
+
+
 def identity(request: Request, settings: Settings) -> str:
-    return store.client_identity(request.client.host if request.client else "unknown", settings)
+    return store.client_identity(client_ip(request, settings), settings)
 
 
 def document_access(feature: str, user: CurrentUser):
