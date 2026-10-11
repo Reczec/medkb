@@ -156,3 +156,10 @@ def test_admin_password_longer_than_bcrypt_limit_works(anon_client, db_session, 
         "/api/auth/login", json={"username": "admin", "password": "ä" * 59 + "a"}
     )
     assert wrong.status_code == 401
+
+
+def test_token_without_exp_is_rejected(anon_client, test_settings, db_session):
+    user = db_session.scalar(select(User).where(User.username == "demo-admin"))
+    forever = jwt.encode({"sub": str(user.id), "role": "admin"}, test_settings.jwt_secret, "HS256")
+    response = anon_client.get("/api/auth/me", headers={"Authorization": f"Bearer {forever}"})
+    assert response.status_code == 401

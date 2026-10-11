@@ -50,7 +50,9 @@ def create_token(user: User, settings: Settings) -> str:
 
 def decode_token(token: str, settings: Settings) -> dict[str, Any]:
     """Raises jwt.InvalidTokenError for expired, tampered or foreign tokens."""
-    return jwt.decode(token, settings.jwt_secret, algorithms=[ALGORITHM])
+    return jwt.decode(
+        token, settings.jwt_secret, algorithms=[ALGORITHM], options={"require": ["exp", "sub"]}
+    )
 
 
 _bearer = HTTPBearer(auto_error=False)

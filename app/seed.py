@@ -18,7 +18,7 @@ from app.seed_data import SEED_DOCUMENTS, SOURCE
 from app.services import create_document
 
 
-def seed_if_empty(db: Session, force: bool = False) -> int:
+def seed_if_empty(db: Session, force: bool = False, commit: bool = True) -> int:
     """Create the example documents; categories and keywords come from the classifier."""
     if not force and (db.scalar(select(func.count(Document.id))) or 0) > 0:
         return 0
@@ -35,6 +35,7 @@ def seed_if_empty(db: Session, force: bool = False) -> int:
                 further_reading=item["further_reading"],
                 source=SOURCE,
             ),
+            commit=commit,
         )
     return len(SEED_DOCUMENTS)
 

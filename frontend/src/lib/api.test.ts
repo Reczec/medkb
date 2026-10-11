@@ -54,6 +54,23 @@ describe('api', () => {
     expect(listener).toHaveBeenCalledTimes(1)
   })
 
+  it('a late 401 for an old token keeps a new login', async () => {
+    tokenStore.set('old-token')
+    const listener = vi.fn()
+    window.addEventListener(UNAUTHORIZED_EVENT, listener)
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async () => {
+        tokenStore.set('fresh-token') // the user logged in again while this request was running
+        return new Response('{}', { status: 401 })
+      }),
+    )
+    await api('/api/stats').catch(() => undefined)
+    window.removeEventListener(UNAUTHORIZED_EVENT, listener)
+    expect(tokenStore.get()).toBe('fresh-token')
+    expect(listener).not.toHaveBeenCalled()
+  })
+
   it('does not announce a 401 when no token was sent (wrong password)', async () => {
     const listener = vi.fn()
     window.addEventListener(UNAUTHORIZED_EVENT, listener)
