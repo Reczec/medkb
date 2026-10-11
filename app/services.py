@@ -253,7 +253,13 @@ def get_stats(db: Session) -> StatsOut:
         categories=[CountItem(name=c, count=by_category.get(c, 0)) for c in CATEGORIES],
         doc_types=[CountItem(name=t.value, count=by_type.get(t.value, 0)) for t in DocType],
         recent=[
-            RecentItem(id=d.id, title=d.title, category=d.category, updated_at=d.updated_at)
+            RecentItem(
+                id=d.id,
+                title=d.title,
+                title_en=d.title_en,
+                category=d.category,
+                updated_at=d.updated_at,
+            )
             for d in recent
         ],
     )

@@ -251,6 +251,13 @@ def test_stats(client):
     assert [r["title"] for r in stats["recent"]][0] == "Zwei"
 
 
+def test_stats_recent_carries_the_english_title(client):
+    make_doc(client, title="Migräne", title_en="Migraine")
+    make_doc(client, title="Nur Deutsch")
+    recent = {r["title"]: r["title_en"] for r in client.get("/api/stats").json()["recent"]}
+    assert recent == {"Migräne": "Migraine", "Nur Deutsch": None}
+
+
 @pytest.mark.parametrize("q", ['"', "[", "]", ",", '","'])
 def test_search_ignores_json_syntax_of_the_keyword_column(client, q):
     # Keywords are stored as JSON text; its quotes, brackets and commas must not match everything.

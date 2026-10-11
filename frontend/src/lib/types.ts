@@ -104,6 +104,7 @@ export interface CountItem {
 export interface RecentItem {
   id: number
   title: string
+  title_en?: string | null
   category: string
   updated_at: string
 }

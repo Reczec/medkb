@@ -373,6 +373,7 @@ class CountItem(BaseModel):
 class RecentItem(BaseModel):
     id: int
     title: str
+    title_en: str | None = None
     category: str
     updated_at: datetime
 

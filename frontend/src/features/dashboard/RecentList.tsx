@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
 import { FileTab } from '@/components/specialty/FileTab'
+import { useI18n } from '@/i18n/context'
 import { formatDate, formatRelative } from '@/lib/format'
 import type { RecentItem } from '@/lib/types'
 
@@ -8,24 +9,25 @@ import type { RecentItem } from '@/lib/types'
 interface RecentListProps {
   items: RecentItem[]
   title?: string
-  /** Editorial "geändert …" stamps; off for patients. */
+  /** Editorial "changed …" stamps; off for patients. */
   showTimes?: boolean
 }
 
-export function RecentList({ items, title = 'Zuletzt bearbeitet', showTimes = true }: RecentListProps) {
+export function RecentList({ items, title, showTimes = true }: RecentListProps) {
+  const { t, lang } = useI18n()
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold">{title}</h2>
+        <h2 className="text-base font-semibold">{title ?? t('recent.title')}</h2>
         <Link
           to="/wissen"
           className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
-          Alle Einträge <ArrowRight className="size-3.5" aria-hidden />
+          {t('recent.all')} <ArrowRight className="size-3.5" aria-hidden />
         </Link>
       </div>
       {items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Noch keine Einträge.</p>
+        <p className="text-sm text-muted-foreground">{t('recent.empty')}</p>
       ) : (
         <ul className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
           {items.map((item) => (
@@ -39,14 +41,14 @@ export function RecentList({ items, title = 'Zuletzt bearbeitet', showTimes = tr
                   className="relative z-10 ml-3 -mb-px self-start transition-transform duration-200 ease-out group-hover:-translate-y-1"
                 />
                 <span className="flex flex-1 flex-col justify-between gap-3 rounded-xl border bg-card p-4 shadow-sheet transition-shadow duration-200 group-hover:shadow-lift group-focus-visible:ring-2 group-focus-visible:ring-ring">
-                  <span className="line-clamp-2 font-medium [overflow-wrap:anywhere]">{item.title}</span>
+                  <span className="line-clamp-2 font-medium [overflow-wrap:anywhere]">{(lang === 'en' && item.title_en) || item.title}</span>
                   {showTimes && (
                     <time
                       dateTime={item.updated_at}
-                      title={formatDate(item.updated_at)}
+                      title={formatDate(item.updated_at, lang)}
                       className="text-xs text-muted-foreground"
                     >
-                      geändert {formatRelative(item.updated_at)}
+                      {t('card.changed', { time: formatRelative(item.updated_at, lang) })}
                     </time>
                   )}
                 </span>
