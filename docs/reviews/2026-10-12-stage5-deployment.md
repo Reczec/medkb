@@ -33,7 +33,9 @@ Before stage 5, on `main`: 43fe489 (blank page after saving — exit animation n
 
 Spoof test (2026-10-12): 19 uncached questions with `True-Client-IP: 198.51.100.10` counted against the same visitor bucket as this network's earlier header-less requests (429 at call 20, not 31); a fresh fake value `203.0.113.99` then also got 429. So a client-sent value is not used as is. Four calls got 503 `ai_unavailable` because the burst (~40/min) exceeded Gemini's free per-minute limit; the reservations still counted, as designed.
 
-Open live checks: cold start time after 15 min idle; one AI question from a second network (for example a phone on mobile data) to confirm visitors get separate buckets (Render writes the real IP) rather than one shared bucket (header stripped).
+Second network (user's phone on mobile data, same day): AI answered while the home network was at its limit, so Render writes the visitor's real IP into `True-Client-IP` and visitors get separate quotas. That phone test also showed the assistant answering "keine passenden Einträge" for "Was hilft bei Erkältung?": fixed in the following commit (everyday question words, partial-match fallback weighted by term rarity and title hits).
+
+Open live check: cold start time after 15 min idle.
 
 ## Rulings
 

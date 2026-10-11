@@ -15,7 +15,6 @@ from app.config import Settings, get_settings
 from app.database import get_db
 from app.models import Document
 from app.schemas import ClassifyRequest
-from app.services import search_documents
 from app.sources.cache import cached
 from app.sources.http import http_client
 from app.sources.pubmed import fetch_abstract
@@ -87,8 +86,7 @@ async def ask(
     provider: Provider,
     stream: bool = False,
 ):
-    query = retrieval.query(body)
-    documents = search_documents(db, q=query, limit=5)[0] if query else []
+    documents = retrieval.find(db, body)
     references = [{"index": i, "id": d.id, "title": d.title} for i, d in enumerate(documents, 1)]
     if not documents:
         result = {
