@@ -48,9 +48,8 @@ Follow-ups deferred from the stage 1 reviews (code review and design review, 202
 
 ## AI (stage 4)
 
-- Minor review finding: staff “Einfach erklären” uses professional tone. Make this feature plain-language independently of caller role when refining prompts; bump PROMPT_VERSION.
 
-- Live provider smoke test requires a real configured key; verify available model, account limits and output quality before deployment. Offline tests prove contracts, not medical correctness.
+- Live provider smoke test done 2026-10-12 locally (all seven features). Re-check model availability and free-tier limits on the deployed service.
 - Verify concurrent global/client reservations on PostgreSQL and trusted deployment proxy identity. Current concurrency regression uses SQLite; HMAC identities need stable JWT_SECRET.
 - Cache has no automatic retention policy yet. Add bounded cleanup if real demo usage warrants it; successful content/role/model/prompt identities remain persisted across reset.
 - Existing Impeccable surface brief mentions nine specialties; current DESIGN and code correctly contain sixteen. Treat this as pre-existing documentation drift, not a redesign request.

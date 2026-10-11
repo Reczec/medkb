@@ -17,8 +17,8 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 | 1 React frontend, redesign, dashboard | done, merged into `main` ([plan](docs/superpowers/plans/2026-10-10-etappe-1-frontend-redesign.md)) |
 | 2 Roles and auth (admin / doctor / patient, demo login, demo reset) | done ([plan](docs/superpowers/plans/2026-10-10-etappe-2-rollen-auth.md)) |
 | 3 Data model, 47 realistic entries, PubMed / WHO ICD-11 / openFDA | done, merged into `main` and pushed ([plan](docs/superpowers/plans/2026-10-11-etappe-3-inhalte-quellen.md)) |
-| 4 AI features (free OpenAI-compatible provider, cache, rate limit) | implemented; live provider smoke test pending ([plan](docs/superpowers/plans/2026-10-11-etappe-4-ki.md)) |
-| 5 Deployment (Render + Neon), README, demo GIF | open |
+| 4 AI features (free OpenAI-compatible provider, cache, rate limit) | done; live-checked with Gemini 2026-10-12 ([plan](docs/superpowers/plans/2026-10-11-etappe-4-ki.md)) |
+| 5 Deployment (Render + Neon), README, demo GIF | planned ([plan](docs/superpowers/plans/2026-10-12-etappe-5-deployment.md)) |
 
 Continue a stage by writing its plan next to the stage 1 plan (same structure: file map, tasks with failing test first, commit per task), then implement it task by task.
 
