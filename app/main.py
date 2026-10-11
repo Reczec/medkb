@@ -18,7 +18,7 @@ from app.database import Base, SessionLocal, engine, upgrade_schema
 from app.demo import demo_reset_loop, reset_demo
 from app.routers import admin, ai, auth, documents, sources, users
 from app.seed import seed_if_empty
-from app.spa import mount_frontend
+from app.spa import install_security_headers, mount_frontend
 from app.users import ensure_users
 
 logger = logging.getLogger("medkb")
@@ -66,6 +66,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+install_security_headers(app)
 app.include_router(auth.router)
 app.include_router(documents.router)
 app.include_router(admin.router)
