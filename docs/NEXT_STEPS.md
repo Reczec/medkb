@@ -1,6 +1,6 @@
 # Next steps after stage 4
 
-Updated 2026-10-11. Stages 1–3 are on main; stage 4 is implemented on codex/v2-stage4. See [stage 4 record](reviews/2026-10-11-stage4-completion.md) for checks and integration status.
+Updated 2026-10-11. Stages 1–4 are integrated into main; stage 4 implementation ends at c65c0f1. See [stage 4 record](reviews/2026-10-11-stage4-completion.md) for checks and integration status.
 
 ## Configure and smoke-test AI
 

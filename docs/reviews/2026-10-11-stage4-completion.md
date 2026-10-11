@@ -11,7 +11,7 @@ Date: 2026-10-11. Request: implement the next stage and document all work. Scope
 | 75b27b3 | Persistent cache and atomic global/client UTC quotas |7 tests RED→GREEN, including concurrent final SQLite slot;507 backend,128 frontend,25 browser;Ruff73 |
 | 40aeabf | Role endpoints, constrained prompts/output, PMID abstract transport, trusted explicit warmup |39 tests RED→GREEN;546 backend,128 frontend,25 browser;Ruff79 |
 | 032547b | AI result panels, assistant, document/study controls, editor review/apply, dashboard usage |141 frontend,547 backend,25 browser;lint/typecheck/build/Ruff green |
-| Task 5 (recorded in git log) | Five deterministic AI browser flows, visible saved provenance, configuration/docs and captures |Final check/review results below |
+| f97f251 | Five deterministic AI browser flows, visible saved provenance, configuration/docs and captures |Final check/review results below |
 
 Each task ran pytest, Ruff check/format, frontend lint/typecheck/test/build/e2e. RED was observed before implementation: missing provider/store/routes/components, missing editor/tab controls, split-CRLF framing and reset-cache regression. A Radix tab test needed mousedown followed by click, matching existing test helpers. An async pytest test used asyncio.run because no asyncio pytest plugin is installed.
 
@@ -21,14 +21,14 @@ Backend: app/ai separates provider, prompts, schemas, transactional store and va
 
 All roles can explain entries, read general warning signs and ask grounded questions. Staff can summarize entries/actual NCBI PMID abstracts. Admin can request a validated DocumentCreate draft or separate known-category/confidence opinion. A draft never inserts a document; provenance is forced true. Draft metadata URLs/source/category are not accepted from the model. Missing abstracts/providers fail honestly.
 
-Questions use the existing AND keyword search's top five entries, six bounded history messages and role-specific prompts. No matches: no provider call or quota. Citations are server-owned IDs/titles; missing/out-of-range model indices fail. This does not establish factual support for every sentence. Quoted input/history is untrusted, prompts prohibit individual diagnoses/dosages and reference144; no patient data is permitted.
+Questions normalize question words and reuse prior user topics for generic follow-ups, then use the existing AND keyword search's top five entries, six bounded history messages and role-specific prompts. No matches: no provider call or quota. Citations are server-owned IDs/titles; missing/out-of-range model indices fail. This does not establish factual support for every sentence. Quoted input/history is untrusted, prompts prohibit individual diagnoses/dosages and reference144; no patient data is permitted.
 
 Frontend: /assistent and navigation/patient-home links; inline AI response sheets with source links, provenance and actionable error/retry states; patient explanation/warning controls and a staff-only summary tab; study abstract buttons; dashboard global UTC usage. Tokens are provisional until done. Text is rendered as React text, never model HTML. Requests abort on replacement/unmount; split UTF-8 and LF/CRLF SSE frames are tested. Admin reviews content and metadata before explicit apply; fields remain editable and require Save. AI category selection is a separate explicit action; the rule classifier remains unchanged. Draft generation is available only for new entries, preserving existing provenance on edits. Saved drafts show KI-generiert on detail pages.
 
 ## Decisions and deviations
 
 - Default gemini-3.5-flash-lite, not legacy2.5Flash: official Google model docs restrict older models for new projects. BaseURL/key/model are configurable. [Compatibility](https://ai.google.dev/gemini-api/docs/openai), [model policy](https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash), [pricing](https://ai.google.dev/gemini-api/docs/pricing), [Groq alternative](https://console.groq.com/docs/openai) checked during planning. Free tier availability/account limits are not guaranteed; Google lists free-tier input as product-improvement data.
-- Cache key includes semantic entry snapshot, feature, ID, role, provider/model and prompt version. Excludes reset timestamps: a regression initially showed unchanged seeds missing cache after reset; shared snapshot fixed it. Changed content remains a different identity. No ask/draft/classify cache; failed/incomplete output never cached.
+- Cache key includes semantic entry snapshot, feature, stable seed identity or ordinary entry ID, role, provider/model and prompt version. Excludes IDs and reset timestamps from semantic snapshots: a regression initially showed unchanged seeds missing cache after reset; shared snapshot fixed it. Changed content remains a different identity. No ask/draft/classify cache; failed/incomplete output never cached.
 - Quotas reserve global first and HMAC client second, then commit both;429 rolls both back and provides time to UTC midnight. Provider attempts consume quota even on failure, matching real upstream work. Direct client IP only; stable JWT_SECRET salts identity. Proxy trust is deployment work.
 - Explicit trusted warmup temporarily uses the global budget as its own client budget, without modifying public30/day. Eight role/feature variants per entry =376 potential calls for47 entries. Missing key exits without requests; no automatic startup warmup. No live warmup was run.
 - Inline panels instead of modal interruption preserve reference reading and ordinary filing-room design. No new tokens or imagery. DESIGN.md and design.json stay intact. Pre-existing brief/sidecar drift is reported in BACKLOG.
@@ -67,3 +67,7 @@ Fresh visual finish review disposition: ship, no material fixes. Sixteen desktop
 Integration follows the user's explicit local-main and push instructions. Grouped fixes are recorded as “fix(ai): address stage 4 review findings” in git log. No worktree created. Stage 4 ignored execution scratch is removed after preserving this record.
 
 [Next steps](../NEXT_STEPS.md): configure one real provider smoke test, optionally warm seeded results, resolve auth/reset/archive follow-ups, then plan stage5 Render/Neon deployment and public demo evidence. [BACKLOG](../BACKLOG.md) retains deferred issues and live verification boundaries.
+
+## Local integration
+
+Fast-forwarded main from c422e54 to c65c0f1 after fetching origin/main and confirming no upstream changes. Full backend/frontend suites repeated on the identical merged implementation; all other final checks covered this same tree. Publication is recorded in the following documentation commit and remote verification. Earlier user instructions explicitly authorize local main and push.
