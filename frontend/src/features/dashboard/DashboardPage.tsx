@@ -7,6 +7,7 @@ import { ActivityChart } from '@/features/dashboard/ActivityChart'
 import { ActivityFeed } from '@/features/dashboard/ActivityFeed'
 import { DocTypeBars } from '@/features/dashboard/DocTypeBars'
 import { RecentList } from '@/features/dashboard/RecentList'
+import { LatestStudies } from '@/features/dashboard/LatestStudies'
 import { useStats } from '@/lib/queries'
 import type { Stats } from '@/lib/types'
 
@@ -78,7 +79,10 @@ export function DashboardPage() {
             </div>
             <DocTypeBars items={data.doc_types} />
           </div>
-          <RecentList items={data.recent} />
+          <div className="grid min-w-0 items-start gap-6 xl:grid-cols-2">
+            <RecentList items={data.recent} />
+            {(user?.role === 'doctor' || user?.role === 'admin') && <LatestStudies />}
+          </div>
           {user?.role === 'admin' && <ActivityFeed />}
         </>
       )}
