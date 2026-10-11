@@ -203,3 +203,25 @@ def test_old_archive_without_new_fields_restores_with_defaults(client, archive_d
     assert doc["sections"] is None and doc["term_en"] is None
     assert doc["medications"] == [] and doc["further_reading"] == []
     assert doc["ai_generated"] is False
+
+
+def test_archive_roundtrip_keeps_the_english_version(client):
+    payload = {
+        "title": "Migräne",
+        "content": "Anfallsartige Kopfschmerzen mit Übelkeit.",
+        "doc_type": "Diagnose",
+        "title_en": "Migraine",
+        "sections_en": {"definition": "Recurrent headache attacks."},
+        "keywords_en": ["Headache", "Nausea"],
+        "further_reading": [
+            {"label": "Portal", "label_en": "Austrian portal", "url": "https://www.who.int/x"}
+        ],
+    }
+    original = client.post("/api/documents", json=payload).json()
+    archive = client.post("/api/archives").json()
+    client.delete(f"/api/documents/{original['id']}")
+    assert client.post(f"/api/archives/{archive['name']}/restore").status_code == 200
+    restored = client.get("/api/documents").json()["items"][0]
+    for field in ("title_en", "content_en", "sections_en", "keywords_en", "further_reading"):
+        assert restored[field] == original[field], field
+    assert restored["further_reading"][0]["label_en"] == "Austrian portal"

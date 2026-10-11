@@ -40,7 +40,7 @@ def test_new_fields_roundtrip(client):
     assert doc["term_en"] == "Migraine"
     assert doc["icd11_code"] == "8A80.1"
     assert doc["medications"] == ["sumatriptan", "ibuprofen"]
-    assert doc["further_reading"] == [LINK]
+    assert doc["further_reading"] == [{**LINK, "label_en": None}]
     assert doc["ai_generated"] is False
 
 
@@ -123,3 +123,75 @@ def test_classify_accepts_sections(client):
 
 def test_classify_needs_content_or_sections(client):
     assert client.post("/api/classify", json={"title": "Ohr"}).status_code == 422
+
+
+# ------------------------------------------------------------- English version (i18n)
+
+DE_TEXT = "Deutscher Inhalt für den Test mit genügend Zeichen."
+
+
+def post_en(client, **fields):
+    payload = {"title": "Erkältung", "content": DE_TEXT, "doc_type": "Beschreibung", **fields}
+    return client.post("/api/documents", json=payload)
+
+
+def test_english_sections_compose_english_content(client):
+    response = post_en(
+        client,
+        title_en="Common cold",
+        sections_en={"definition": "A viral infection.", "symptoms": "Runny nose."},
+        keywords_en=["Cold", "cold", "Virus"],
+    )
+    assert response.status_code == 201, response.text
+    doc = response.json()
+    assert doc["content"] == DE_TEXT  # German stays canonical
+    assert doc["content_en"] == "Definition\nA viral infection.\n\nSymptoms\nRunny nose."
+    assert doc["title_en"] == "Common cold"
+    assert doc["keywords_en"] == ["Cold", "Virus"]
+
+
+def test_documents_without_english_have_empty_english_fields(client):
+    doc = make_doc(client)
+    assert doc["title_en"] is None and doc["content_en"] is None
+    assert doc["sections_en"] is None and doc["keywords_en"] == []
+
+
+def test_patch_content_en_drops_sections_en(client):
+    doc = post_en(client, sections_en={"definition": "Structured English."}).json()
+    updated = client.patch(
+        f"/api/documents/{doc['id']}", json={"content_en": "Now free text in English."}
+    ).json()
+    assert updated["sections_en"] is None
+    assert updated["content_en"] == "Now free text in English."
+
+
+def test_patch_title_en_null_clears_only_the_title(client):
+    doc = post_en(
+        client, title_en="Common cold", content_en="A viral infection of the nose."
+    ).json()
+    updated = client.patch(f"/api/documents/{doc['id']}", json={"title_en": None}).json()
+    assert updated["title_en"] is None
+    assert updated["content_en"] == "A viral infection of the nose."
+
+
+def test_patch_sections_en_recomposes_and_leaves_german_alone(client):
+    doc = post_en(client, content_en="Old English text here.").json()
+    updated = client.patch(
+        f"/api/documents/{doc['id']}", json={"sections_en": {"therapy": "Rest and fluids."}}
+    ).json()
+    assert updated["content_en"] == "Therapy\nRest and fluids."
+    assert updated["content"] == DE_TEXT and updated["title"] == "Erkältung"
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        {"title_en": "ab"},
+        {"sections_en": {}},
+        {"content_en": "short"},
+        {"keywords_en": [f"k{i}" for i in range(21)]},
+    ],
+    ids=["short-title", "no-sections", "short-content", "too-many-keywords"],
+)
+def test_invalid_english_fields_are_rejected(client, fields):
+    assert post_en(client, **fields).status_code == 422

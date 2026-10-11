@@ -37,6 +37,11 @@ class Document(Base):
     # {definition, symptoms, causes, diagnostics, therapy, red_flags}; None = free text only.
     sections: Mapped[dict[str, str | None] | None] = mapped_column(JSON, default=None)
     further_reading: Mapped[list[dict[str, str]]] = mapped_column(JSON, default=list)
+    # Optional English version (German stays canonical: the classifier works on it).
+    title_en: Mapped[str | None] = mapped_column(String(200), default=None)
+    content_en: Mapped[str | None] = mapped_column(Text, default=None)
+    sections_en: Mapped[dict[str, str | None] | None] = mapped_column(JSON, default=None)
+    keywords_en: Mapped[list[str]] = mapped_column(JSON, default=list)
     # True if the entry started as an AI draft (stage 4).
     ai_generated: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

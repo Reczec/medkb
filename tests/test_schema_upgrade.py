@@ -65,6 +65,8 @@ def test_adds_document_columns_to_an_old_database(tmp_path):
         out = DocumentOut.model_validate(db.get(Document, 1))
     assert out.medications == [] and out.further_reading == []
     assert out.sections is None and out.ai_generated is False
+    assert {"title_en", "content_en", "sections_en", "keywords_en"} <= columns
+    assert out.title_en is None and out.content_en is None and out.keywords_en == []
 
 
 def test_server_databases_check_pooled_connections_before_use():

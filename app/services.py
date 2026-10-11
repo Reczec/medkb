@@ -72,6 +72,10 @@ def create_document(
         sections=data.sections.model_dump() if data.sections else None,
         further_reading=[link.model_dump() for link in data.further_reading],
         ai_generated=data.ai_generated,
+        title_en=data.title_en,
+        content_en=data.content_en,
+        sections_en=data.sections_en.model_dump() if data.sections_en else None,
+        keywords_en=data.keywords_en,
     )
     db.add(document)
     db.flush()  # assigns the id for the audit entry
@@ -99,6 +103,7 @@ def update_document(
         document.sections = None  # edited as free text from now on
     elif "sections" in changes:  # explicit null: keep the text, drop the structure
         document.sections = None
+    _apply_english(document, changes)
     if "doc_type" in changes:
         document.doc_type = changes["doc_type"].value
     if "source" in changes:
@@ -129,6 +134,23 @@ def update_document(
     return document
 
 
+def _apply_english(document: Document, changes: dict) -> None:
+    """The English version mirrors the German logic: sections recompose the text, free text
+    drops the structure, null clears. Nothing here touches the German fields."""
+    if "title_en" in changes:
+        document.title_en = changes["title_en"]
+    if changes.get("sections_en") is not None:
+        document.sections_en = changes["sections_en"]
+        document.content_en = compose_content(changes["sections_en"], "en")
+    elif "content_en" in changes:
+        document.content_en = changes["content_en"]
+        document.sections_en = None
+    elif "sections_en" in changes:  # explicit null: keep the text, drop the structure
+        document.sections_en = None
+    if "keywords_en" in changes:
+        document.keywords_en = changes["keywords_en"] or []
+
+
 def delete_document(db: Session, document: Document, actor: str | None = None) -> None:
     log_audit(db, "delete", document.id, document.title, actor)
     db.delete(document)
@@ -143,10 +165,20 @@ JSON_SYNTAX = frozenset('"[],' + "\\")
 
 
 def _term_condition_and_score(term: str):
-    in_title = Document.title.icontains(term, autoescape=True)
-    in_content = Document.content.icontains(term, autoescape=True)
+    """German and English fields are searched together with the same weights."""
+    in_title = or_(
+        Document.title.icontains(term, autoescape=True),
+        Document.title_en.icontains(term, autoescape=True),
+    )
+    in_content = or_(
+        Document.content.icontains(term, autoescape=True),
+        Document.content_en.icontains(term, autoescape=True),
+    )
     if JSON_SYNTAX.isdisjoint(term):
-        in_keywords = cast(Document.keywords, String).icontains(term, autoescape=True)
+        in_keywords = or_(
+            cast(Document.keywords, String).icontains(term, autoescape=True),
+            cast(Document.keywords_en, String).icontains(term, autoescape=True),
+        )
     else:
         in_keywords = false()
     score = (

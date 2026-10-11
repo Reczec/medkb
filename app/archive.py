@@ -140,6 +140,10 @@ def restore_archive(
                 sections=entry.sections.model_dump() if entry.sections else None,
                 further_reading=[link.model_dump() for link in entry.further_reading],
                 ai_generated=entry.ai_generated,
+                title_en=entry.title_en,
+                content_en=entry.content_en,
+                sections_en=entry.sections_en.model_dump() if entry.sections_en else None,
+                keywords_en=entry.keywords_en,
                 created_at=entry.created_at,
                 updated_at=entry.updated_at,
             )

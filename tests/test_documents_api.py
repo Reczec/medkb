@@ -262,3 +262,47 @@ def test_search_still_finds_punctuation_inside_title_or_content(client):
     make_doc(client, title='Das "Kopfweh"-Tagebuch', content="Notizen, Termine [optional]")
     assert titles(client, q='"Kopfweh"') == ['Das "Kopfweh"-Tagebuch']
     assert titles(client, q="[optional]") == ['Das "Kopfweh"-Tagebuch']
+
+
+# ------------------------------------------------------- search over both languages
+
+
+def _en_doc(client, title, title_en=None, content_en=None, **extra):
+    payload = {
+        "title": title,
+        "content": "Deutscher Text ohne den gesuchten Begriff.",
+        "doc_type": "Symptom",
+        **extra,
+    }
+    if title_en:
+        payload["title_en"] = title_en
+    if content_en:
+        payload["content_en"] = content_en
+    response = client.post("/api/documents", json=payload)
+    assert response.status_code == 201, response.text
+    return response.json()
+
+
+def test_english_term_finds_the_entry_through_its_english_version(client):
+    doc = _en_doc(client, "Erkältung", title_en="Common cold")
+    _en_doc(client, "Migräne", title_en="Migraine")
+    found = client.get("/api/documents", params={"q": "cold"}).json()["items"]
+    assert [d["id"] for d in found] == [doc["id"]]
+    assert [
+        d["id"] for d in client.get("/api/documents", params={"q": "Erkältung"}).json()["items"]
+    ] == [doc["id"]]
+
+
+def test_english_title_hit_outranks_english_content_hit(client):
+    first = _en_doc(client, "Alpha", title_en="Cold sores")
+    _en_doc(client, "Beta", content_en="A text about a cold in winter, in English.")
+    ids = [d["id"] for d in client.get("/api/documents", params={"q": "cold"}).json()["items"]]
+    assert ids[0] == first["id"] and len(ids) == 2
+
+
+def test_english_keywords_are_searched_and_json_syntax_is_skipped(client):
+    doc = _en_doc(client, "Gicht", keywords_en=["Uric acid"])
+    assert [
+        d["id"] for d in client.get("/api/documents", params={"q": "uric"}).json()["items"]
+    ] == [doc["id"]]
+    assert client.get("/api/documents", params={"q": 'uric"'}).status_code == 200
