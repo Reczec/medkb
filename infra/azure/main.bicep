@@ -15,7 +15,7 @@ resource environment 'Microsoft.App/managedEnvironments@2025-07-01' = {
   location: location
   tags: { project: 'medkb-azure-demo' }
   properties: {
-    appLogsConfiguration: { destination: 'none' }
+    appLogsConfiguration: {}
     workloadProfiles: [
       { name: 'Consumption', workloadProfileType: 'Consumption' }
     ]
