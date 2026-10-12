@@ -1,16 +1,18 @@
 import { ArrowUpRight } from 'lucide-react'
 import { SourcePanel } from '@/features/documents/sources/SourcePanel'
+import { useI18n } from '@/i18n/context'
 import { useIcd11 } from '@/lib/queries'
 
 export function Icd11Panel({ documentId, enabled }: { documentId: number; enabled: boolean }) {
   const query = useIcd11(documentId, enabled)
+  const { t } = useI18n()
   return (
     <SourcePanel
       source="WHO ICD-11"
       shortName="ICD-11"
       query={query}
-      emptyText="Für diesen Eintrag ist kein ICD-11-Code hinterlegt oder die WHO kennt ihn nicht."
-      notConfiguredText="ICD-11 ist auf diesem Server nicht eingerichtet (WHO-API-Zugang fehlt)."
+      emptyText={t('icd.empty')}
+      notConfiguredText={t('icd.notConfigured')}
     >
       {(entry) => (
         <div className="flex flex-col gap-3">
@@ -30,11 +32,11 @@ export function Icd11Panel({ documentId, enabled }: { documentId: number; enable
               rel="noreferrer noopener"
               className="inline-flex items-center gap-1 font-medium text-primary underline-offset-4 hover:underline"
             >
-              Im ICD-11-Browser öffnen <ArrowUpRight className="size-4" aria-hidden />
+              {t('icd.open')} <ArrowUpRight className="size-4" aria-hidden />
             </a>
             <span className="text-xs text-muted-foreground">
-              Version <span className="tabular">{entry.release}</span>
-              {entry.language === 'de' && ' · Deutsche Fassung: WHO-Prerelease'}
+              {t('icd.version', { release: entry.release })}
+              {entry.language === 'de' && t('icd.prerelease')}
             </span>
           </div>
         </div>

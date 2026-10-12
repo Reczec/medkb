@@ -23,12 +23,12 @@ erhalten und sichtbar.
 
 ### Annahmen
 - Keine Patientendaten, nirgends. Alle Inhalte sind Lehrbuch-/Demo-Inhalte.
-- UI-Sprache Deutsch, Code und API Englisch (wie bisher).
+- UI-Sprache ursprünglich Deutsch, Code und API Englisch. Seit 2026-10-12 ist die Oberfläche zweisprachig (Englisch Standard, Umschalter auf Deutsch), siehe [Mehrsprachigkeit](2026-10-12-mehrsprachigkeit-design.md).
 
 ### Nicht im Umfang
 - Echte Nutzerverwaltung mit Registrierung, Passwort-Reset, E-Mail
 - Vektor-/Embedding-Suche (Retrieval nutzt die bestehende Suche)
-- Mehrsprachigkeit der UI
+- Mehrsprachigkeit der UI (später ergänzt: [Mehrsprachigkeit](2026-10-12-mehrsprachigkeit-design.md))
 - Mobile App
 
 ## 2. Architektur

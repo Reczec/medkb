@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DocumentCard } from '@/features/documents/DocumentCard'
 import { SearchFilters } from '@/features/documents/SearchFilters'
+import { useI18n } from '@/i18n/context'
 import { useDebounced } from '@/hooks/useDebounced'
 import { useDocuments, useMeta, useStats } from '@/lib/queries'
 
@@ -16,6 +17,7 @@ const PAGE_SIZE = 10
 export function KnowledgeBasePage() {
   const [params, setParams] = useSearchParams()
   const reduced = useReducedMotion()
+  const { t } = useI18n()
   const urlQuery = params.get('q') ?? ''
   const category = params.get('category') ?? ''
   const docType = params.get('type') ?? ''
@@ -77,10 +79,8 @@ export function KnowledgeBasePage() {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Wissensdatenbank</h1>
-        <p className="text-muted-foreground">
-          Alle Suchbegriffe müssen vorkommen, Treffer im Titel zählen am meisten.
-        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">{t('nav.knowledge')}</h1>
+        <p className="text-muted-foreground">{t('kb.lead')}</p>
       </header>
 
       <SearchFilters
@@ -97,10 +97,10 @@ export function KnowledgeBasePage() {
       <div className="flex min-h-6 items-center gap-2 text-sm text-muted-foreground" aria-live="polite">
         {documents.data && (
           <span className="tabular">
-            {first}–{last} von {total} {total === 1 ? 'Eintrag' : 'Einträgen'}
+            {t('kb.range', { first, last, total, count: total })}
           </span>
         )}
-        {documents.isFetching && <Loader2 className="size-4 animate-spin" aria-label="Lädt" />}
+        {documents.isFetching && <Loader2 className="size-4 animate-spin" aria-label={t('kb.loading')} />}
       </div>
 
       {documents.error && (
@@ -117,11 +117,11 @@ export function KnowledgeBasePage() {
 
       {documents.data && items.length === 0 && (
         <EmptyState
-          title="Keine Einträge gefunden"
-          text="Versuche weniger oder andere Suchbegriffe oder entferne Filter."
+          title={t('kb.empty.title')}
+          text={t('kb.empty.text')}
           action={
             <Button variant="outline" onClick={resetFilters}>
-              Filter zurücksetzen
+              {t('kb.empty.reset')}
             </Button>
           }
         />
@@ -148,23 +148,23 @@ export function KnowledgeBasePage() {
       )}
 
       {pages > 1 && (
-        <nav aria-label="Seiten" className="flex items-center justify-between gap-3">
+        <nav aria-label={t('kb.pages')} className="flex items-center justify-between gap-3">
           <Button
             variant="outline"
             disabled={page <= 1}
             onClick={() => update({ page: page - 1 > 1 ? String(page - 1) : '' })}
           >
-            <ChevronLeft aria-hidden /> Zurück
+            <ChevronLeft aria-hidden /> {t('kb.prev')}
           </Button>
           <span className="tabular text-sm text-muted-foreground">
-            Seite {page} von {pages}
+            {t('kb.page', { page, pages })}
           </span>
           <Button
             variant="outline"
             disabled={page >= pages}
             onClick={() => update({ page: String(page + 1) })}
           >
-            Weiter <ChevronRight aria-hidden />
+            {t('kb.next')} <ChevronRight aria-hidden />
           </Button>
         </nav>
       )}

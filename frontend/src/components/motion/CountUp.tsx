@@ -1,5 +1,6 @@
 import { animate, useReducedMotion } from 'motion/react'
 import { useEffect, useState } from 'react'
+import { useI18n } from '@/i18n/context'
 import { formatNumber } from '@/lib/format'
 
 interface CountUpProps {
@@ -11,6 +12,7 @@ interface CountUpProps {
 /** Counts from 0 to `value` on mount (jumps straight there with reduced motion). */
 export function CountUp({ value, suffix = '', duration = 0.9 }: CountUpProps) {
   const reduced = useReducedMotion()
+  const { lang } = useI18n()
   const [animated, setAnimated] = useState(0)
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export function CountUp({ value, suffix = '', duration = 0.9 }: CountUpProps) {
 
   return (
     <span className="tabular">
-      {formatNumber(reduced ? value : animated)}
+      {formatNumber(reduced ? value : animated, lang)}
       {suffix}
     </span>
   )

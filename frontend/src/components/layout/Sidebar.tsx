@@ -12,14 +12,23 @@ import { NavLink, useLocation } from 'react-router'
 import { BrandMark } from '@/components/layout/BrandMark'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { useAuth } from '@/features/auth/context'
-import { ROLE_LABELS, type Role } from '@/lib/auth'
+import { useI18n } from '@/i18n/context'
+import { LanguageSwitch } from '@/i18n/LanguageSwitch'
+import type { TranslationKey } from '@/i18n/translate'
+import type { Role } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 
-const NAV: { to: string; label: string; icon: typeof Library; end: boolean; roles?: Role[] }[] = [
-  { to: '/', label: 'Startseite', icon: LayoutDashboard, end: true },
-  { to: '/wissen', label: 'Wissensdatenbank', icon: Library, end: false },
-  { to: '/assistent', label: 'KI-Assistent', icon: MessagesSquare, end: false },
-  { to: '/admin', label: 'Admin', icon: ShieldCheck, end: false, roles: ['admin'] },
+const NAV: {
+  to: string
+  label: TranslationKey
+  icon: typeof Library
+  end: boolean
+  roles?: Role[]
+}[] = [
+  { to: '/', label: 'nav.home', icon: LayoutDashboard, end: true },
+  { to: '/wissen', label: 'nav.knowledge', icon: Library, end: false },
+  { to: '/assistent', label: 'nav.assistant', icon: MessagesSquare, end: false },
+  { to: '/admin', label: 'nav.admin', icon: ShieldCheck, end: false, roles: ['admin'] },
 ]
 
 interface SidebarProps {
@@ -33,6 +42,7 @@ interface SidebarProps {
 export function Sidebar({ collapsed = false, onToggleCollapsed, onNavigate, layoutScope = 'rail' }: SidebarProps) {
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
+  const { t } = useI18n()
   const items = NAV.filter((item) => !item.roles || (user && item.roles.includes(user.role)))
 
   return (
@@ -42,13 +52,14 @@ export function Sidebar({ collapsed = false, onToggleCollapsed, onNavigate, layo
         {!collapsed && (
           <div className="min-w-0 leading-tight">
             <div className="text-[15px] font-semibold tracking-tight">MedKB</div>
-            <div className="truncate text-xs text-rail-muted">Medizinische Wissensdatenbank</div>
+            <div className="truncate text-xs text-rail-muted">{t('app.tagline')}</div>
           </div>
         )}
       </div>
 
-      <nav aria-label="Hauptnavigation" className="mt-4 flex flex-col gap-1 px-3">
-        {items.map(({ to, label, icon: Icon, end }) => {
+      <nav aria-label={t('nav.main')} className="mt-4 flex flex-col gap-1 px-3">
+        {items.map(({ to, label: labelKey, icon: Icon, end }) => {
+          const label = t(labelKey)
           const active = end ? pathname === to : pathname.startsWith(to)
           return (
             <NavLink
@@ -94,14 +105,14 @@ export function Sidebar({ collapsed = false, onToggleCollapsed, onNavigate, layo
                 <span data-user-name className="block truncate text-sm font-medium">
                   {user.display_name}
                 </span>
-                <span className="block truncate text-xs text-rail-muted">{ROLE_LABELS[user.role]}</span>
+                <span className="block truncate text-xs text-rail-muted">{t(`role.${user.role}`)}</span>
               </span>
             )}
             <button
               type="button"
               onClick={logout}
-              aria-label="Abmelden"
-              title="Abmelden"
+              aria-label={t('nav.logout')}
+              title={t('nav.logout')}
               className="flex size-8 shrink-0 items-center justify-center rounded-lg text-rail-muted transition-colors hover:bg-rail-active hover:text-rail-foreground focus-visible:ring-2 focus-visible:ring-rail-ring focus-visible:outline-none"
             >
               <LogOut className="size-4" aria-hidden />
@@ -110,17 +121,18 @@ export function Sidebar({ collapsed = false, onToggleCollapsed, onNavigate, layo
         )}
         {!collapsed && (
           <p className="px-1 text-[11px] leading-snug text-rail-muted">
-            Prototyp mit Beispieldaten – keine medizinische Beratung.
+            {t('notice.prototype')}
           </p>
         )}
+        <LanguageSwitch className="w-full" />
         <div className={cn('flex items-center gap-2', collapsed && 'flex-col')}>
           <ThemeToggle className={cn(collapsed ? 'w-full flex-col' : 'flex-1')} />
           {onToggleCollapsed && (
             <button
               type="button"
               onClick={onToggleCollapsed}
-              aria-label={collapsed ? 'Seitenleiste ausklappen' : 'Seitenleiste einklappen'}
-              title={collapsed ? 'Ausklappen' : 'Einklappen'}
+              aria-label={collapsed ? t('nav.expand') : t('nav.collapse')}
+              title={collapsed ? t('nav.expandShort') : t('nav.collapseShort')}
               className="flex size-8 shrink-0 items-center justify-center rounded-lg text-rail-muted transition-colors hover:bg-rail-active hover:text-rail-foreground focus-visible:ring-2 focus-visible:ring-rail-ring focus-visible:outline-none"
             >
               {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}

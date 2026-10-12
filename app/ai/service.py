@@ -13,17 +13,47 @@ from app.ai import prompts, store
 from app.ai.provider import AIProvider, AIUnavailable
 from app.ai.schemas import Classification
 from app.config import Settings
+from app.content import SECTION_KEYS, compose_content
+from app.i18n import Lang, message
 from app.schemas import DocumentCreate, DocumentOut
 from app.seed_data import SEED_DOCUMENTS, SOURCE
 
 SEED_TITLES = frozenset(item["title"] for item in SEED_DOCUMENTS)
 
 
-def document_inputs(document: Any) -> dict:
-    """Bind to semantic content, not timestamps refreshed by an unchanged demo reset."""
-    return DocumentOut.model_validate(document).model_dump(
-        mode="json", exclude={"id", "created_at", "updated_at"}
-    )
+ENGLISH_FIELDS = {"title_en", "content_en", "sections_en", "keywords_en"}
+
+
+def document_inputs(document: Any, lang: Lang = "de") -> dict:
+    """Bind to semantic content, not timestamps refreshed by an unchanged demo reset.
+
+    The German shape is exactly what it was before the English version existed, so cache keys
+    of warmed German answers stay valid. English requests use the English text field by field,
+    falling back to German.
+    """
+    out = DocumentOut.model_validate(document)
+    data = out.model_dump(mode="json", exclude={"id", "created_at", "updated_at"} | ENGLISH_FIELDS)
+    english_links = [link.label_en or link.label for link in out.further_reading]
+    data["further_reading"] = [
+        {"label": link["label"], "url": link["url"]} for link in data["further_reading"]
+    ]
+    if lang == "en":
+        data["title"] = out.title_en or out.title
+        data["content"] = out.content_en or out.content
+        german = out.sections or {}
+        english = out.sections_en or {}
+        if german or english:
+            # Section by section: a half-translated entry keeps its German warning signs.
+            merged = {
+                key: text for key in SECTION_KEYS if (text := english.get(key) or german.get(key))
+            }
+            data["sections"] = merged or None
+            if merged:
+                data["content"] = compose_content(merged, "en")
+        data["keywords"] = out.keywords_en or out.keywords
+        for link, label in zip(data["further_reading"], english_links, strict=True):
+            link["label"] = label
+    return data
 
 
 def document_cache_identity(document: Any) -> str | None:
@@ -34,7 +64,9 @@ def document_cache_identity(document: Any) -> str | None:
     return None
 
 
-def normalize(feature: str, text: str, inputs: Any, citations: list[dict]) -> dict:
+def normalize(
+    feature: str, text: str, inputs: Any, citations: list[dict], lang: Lang = "de"
+) -> dict:
     try:
         if not text.strip() or len(text) > 20_000:
             raise ValueError("Invalid output size")
@@ -70,7 +102,7 @@ def normalize(feature: str, text: str, inputs: Any, citations: list[dict]) -> di
             marks = [int(n) for n in re.findall(r"\[(\d+)\]", text)]
             if not marks or any(n < 1 or n > len(citations) for n in marks):
                 raise ValueError("Unverifiable citation")
-        result["text"] += "\n\n" + prompts.NOTICE
+        result["text"] += "\n\n" + message("notice", lang)
         return result
     except (ValueError, TypeError, AttributeError, ValidationError) as exc:
         raise AIUnavailable("ai_invalid_output") from exc
@@ -92,10 +124,11 @@ async def execute(
     citations: list[dict] | None = None,
     stream: bool = False,
     cache_identity: str | None = None,
+    lang: Lang = "de",
 ) -> Any:
     references = citations or []
     cacheable = feature not in ("ask", "draft", "classify")
-    key = store.cache_key(feature, cache_identity or document_id, inputs, role, settings)
+    key = store.cache_key(feature, cache_identity or document_id, inputs, role, settings, lang)
     found = store.read_cache(db, key) if cacheable else None
     if found is not None:
         result = {**found, "cached": True}
@@ -106,11 +139,11 @@ async def execute(
 
             return StreamingResponse(cached_events(), media_type="text/event-stream")
         return result
-    store.reserve(db, identity, settings)
-    request_messages = prompts.messages(feature, role, inputs)
+    store.reserve(db, identity, settings, lang)
+    request_messages = prompts.messages(feature, role, inputs, lang)
 
     def finish(text: str) -> dict:
-        result = normalize(feature, text, inputs, references)
+        result = normalize(feature, text, inputs, references, lang)
         if cacheable:
             store.write_cache(db, key, feature, document_id, settings, result)
         return result
@@ -133,10 +166,7 @@ async def execute(
                 "error",
                 {
                     "code": str(exc),
-                    "message": (
-                        "KI-Antwort konnte nicht vollständig erstellt werden. "
-                        "Bitte erneut versuchen."
-                    ),
+                    "message": message("ai_incomplete", lang),
                 },
             )
 

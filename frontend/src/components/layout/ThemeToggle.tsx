@@ -1,12 +1,14 @@
 import { Monitor, Moon, Sun } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useI18n } from '@/i18n/context'
+import type { TranslationKey } from '@/i18n/translate'
 import { useTheme, type Theme } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
-const options: { value: Theme; label: string; icon: typeof Sun }[] = [
-  { value: 'light', label: 'Hell', icon: Sun },
-  { value: 'dark', label: 'Dunkel', icon: Moon },
-  { value: 'system', label: 'System', icon: Monitor },
+const options: { value: Theme; label: TranslationKey; icon: typeof Sun }[] = [
+  { value: 'light', label: 'theme.light', icon: Sun },
+  { value: 'dark', label: 'theme.dark', icon: Moon },
+  { value: 'system', label: 'theme.system', icon: Monitor },
 ]
 
 /** `rail` sits on the petrol navigation rail; `surface` on the normal work area. */
@@ -18,15 +20,17 @@ export function ThemeToggle({
   tone?: 'rail' | 'surface'
 }) {
   const { theme, setTheme } = useTheme()
+  const { t } = useI18n()
   const surface = tone === 'surface'
   return (
     <div
       role="radiogroup"
-      aria-label="Farbschema"
+      aria-label={t('theme.label')}
       className={cn('relative flex rounded-lg p-0.5', surface ? 'border bg-muted' : 'bg-rail-well', className)}
     >
-      {options.map(({ value, label, icon: Icon }) => {
+      {options.map(({ value, label: labelKey, icon: Icon }) => {
         const active = theme === value
+        const label = t(labelKey)
         return (
           <button
             key={value}

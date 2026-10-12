@@ -1,6 +1,8 @@
+import type { Lang } from '@/i18n/lang'
+import { translate } from '@/i18n/translate'
 import type { SectionKey, Sections } from '@/lib/types'
 
-/** Same order and labels as app/content.py. */
+/** Same order as app/content.py. */
 export const SECTION_ORDER: SectionKey[] = [
   'definition',
   'symptoms',
@@ -10,20 +12,11 @@ export const SECTION_ORDER: SectionKey[] = [
   'red_flags',
 ]
 
-export const SECTION_LABELS: Record<SectionKey, string> = {
-  definition: 'Definition',
-  symptoms: 'Symptome',
-  causes: 'Ursachen',
-  diagnostics: 'Diagnostik',
-  therapy: 'Therapie',
-  red_flags: 'Warnzeichen',
-}
-
-/** Matches the server composition; used when converting sections to editable free text. */
-export function composeContent(sections: Sections): string {
+/** Matches the server composition (labels of `lang`); used when converting sections to free text. */
+export function composeContent(sections: Sections, lang: Lang): string {
   return SECTION_ORDER.flatMap((key) => {
     const text = sections[key]?.trim()
-    return text ? [`${SECTION_LABELS[key]}\n${text}`] : []
+    return text ? [`${translate(lang, `section.${key}`)}\n${text}`] : []
   }).join('\n\n')
 }
 

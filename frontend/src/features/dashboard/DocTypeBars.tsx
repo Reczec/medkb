@@ -1,14 +1,16 @@
 import { motion, useReducedMotion } from 'motion/react'
 import { Link } from 'react-router'
+import { useI18n } from '@/i18n/context'
 import type { CountItem } from '@/lib/types'
 
 export function DocTypeBars({ items }: { items: CountItem[] }) {
   const reduced = useReducedMotion()
+  const { t, docTypeLabel } = useI18n()
   const max = Math.max(1, ...items.map((item) => item.count))
 
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sheet">
-      <h2 className="text-base font-semibold">Nach Dokumenttyp</h2>
+      <h2 className="text-base font-semibold">{t('dash.docTypes')}</h2>
       <ul className="mt-4 flex flex-col gap-3">
         {items.map((item, index) => (
           <li key={item.name}>
@@ -17,7 +19,7 @@ export function DocTypeBars({ items }: { items: CountItem[] }) {
               className="group block rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
               <div className="flex items-baseline justify-between text-sm">
-                <span className="text-foreground/90 group-hover:text-foreground">{item.name}</span>
+                <span className="text-foreground/90 group-hover:text-foreground">{docTypeLabel(item.name)}</span>
                 <span className="tabular font-medium text-muted-foreground">{item.count}</span>
               </div>
               <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">

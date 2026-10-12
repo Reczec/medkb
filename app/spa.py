@@ -10,13 +10,13 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 NOT_BUILT_PAGE = """<!doctype html>
-<html lang="de"><meta charset="utf-8"><title>MedKB</title>
+<html lang="en"><meta charset="utf-8"><title>MedKB</title>
 <body style="font-family: system-ui, sans-serif; max-width: 40rem; margin: 4rem auto">
-<h1>Frontend nicht gebaut</h1>
-<p>Die API läuft unter <a href="/docs">/docs</a>. Für die Oberfläche einmal bauen:</p>
+<h1>Frontend not built</h1>
+<p>The API runs at <a href="/docs">/docs</a>. To get the user interface, build it once:</p>
 <pre>cd frontend &amp;&amp; npm install &amp;&amp; npm run build</pre>
-<p>Oder im Entwicklungsmodus <code>npm run dev</code> starten und
-<a href="http://localhost:5173">localhost:5173</a> öffnen.</p>
+<p>Or start <code>npm run dev</code> and open
+<a href="http://localhost:5173">localhost:5173</a>.</p>
 </body></html>"""
 
 

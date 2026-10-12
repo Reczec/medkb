@@ -12,6 +12,7 @@ async function login(page: Page, role: string) {
 }
 
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('medkb:lang', 'de'))
   await page.route('**/api/sources/**', route => route.fulfill({ json: { status: 'empty', data: null } }))
   await page.route('**/api/ai/**', async route => {
     const url = new URL(route.request().url())

@@ -1,4 +1,5 @@
 import { ListChecks } from 'lucide-react'
+import { useI18n } from '@/i18n/context'
 import { categoryStyle } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 
@@ -14,6 +15,7 @@ interface CategoryPickerProps {
 
 /** Radio group of specialty chips; the first option keeps the classifier in charge. */
 export function CategoryPicker({ categories, value, onChange, suggestion }: CategoryPickerProps) {
+  const { t, categoryLabel } = useI18n()
   const chip =
     'inline-flex h-9 items-center gap-2 rounded-lg border bg-card px-3 text-sm transition-[background-color,border-color,box-shadow] duration-150 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
 
@@ -32,8 +34,12 @@ export function CategoryPicker({ categories, value, onChange, suggestion }: Cate
         )}
       >
         <ListChecks className="size-4 text-primary" aria-hidden />
-        Automatisch
-        {suggestion && <span className="text-muted-foreground">· Vorschlag: {suggestion}</span>}
+        {t('editor.auto')}
+        {suggestion && (
+          <span className="text-muted-foreground">
+            {t('editor.autoSuggestion', { category: categoryLabel(suggestion) })}
+          </span>
+        )}
       </button>
       {categories.map((name) => {
         const style = categoryStyle(name)
@@ -49,7 +55,7 @@ export function CategoryPicker({ categories, value, onChange, suggestion }: Cate
             style={selected ? { borderColor: style.color, background: style.soft } : undefined}
           >
             <span className="size-2 rounded-full" style={{ background: style.color }} aria-hidden />
-            {name}
+            {categoryLabel(name)}
           </button>
         )
       })}

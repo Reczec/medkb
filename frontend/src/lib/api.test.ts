@@ -1,4 +1,5 @@
 import { ApiError, UNAUTHORIZED_EVENT, api, errorMessage } from '@/lib/api'
+import { setApiLanguage } from '@/i18n/lang'
 import { tokenStore } from '@/lib/auth'
 
 describe('errorMessage', () => {
@@ -20,7 +21,7 @@ describe('errorMessage', () => {
   })
 
   it('falls back to the status for non-JSON bodies', async () => {
-    expect(await errorMessage(new Response('<html>', { status: 502 }))).toBe('Fehler 502')
+    expect(await errorMessage(new Response('<html>', { status: 502 }))).toBe('Error 502')
   })
 })
 
@@ -109,7 +110,7 @@ describe('api', () => {
     const error = await api('/api/stats').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(ApiError)
     expect((error as ApiError).status).toBe(0)
-    expect((error as ApiError).message).toBe('Server nicht erreichbar')
+    expect((error as ApiError).message).toBe('Server unreachable')
   })
 })
 
@@ -121,5 +122,30 @@ describe('documentsPath', () => {
     expect(url.searchParams.get('q')).toBe('100% "Ohr_"')
     expect(url.searchParams.has('category')).toBe(false)
     expect(url.searchParams.get('offset')).toBe('10')
+  })
+})
+
+describe('language', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    setApiLanguage('en')
+  })
+
+  it('sends the chosen language on every request', async () => {
+    const fetchMock = vi.fn().mockImplementation(async () => new Response('[]', { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+    await api('/api/documents')
+    setApiLanguage('de')
+    await api('/api/documents')
+    const sent = fetchMock.mock.calls.map(([, init]) =>
+      new Headers((init as RequestInit).headers).get('Accept-Language'),
+    )
+    expect(sent).toEqual(['en', 'de'])
+  })
+
+  it('writes the fallback error text in the chosen language', async () => {
+    expect(await errorMessage(new Response('<html>', { status: 502 }))).toBe('Error 502')
+    setApiLanguage('de')
+    expect(await errorMessage(new Response('<html>', { status: 502 }))).toBe('Fehler 502')
   })
 })
