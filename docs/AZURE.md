@@ -79,13 +79,13 @@ in this Azure change; the supported fallback is the existing resumable index com
 Tooling observed 2026-10-13: official Azure CLI ZIP 2.91.0 and Bicep 0.48.1, local ignored scratch only.
 Azure CLI device-code login was denied with error 530035; no security policy was weakened. Normal browser login succeeded on 2026-10-13; fresh ARM evidence confirmed an enabled FreeTrial
 subscription with spendingLimit=On. The browser connection then became unavailable; Neon sign-in
-and free capacity cannot yet be verified.
+was verified through official Neon CLI 8.4.1. The organization is Free; the isolated project uses
+fixed 0.25 CU and automatic suspension. Browser control remains unavailable.
 
 ## Evidence boundaries
 
 On 2026-10-12 the portal showed an active trial with EUR 175.99 remaining and expiry 2026-10-20.
-This is a dated observation. Current trial protection was verified on 2026-10-13. Updated credit balance, isolated Neon capacity
-and live Azure checks are pending. Never publish account identifiers, emails or credentials in examples/screenshots.
+This is a dated observation. Current trial protection was verified on 2026-10-13. Updated credit balance and live Azure checks are pending; isolated Neon capacity is verified. Never publish account identifiers, emails or credentials in examples/screenshots.
 
 Primary references: [spending limits](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit),
 [subscription policies](https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/get),
@@ -142,7 +142,9 @@ confirming. Only this group is deleted; Neon/Render are not touched. Cleanup sti
 expiry if Azure permits access; it does not require an unexpired trial. Resource deletion may take
 time and reported costs may arrive later. Scale-to-zero is not equivalent to cleanup or a hard cost cap.
 
-Budget setup is pending live authentication/resource-group creation. In Cost Management, select the
+A group-scoped nominal 5-unit budget with actual alerts at 50/80/100 percent was created on 2026-10-13;
+Azure has not returned current spend/currency yet. Confirm billing currency before treating the budget
+as exactly EUR 5. In Cost Management, select the
 **demo resource-group scope**, create a monthly budget for **5 in the actual billing currency**, and
 set actual-cost notifications at 50/80/100 percent. If the billing currency is not EUR, do not silently
 equate amounts: confirm a corresponding limit before creation. Confirm the notification address and
@@ -171,3 +173,7 @@ What-if explicitly requests JSON. Its public summary includes only resource IDs 
 resolved property deltas remain suppressed because they may contain credentials. Review the summary
 against the two-resource graph; do not apply an unexpected resource change. Actual drift inspection
 and idempotence remain live acceptance checks.
+Azure refused new customers in West Europe during identity bootstrap. North Europe succeeded, so
+Bicep now defaults to North Europe; both European regions remain allowed. The demo group metadata
+location remains West Europe, which does not control application resource placement. Full tests
+passed after the change (895 backend, 227 frontend unit, 38 e2e).

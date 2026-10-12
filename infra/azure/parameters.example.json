@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "appName": { "value": "medkb-azure-demo" },
-    "location": { "value": "westeurope" },
+    "location": { "value": "northeurope" },
     "image": { "value": "ghcr.io/reczec/medkb@sha256:REPLACE_WITH_VERIFIED_DIGEST" },
     "ragEnabled": { "value": false }
   }

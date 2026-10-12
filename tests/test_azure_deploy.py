@@ -206,4 +206,6 @@ def test_compiled_template_has_only_bounded_consumption_resources(tmp_path):
     assert compute["cpu"] == "[json('0.5')]"
     assert compute["memory"] == "1Gi"
     assert template["parameters"]["appSecrets"]["type"] == "secureObject"
+    assert template["parameters"]["location"]["defaultValue"] == "northeurope"
+    assert set(template["parameters"]["location"]["allowedValues"]) == {"westeurope", "northeurope"}
     assert set(template["outputs"]) == {"hostname"}
