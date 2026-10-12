@@ -26,7 +26,8 @@ QUESTION_WORDS = frozenset(
     "this that these those there here i me my we our you your he she they them can could "
     "should would will shall may might must have has had get gets got help helps helping "
     "treat treats treated treating tell please explain give need needs want symptoms symptom "
-    "cause causes therapy treatment diagnostics definition".split()
+    "cause causes therapy treatment diagnostics definition "
+    "diagnose diagnosed diagnosis diagnostic".split()
 )
 
 

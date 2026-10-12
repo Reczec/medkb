@@ -14,10 +14,10 @@ In PowerShell from the repository root, with configured Gemini credentials in `.
 ```powershell
 $env:DATABASE_URL = 'sqlite:///./rag-evaluation.db'
 .venv/Scripts/python.exe -m app.seed
-.venv/Scripts/python.exe -m app.rag.index_cli --pause 4
+.venv/Scripts/python.exe -m app.rag.index_cli --pause 15
 .venv/Scripts/python.exe -m app.rag.evaluate --split dev --sweep --output evaluation/rag/dev.json
 # Select and freeze the threshold using only dev results, then run test once:
-.venv/Scripts/python.exe -m app.rag.evaluate --split test --threshold 0.45 --answers --output evaluation/rag/test.json
+.venv/Scripts/python.exe -m app.rag.evaluate --split test --threshold 0.60 --answers --output evaluation/rag/test.json
 ```
 
 Replace the illustrative threshold with the recorded development decision. The declared grid is
@@ -27,6 +27,12 @@ The dev sweep reuses real query vectors only in memory; conservative request res
 count each evaluation attempt. Trusted CLI operations retain the global daily budget. Regular
 public requests retain both global and client quotas. A semantic answer uses one embedding and
 one completion reservation. Provider failures consume their reserved attempts.
+
+Sweep latency includes operator pacing on the first threshold and cached vectors thereafter;
+only the separate held-out run measures uncached query latency without pacing inside its timer.
+Corpus or identity changes invalidate the whole run and null ranking metrics; such a report is
+not release evidence. Interrupted indexing retains valid batches; the live run needed 15-second
+batch spacing to finish reliably rather than the CLI's default 4 seconds.
 
 Default evaluation is retrieval-only. `--answers` generates grounded answers through the actual
 answer service and a blank `.review.csv` rubric. `validated` means mechanically valid server

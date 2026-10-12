@@ -92,9 +92,7 @@ async def ask(
     lang: RequestLang,
     stream: bool = False,
 ):
-    found = await asyncio.to_thread(
-        rag.retrieve, db, body, lang, settings, None, identity(request, settings)
-    )
+    found = await rag.retrieve_async(db, body, lang, settings, None, identity(request, settings))
     references = found.citations
     if not found.entries:
         result = {

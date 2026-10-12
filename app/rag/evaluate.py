@@ -86,23 +86,39 @@ def evaluate(db, settings, cases, provider, pause=4):
     settings = settings.model_copy(
         update={"rag_enabled": True, "ai_client_daily_limit": settings.ai_daily_limit}
     )
-    titles = {doc.id: doc.title for doc in db.scalars(select(Document))}
-    snapshot = sorted(chunk.key for chunk in corpus(db, settings))
+
+    def current_snapshot():
+        db.expire_all()
+        return (
+            sorted(chunk.key for chunk in corpus(db, settings)),
+            {doc.id: doc.title for doc in db.scalars(select(Document))},
+        )
+
+    snapshot, titles = current_snapshot()
+    invalid = False
     rows = []
     halted = False
     for case in cases:
+        if current_snapshot() != (snapshot, titles):
+            invalid = True
         body = AskRequest(question=case["question"], history=case.get("history", []))
         start = time.perf_counter()
         baseline = [doc.title for doc in lexical.find(db, body)]
         base = {"retrieved": baseline, "latency": time.perf_counter() - start}
         start = time.perf_counter()
         hybrid = {"retrieved": []}
-        if halted:
+        if invalid:
+            hybrid["error"] = "corpus_changed"
+        elif halted:
             hybrid["error"] = "quota_exhausted"
         else:
             try:
                 found = retrieve(db, body, case["lang"], settings, provider, "rag-evaluation")
-                if found.mode != "hybrid":
+                if current_snapshot() != (snapshot, titles):
+                    invalid = True
+                    hybrid["error"] = "corpus_changed"
+                    hybrid["observed_citations"] = found.citations
+                elif found.mode != "hybrid":
                     hybrid["error"] = found.reason or "lexical_fallback"
                 else:
                     hybrid["retrieved"] = list(
@@ -114,7 +130,7 @@ def evaluate(db, settings, cases, provider, pause=4):
                 halted = error.status_code == 429
         hybrid["latency"] = time.perf_counter() - start
         rows.append({**case, "lexical": base, "hybrid": hybrid})
-        if pause and not halted:
+        if pause and not halted and not invalid:
             time.sleep(pause)
     report = {
         "created_at": datetime.now(UTC).isoformat(),
@@ -125,13 +141,20 @@ def evaluate(db, settings, cases, provider, pause=4):
         "documents": len(titles),
         "chunks": len(snapshot),
         "rows": rows,
+        "valid": not invalid,
     }
+    if invalid:
+        report["invalid_reason"] = "corpus_changed"
     for method in ("lexical", "hybrid"):
         report[method] = metrics([{**r, **r[method]} for r in rows])
         report[method]["languages"] = {
             lang: metrics([{**r, **r[method]} for r in rows if r["lang"] == lang])
             for lang in ("de", "en")
         }
+        if invalid:
+            for summary in [report[method], *report[method]["languages"].values()]:
+                for metric in ("hit_at_1", "hit_at_5", "recall_at_5", "mrr_at_5"):
+                    summary[metric] = None
     return report
 
 
@@ -170,7 +193,7 @@ async def answer_review(db, settings, report, output):
             halted = error.status_code == 429
         await asyncio.sleep(4)
     with output.with_suffix(".review.csv").open("w", encoding="utf-8", newline="") as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, lineterminator="\n")
         writer.writerow(
             ["id", "supported_claims", "total_claims", "appropriate_abstention", "notes"]
         )
@@ -231,14 +254,14 @@ def main():
             }
         else:
             result = evaluate(db, settings, cases, get_embeddings(settings), args.pause)
-            if args.answers:
+            if args.answers and result["valid"]:
                 args.output.parent.mkdir(parents=True, exist_ok=True)
                 asyncio.run(answer_review(db, settings, result, args.output))
     result["frozen_dataset_sha"] = digest(raw)
     result["provider"] = "live-gemini-embedding-001"
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
-        json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
     if args.sweep:
         print(
@@ -246,9 +269,9 @@ def main():
                 [{"threshold": r["threshold"], "hybrid": r["hybrid"]} for r in result["runs"]]
             )
         )
-        return int(any(r["hybrid"]["provider_failures"] for r in result["runs"]))
+        return int(any(not r["valid"] or r["hybrid"]["provider_failures"] for r in result["runs"]))
     print(json.dumps({m: result[m] for m in ("lexical", "hybrid")}))
-    return int(bool(result["hybrid"]["provider_failures"]))
+    return int(not result["valid"] or bool(result["hybrid"]["provider_failures"]))
 
 
 if __name__ == "__main__":

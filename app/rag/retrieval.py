@@ -1,5 +1,7 @@
 """Bounded hybrid retrieval with explicit lexical fallback and no forced nearest neighbor."""
 
+import asyncio
+import re
 from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
@@ -66,12 +68,54 @@ def evidence(
 
 def fallback(db: Session, body: AskRequest, lang: Lang, reason: str) -> RetrievalResult:
     focus = lexical.query(body).split()
+    words = set(re.findall(r"[^\W_]+", body.question.lower()))
+    intent = {
+        section
+        for section, terms in {
+            "therapy": (
+                "treat treated treating treatment therapy hilft helfen "
+                "behandlung behandelt therapie"
+            ),
+            "diagnostics": (
+                "diagnose diagnosed diagnosis diagnostics diagnostic "
+                "untersucht untersuchung diagnostik diagnostiziert"
+            ),
+            "red_flags": "warning warnings emergency urgent warnzeichen notfall gefährlich",
+            "symptoms": "symptom symptoms symptome beschwerden",
+            "causes": "cause causes ursache ursachen",
+        }.items()
+        if words.intersection(terms.split())
+    }
     selected = []
     for doc in lexical.find(db, body):
         candidates = chunks(doc, lang)
-        candidates.sort(key=lambda c: (-sum(t in c.text.lower() for t in focus), c.offset))
+        candidates.sort(
+            key=lambda c: (
+                c.section not in intent,
+                -sum(t in c.text.lower() for t in focus),
+                c.offset,
+            )
+        )
         selected.extend(candidates[:2])
     return evidence(selected, "lexical", reason)
+
+
+async def retrieve_async(*args) -> RetrievalResult:
+    """Keep the request session owned until its bounded DB worker actually finishes."""
+    worker = asyncio.create_task(asyncio.to_thread(retrieve, *args))
+    try:
+        return await asyncio.shield(worker)
+    except asyncio.CancelledError:
+        while not worker.done():
+            try:
+                await asyncio.shield(worker)
+            except asyncio.CancelledError:
+                continue
+            except Exception:
+                break
+        if not worker.cancelled():
+            worker.exception()  # consume a failed abandoned result; never start completion
+        raise
 
 
 def retrieve(
