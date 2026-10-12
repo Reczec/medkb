@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'motion/react'
+import { useI18n } from '@/i18n/context'
 import { categoryStyle } from '@/lib/categories'
 import { toScoreBars } from '@/lib/scores'
 import { cn } from '@/lib/utils'
@@ -14,12 +15,13 @@ interface ScoreBarsProps {
 /** Classifier scores as bars in specialty colours; widths animate when the scores change. */
 export function ScoreBars({ scores, winner, max = 5, className }: ScoreBarsProps) {
   const reduced = useReducedMotion()
+  const { t, categoryLabel } = useI18n()
   const bars = toScoreBars(scores, max)
 
   if (bars.length === 0) {
     return (
       <p className={cn('text-sm text-muted-foreground', className)}>
-        Noch keine Fachbegriffe erkannt.
+        {t('scores.none')}
       </p>
     )
   }
@@ -37,7 +39,7 @@ export function ScoreBars({ scores, winner, max = 5, className }: ScoreBarsProps
           >
             <div className="flex items-baseline justify-between gap-2 text-sm">
               <span className={cn('truncate', isWinner ? 'font-semibold' : 'text-muted-foreground')}>
-                {bar.name}
+                {categoryLabel(bar.name)}
               </span>
               <span className="tabular shrink-0 text-xs text-muted-foreground">{bar.score}</span>
             </div>

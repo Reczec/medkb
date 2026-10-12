@@ -60,7 +60,7 @@ def test_document_roles(client, doctor_client, patient_client, anon_client, fake
     expected = 401 if role is None else 403 if role == "patient" and feature == "summary" else 200
     assert response.status_code == expected
     if expected == 200:
-        assert "keine medizinische Beratung" in response.json()["text"]
+        assert "not medical advice" in response.json()["text"]
 
 
 def test_cache_hit_costs_no_quota_and_edit_or_role_changes_cache(
@@ -107,7 +107,11 @@ def test_interrupted_stream_is_not_cached(client, fake, db_session):
 
 
 def test_ask_no_context_is_honest_and_uses_no_provider(client, fake, db_session):
-    response = client.post("/api/ai/ask", json={"question": "KeinePassendenEinträge"})
+    response = client.post(
+        "/api/ai/ask",
+        json={"question": "KeinePassendenEinträge"},
+        headers={"Accept-Language": "de"},
+    )
     assert response.status_code == 200
     assert response.json()["citations"] == []
     assert "keine passenden" in response.json()["text"].lower()
@@ -124,7 +128,7 @@ def test_grounded_ask_cites_actual_entries_and_role_prompt(patient_client, clien
     assert response.status_code == 200
     assert response.json()["citations"] == [{"index": 1, "id": doc["id"], "title": "Migräne"}]
     assert "B1" in fake.calls[0][0]["content"]
-    assert "keine individuellen Diagnosen" in fake.calls[0][0]["content"]
+    assert "individual diagnoses" in fake.calls[0][0]["content"]
     assert "144" in fake.calls[0][0]["content"]
     assert client.post("/api/ai/ask", json={"question": "Migräne"}).status_code == 200
     assert len(fake.calls) == 2  # ask is never cached
@@ -382,23 +386,23 @@ def test_explain_is_plain_language_for_every_role(client, fake):
 def test_summary_stays_professional(doctor_client, client, fake):
     doc = make_doc(client)
     doctor_client.post(f"/api/ai/documents/{doc['id']}/summary")
-    assert "Fachliche Sprache" in fake.calls[0][0]["content"]
+    assert "professional language for medical staff" in fake.calls[0][0]["content"]
 
 
 def test_red_flags_answer_only_with_warning_signs(patient_client, client, fake):
     doc = make_doc(client)
     patient_client.post(f"/api/ai/documents/{doc['id']}/red-flags")
     system = fake.calls[0][0]["content"]
-    assert "Nur Warnzeichen" in system
-    assert "Sofort Notruf 144" in system
+    assert "Only warning signs" in system
+    assert "### Call emergency number 144 now" in system
 
 
 def test_prompts_ask_for_the_markdown_subset_the_ui_renders(patient_client, client, fake):
     doc = make_doc(client)
     patient_client.post(f"/api/ai/documents/{doc['id']}/explain")
     system = fake.calls[0][0]["content"]
-    assert "### " in system and "- " in system and "**fett**" in system
-    assert "Beginne direkt mit dem Inhalt" in system
+    assert "### " in system and "- " in system and "**bold**" in system
+    assert "Start directly with the content" in system
 
 
 def _ask(client, ip=None):
@@ -524,3 +528,255 @@ def test_prewarm_can_pause_between_calls_for_provider_rate_limits(
     result = asyncio.run(prewarm_module.prewarm(db_session, test_settings, fake, limit=1, pause=4))
     assert result == {"completed": 8, "failed": 0}
     assert pauses == [4] * 7  # between the 8 calls, not after the last
+
+
+@pytest.mark.parametrize(
+    ("header", "limit_text", "notice"),
+    [
+        (
+            "de",
+            "KI-Tageslimit erreicht. Bitte morgen erneut versuchen.",
+            "Prototyp mit Beispieldaten",
+        ),
+        ("en", "Daily AI limit reached. Please try again tomorrow.", "Prototype with example data"),
+        (None, "Daily AI limit reached. Please try again tomorrow.", "Prototype with example data"),
+    ],
+)
+def test_ai_messages_follow_the_request_language(
+    client, fake, test_settings, header, limit_text, notice
+):
+    make_doc(client, title="Migräne")
+    fake.answer = "Allgemeine Information [1]."
+    test_settings.ai_client_daily_limit = 1
+    headers = {"Accept-Language": header} if header else {}
+    first = client.post("/api/ai/ask", json={"question": "Migräne"}, headers=headers)
+    assert first.status_code == 200
+    assert notice in first.json()["text"]
+    second = client.post("/api/ai/ask", json={"question": "Migräne"}, headers=headers)
+    assert second.status_code == 429
+    assert second.json()["detail"] == limit_text
+
+
+def test_no_matching_entries_is_english_without_a_header(client, fake):
+    response = client.post("/api/ai/ask", json={"question": "KeinePassendenEinträge"})
+    assert "no matching entries" in response.json()["text"].lower()
+    assert "Prototype with example data" in response.json()["text"]
+
+
+def test_stream_error_message_follows_the_request_language(client, fake):
+    doc = make_doc(client)
+    fake.stream_fail = True
+    de = client.post(
+        f"/api/ai/documents/{doc['id']}/explain?stream=true", headers={"Accept-Language": "de"}
+    )
+    en = client.post(f"/api/ai/documents/{doc['id']}/explain?stream=true")
+    assert "nicht vollständig erstellt" in de.text
+    assert "could not be completed" in en.text
+
+
+# --------------------------------------------------------- language of AI requests
+
+ENGLISH_DOC = {
+    "title": "Erkältung",
+    "content": "Eine Erkältung wird durch Viren ausgelöst. Ruhe und Trinken helfen.",
+    "doc_type": "Beschreibung",
+    "title_en": "Common cold",
+    "sections_en": {"definition": "A cold is caused by viruses.", "therapy": "Rest and fluids."},
+}
+
+
+def _system(fake, index=0):
+    return fake.calls[index][0]["content"]
+
+
+def _user(fake, index=0):
+    return fake.calls[index][1]["content"]
+
+
+def test_german_cache_key_is_unchanged(test_settings):
+    # Pinned from the code before the language feature: the warmed German answers must keep
+    # hitting. Inputs have the shape document_inputs produced then.
+    from app.ai import store
+    from app.config import Settings
+
+    settings = Settings(
+        _env_file=None,
+        jwt_secret="x",
+        ai_model="gemini-3.5-flash-lite",
+        ai_base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    )
+    inputs = {
+        "title": "Migräne",
+        "content": "Definition\nText.",
+        "category": "Neurologie",
+        "doc_type": "Diagnose",
+        "keywords": ["Migräne"],
+        "source": "Redaktionelle Demo-Inhalte auf Lehrbuchniveau – keine medizinische Beratung",
+        "auto_classified": True,
+        "term_en": "Migraine",
+        "icd11_code": "8A80",
+        "medications": ["sumatriptan"],
+        "sections": {
+            "definition": "Text.",
+            "symptoms": None,
+            "causes": None,
+            "diagnostics": None,
+            "therapy": None,
+            "red_flags": None,
+        },
+        "further_reading": [{"label": "Portal", "url": "https://www.who.int/x"}],
+        "ai_generated": False,
+    }
+    key = store.cache_key("explain", "seed:Migräne", inputs, "patient", settings)
+    assert key == "5ce74d3f3f392e5aea408281fc60ad83fd8656137180920fc54ec85270836860"
+    assert store.cache_key("explain", "seed:Migräne", inputs, "patient", settings, "de") == key
+    assert store.cache_key("explain", "seed:Migräne", inputs, "patient", settings, "en") != key
+
+
+def test_german_document_inputs_keep_their_old_shape(client):
+    from app.ai.service import document_inputs
+    from app.database import SessionLocal
+    from app.models import Document
+
+    doc = make_doc(
+        client,
+        title="Migräne",
+        title_en="Migraine",
+        further_reading=[
+            {"label": "Portal", "label_en": "Portal EN", "url": "https://www.who.int/x"}
+        ],
+    )
+    with SessionLocal() as db:
+        inputs = document_inputs(db.get(Document, doc["id"]))
+    assert set(inputs) == {
+        "title",
+        "content",
+        "category",
+        "doc_type",
+        "keywords",
+        "source",
+        "auto_classified",
+        "term_en",
+        "icd11_code",
+        "medications",
+        "sections",
+        "further_reading",
+        "ai_generated",
+    }
+    assert inputs["further_reading"] == [{"label": "Portal", "url": "https://www.who.int/x"}]
+    assert inputs["title"] == "Migräne"
+
+
+def test_english_inputs_use_the_english_version_with_german_fallback(client):
+    from app.ai.service import document_inputs
+    from app.database import SessionLocal
+    from app.models import Document
+
+    doc = client.post("/api/documents", json=ENGLISH_DOC).json()
+    with SessionLocal() as db:
+        english = document_inputs(db.get(Document, doc["id"]), "en")
+        german = document_inputs(db.get(Document, doc["id"]), "de")
+    assert english["title"] == "Common cold"
+    assert english["content"].startswith("Definition\nA cold is caused by viruses.")
+    assert english["sections"]["therapy"] == "Rest and fluids."
+    assert german["title"] == "Erkältung"
+    # Without any English version the German text is used.
+    plain = make_doc(client, title="Nur Deutsch")
+    with SessionLocal() as db:
+        assert document_inputs(db.get(Document, plain["id"]), "en")["title"] == "Nur Deutsch"
+
+
+def test_english_inputs_keep_untranslated_sections_from_german(client):
+    """A half-translated entry must not lose its German warning signs in English."""
+    from app.ai.service import document_inputs
+    from app.database import SessionLocal
+    from app.models import Document
+
+    doc = make_doc(
+        client,
+        title="Teilweise",
+        sections={"definition": "Deutsche Definition.", "red_flags": "Sofort Notruf 144."},
+        sections_en={"definition": "English definition."},
+    )
+    with SessionLocal() as db:
+        english = document_inputs(db.get(Document, doc["id"]), "en")
+    assert english["sections"] == {
+        "definition": "English definition.",
+        "red_flags": "Sofort Notruf 144.",
+    }
+    assert "Sofort Notruf 144." in english["content"]
+    assert english["content"].startswith("Definition\nEnglish definition.")
+
+
+def test_prompt_names_the_answer_language(client, fake):
+    doc = client.post("/api/documents", json=ENGLISH_DOC).json()
+    client.post(f"/api/ai/documents/{doc['id']}/explain", headers={"Accept-Language": "en"})
+    client.post(f"/api/ai/documents/{doc['id']}/explain", headers={"Accept-Language": "de"})
+    assert "Answer in English." in _system(fake, 0) and "Common cold" in _user(fake, 0)
+    assert "Answer in German." in _system(fake, 1) and "Erkältung" in _user(fake, 1)
+
+
+def test_red_flag_headings_follow_the_language(client, fake):
+    doc = make_doc(client)
+    client.post(f"/api/ai/documents/{doc['id']}/red-flags", headers={"Accept-Language": "de"})
+    assert "### Sofort Notruf 144" in _system(fake)
+    assert "### Zeitnah ärztlich abklären" in _system(fake)
+
+
+def test_cache_is_separate_per_language(client, fake):
+    doc = client.post("/api/documents", json=ENGLISH_DOC).json()
+    path = f"/api/ai/documents/{doc['id']}/explain"
+    en = {"Accept-Language": "en"}
+    de = {"Accept-Language": "de"}
+    assert client.post(path, headers=en).json()["cached"] is False
+    assert client.post(path, headers=de).json()["cached"] is False  # not the English answer
+    assert client.post(path, headers=en).json()["cached"] is True
+    assert client.post(path, headers=de).json()["cached"] is True
+    assert len(fake.calls) == 2
+
+
+def test_draft_is_always_written_in_german(client, fake):
+    fake.answer = json.dumps(
+        {"content": "Ein deutscher Entwurf mit genug Zeichen.", "doc_type": "Diagnose"}
+    )
+    response = client.post(
+        "/api/ai/draft", json={"title": "Shingles"}, headers={"Accept-Language": "en"}
+    )
+    assert response.status_code == 200
+    assert "Answer in German." in _system(fake) and "Answer in English." not in _system(fake)
+    assert "Prototype with example data" in response.json()["text"]  # notice in the UI language
+
+
+def test_english_question_finds_the_entry_through_its_english_version(client, fake):
+    client.post("/api/documents", json=ENGLISH_DOC)
+    fake.answer = "A cold is caused by viruses [1]."
+    response = client.post(
+        "/api/ai/ask",
+        json={"question": "What helps with a cold?"},
+        headers={"Accept-Language": "en"},
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["citations"][0]["title"] == "Common cold"
+    assert "Rest and fluids." in _user(fake)
+    de = client.post(
+        "/api/ai/ask", json={"question": "Erkältung"}, headers={"Accept-Language": "de"}
+    )
+    assert de.json()["citations"][0]["title"] == "Erkältung"
+
+
+def test_prewarm_writes_separate_english_and_german_entries(
+    db_session, fake, test_settings, client
+):
+    import asyncio
+
+    from app.ai.prewarm import prewarm
+
+    client.post("/api/documents", json=ENGLISH_DOC)
+    english = asyncio.run(prewarm(db_session, test_settings, fake, limit=1, lang="en"))
+    assert english == {"completed": 8, "failed": 0}
+    assert db_session.scalar(select(func.count()).select_from(AICache)) == 8
+    asyncio.run(prewarm(db_session, test_settings, fake, limit=1, lang="de"))
+    assert db_session.scalar(select(func.count()).select_from(AICache)) == 16
+    again = asyncio.run(prewarm(db_session, test_settings, fake, limit=1, lang="en"))
+    assert again == {"completed": 8, "failed": 0}
+    assert len(fake.calls) == 16  # the repeat came from the cache

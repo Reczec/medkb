@@ -1,5 +1,7 @@
 /** Thin fetch wrapper for the MedKB REST API. */
 
+import { getApiLanguage } from '@/i18n/lang'
+import { translate } from '@/i18n/translate'
 import { tokenStore } from '@/lib/auth'
 
 export class ApiError extends Error {
@@ -31,7 +33,7 @@ export async function errorMessage(res: Response): Promise<string> {
   } catch {
     // not JSON
   }
-  return `Fehler ${res.status}`
+  return translate(getApiLanguage(), 'error.status', { status: res.status })
 }
 
 export interface ApiOptions {
@@ -49,6 +51,7 @@ export async function api(path: string, opts: ApiOptions & { raw: true }): Promi
 export async function api<T = unknown>(path: string, opts?: ApiOptions): Promise<T>
 export async function api<T = unknown>(path: string, opts: ApiOptions = {}): Promise<T | Response> {
   const headers = new Headers()
+  headers.set('Accept-Language', getApiLanguage())
   if (opts.body !== undefined) headers.set('Content-Type', 'application/json')
   const token = tokenStore.get()
   if (token) headers.set('Authorization', `Bearer ${token}`)
@@ -63,7 +66,7 @@ export async function api<T = unknown>(path: string, opts: ApiOptions = {}): Pro
     })
   } catch (error) {
     if ((error as Error)?.name === 'AbortError') throw error
-    throw new ApiError(0, 'Server nicht erreichbar')
+    throw new ApiError(0, translate(getApiLanguage(), 'error.unreachable'))
   }
 
   // Only the token this request carried is stale; a login made meanwhile stays.

@@ -1,3 +1,4 @@
+import { useI18n } from '@/i18n/context'
 import { categoryStyle } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 
@@ -9,6 +10,7 @@ interface FileTabProps {
 
 /** The labelled filing tab that sits on top of a record sheet and names its specialty. */
 export function FileTab({ name, className, size = 'sm' }: FileTabProps) {
+  const { categoryLabel } = useI18n()
   const style = categoryStyle(name)
   const Icon = style.icon
   return (
@@ -26,7 +28,7 @@ export function FileTab({ name, className, size = 'sm' }: FileTabProps) {
     >
       <span className="absolute inset-x-0 top-0 h-[3px]" style={{ background: style.color }} aria-hidden />
       <Icon className={cn('shrink-0', size === 'sm' ? 'size-3.5' : 'size-4')} style={{ color: style.color }} aria-hidden />
-      <span className="truncate">{name}</span>
+      <span className="truncate">{categoryLabel(name)}</span>
     </span>
   )
 }

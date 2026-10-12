@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useI18n } from '@/i18n/context'
 import { auditAction } from '@/lib/audit'
 import { formatDate, formatRelative } from '@/lib/format'
 import { useAudit } from '@/lib/queries'
@@ -9,21 +10,22 @@ import { cn } from '@/lib/utils'
 /** Admin dashboard: the latest changes and who made them. */
 export function ActivityFeed() {
   const audit = useAudit(8)
+  const { t, lang } = useI18n()
 
   return (
-    <section aria-label="Aktivität" className="rounded-xl border bg-card shadow-sheet">
+    <section aria-label={t('feed.title')} className="rounded-xl border bg-card shadow-sheet">
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
-        <h2 className="text-base font-semibold">Aktivität</h2>
+        <h2 className="text-base font-semibold">{t('feed.title')}</h2>
         <Link
           to="/admin"
           className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
-          Änderungsprotokoll <ArrowRight className="size-3.5" aria-hidden />
+          {t('feed.log')} <ArrowRight className="size-3.5" aria-hidden />
         </Link>
       </div>
       {audit.isPending && <Skeleton className="mx-5 mb-5 h-24" />}
       {audit.error && (
-        <p className="px-5 pb-5 text-sm text-muted-foreground">Aktivität nicht verfügbar.</p>
+        <p className="px-5 pb-5 text-sm text-muted-foreground">{t('feed.unavailable')}</p>
       )}
       {audit.data && (
         <ol className="divide-y">
@@ -38,16 +40,16 @@ export function ActivityFeed() {
                   className={cn('inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium', action.className)}
                 >
                   <action.icon className="size-3.5" aria-hidden />
-                  {action.label}
+                  {action.key ? t(action.key) : action.raw}
                 </span>
                 <span className="min-w-0 flex-1 truncate">{entry.detail}</span>
                 <span className="font-mono text-xs text-muted-foreground">{entry.actor ?? '—'}</span>
                 <time
                   dateTime={entry.timestamp}
-                  title={formatDate(entry.timestamp)}
+                  title={formatDate(entry.timestamp, lang)}
                   className="text-xs text-muted-foreground"
                 >
-                  {formatRelative(entry.timestamp)}
+                  {formatRelative(entry.timestamp, lang)}
                 </time>
               </li>
             )

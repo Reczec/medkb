@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useI18n } from '@/i18n/context'
 import { requestAI, type AIResult } from './client'
 
 export function useAI() {
@@ -6,6 +7,17 @@ export function useAI() {
   const last = useRef<{ path: string; body?: unknown; stream: boolean } | null>(null)
   const [state, setState] = useState<{ pending: boolean; result?: AIResult; partial: string; error?: string }>({ pending: false, partial: '' })
   useEffect(() => () => controller.current?.abort(), [])
+
+  // An answer belongs to the language it was asked in: a switch drops it and stops a running request.
+  const { lang } = useI18n()
+  const askedIn = useRef(lang)
+  useEffect(() => {
+    if (askedIn.current === lang) return
+    askedIn.current = lang
+    controller.current?.abort()
+    last.current = null
+    setState({ pending: false, partial: '' })
+  }, [lang])
   const run = async (path: string, body?: unknown, stream = true) => {
     controller.current?.abort()
     const current = new AbortController(); controller.current = current

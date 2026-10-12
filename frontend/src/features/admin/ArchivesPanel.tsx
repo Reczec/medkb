@@ -15,13 +15,15 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useI18n } from '@/i18n/context'
 import { api } from '@/lib/api'
 import { formatDate, formatNumber } from '@/lib/format'
+import type { Lang } from '@/i18n/lang'
 import { useArchives, useCreateArchive, useRestoreArchive } from '@/lib/queries'
 import type { ArchiveInfo } from '@/lib/types'
 
-const formatSize = (bytes: number) =>
-  bytes < 1024 ? `${bytes} B` : `${formatNumber(Math.round(bytes / 102.4) / 10)} KB`
+const formatSize = (bytes: number, lang: Lang) =>
+  bytes < 1024 ? `${bytes} B` : `${formatNumber(Math.round(bytes / 102.4) / 10, lang)} KB`
 
 async function download(name: string) {
   try {
@@ -42,10 +44,11 @@ export function ArchivesPanel() {
   const create = useCreateArchive()
   const restore = useRestoreArchive()
   const [pending, setPending] = useState<ArchiveInfo | null>(null)
+  const { t, lang } = useI18n()
 
   const makeArchive = () =>
     create.mutate(undefined, {
-      onSuccess: (info) => toast.success(`Archiv mit ${info.document_count} Einträgen erstellt.`),
+      onSuccess: (info) => toast.success(t('archives.created', { count: info.document_count })),
       onError: (error) => toast.error(error.message),
     })
 
@@ -54,7 +57,7 @@ export function ArchivesPanel() {
     restore.mutate(pending.name, {
       onSuccess: (result) =>
         toast.success(
-          `${result.restored} Einträge wiederhergestellt. Sicherung: ${result.backup.name}`,
+          t('archives.restored', { count: result.restored, backup: result.backup.name }),
         ),
       onError: (error) => toast.error(error.message),
     })
@@ -65,19 +68,18 @@ export function ArchivesPanel() {
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="max-w-xl text-sm text-muted-foreground">
-          Ein Archiv ist ein JSON-Export aller Einträge. Vor jeder Wiederherstellung wird automatisch
-          eine Sicherung des aktuellen Stands angelegt.
+          {t('archives.intro')}
         </p>
         <Button onClick={makeArchive} disabled={create.isPending}>
           {create.isPending ? <Loader2 className="animate-spin" aria-hidden /> : <Plus aria-hidden />}
-          Archiv erstellen
+          {t('archives.create')}
         </Button>
       </div>
 
       {archives.error && <ErrorState error={archives.error} onRetry={() => archives.refetch()} />}
       {archives.isPending && <Skeleton className="h-40 rounded-xl" />}
       {archives.data?.length === 0 && (
-        <EmptyState icon={Archive} title="Noch keine Archive" text="Erstelle das erste Archiv mit einem Klick." />
+        <EmptyState icon={Archive} title={t('archives.emptyTitle')} text={t('archives.emptyText')} />
       )}
 
       {archives.data && archives.data.length > 0 && (
@@ -91,8 +93,9 @@ export function ArchivesPanel() {
                 <div className="min-w-0">
                   <p className="truncate font-mono text-sm">{info.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {formatDate(info.created_at)} · {info.document_count} Einträge ·{' '}
-                    {formatSize(info.size_bytes)}
+                    {formatDate(info.created_at, lang)} ·{' '}
+                    {t('archives.count', { count: info.document_count })} ·{' '}
+                    {formatSize(info.size_bytes, lang)}
                   </p>
                 </div>
               </div>
@@ -101,17 +104,17 @@ export function ArchivesPanel() {
                   variant="outline"
                   size="sm"
                   onClick={() => download(info.name)}
-                  aria-label={`${info.name} herunterladen`}
+                  aria-label={t('archives.downloadLabel', { name: info.name })}
                 >
-                  <Download aria-hidden /> Download
+                  <Download aria-hidden /> {t('archives.download')}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setPending(info)}
-                  aria-label={`${info.name} wiederherstellen`}
+                  aria-label={t('archives.restoreLabel', { name: info.name })}
                 >
-                  <History aria-hidden /> Wiederherstellen
+                  <History aria-hidden /> {t('archives.restore')}
                 </Button>
               </div>
             </li>
@@ -122,15 +125,15 @@ export function ArchivesPanel() {
       <AlertDialog open={pending !== null} onOpenChange={(open) => !open && setPending(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Archiv wiederherstellen?</AlertDialogTitle>
+            <AlertDialogTitle>{t('archives.dialogTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Alle aktuellen Einträge werden durch die {pending?.document_count} Einträge aus „
-              {pending?.name}“ ersetzt. Vorher wird automatisch eine Sicherung erstellt.
+              {pending &&
+                t('archives.dialogText', { count: pending.document_count, name: pending.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmRestore}>Wiederherstellen</AlertDialogAction>
+            <AlertDialogCancel>{t('doc.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRestore}>{t('archives.restore')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

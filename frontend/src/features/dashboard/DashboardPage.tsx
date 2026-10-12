@@ -3,6 +3,7 @@ import { CountUp } from '@/components/motion/CountUp'
 import { SpecialtyStrip } from '@/components/specialty/SpecialtyStrip'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/features/auth/context'
+import { useI18n } from '@/i18n/context'
 import { ActivityChart } from '@/features/dashboard/ActivityChart'
 import { ActivityFeed } from '@/features/dashboard/ActivityFeed'
 import { DocTypeBars } from '@/features/dashboard/DocTypeBars'
@@ -13,6 +14,7 @@ import { AIUsage } from '@/features/ai/AIUsage'
 import type { Stats } from '@/lib/types'
 
 function Summary({ stats }: { stats: Stats }) {
+  const { t } = useI18n()
   const specialties = stats.categories.filter((c) => c.count > 0).length
   const changes = stats.activity.reduce((sum, day) => sum + day.count, 0)
   const rate = stats.total > 0 ? Math.round((stats.auto_classified / stats.total) * 100) : null
@@ -23,26 +25,27 @@ function Summary({ stats }: { stats: Stats }) {
       <strong className={strong}>
         <CountUp value={stats.total} />
       </strong>{' '}
-      Einträge in{' '}
+      {t('dash.summary.entries', { count: stats.total })}{' '}
       <strong className={strong}>
         <CountUp value={specialties} />
       </strong>{' '}
-      Fachgebieten,{' '}
+      {t('dash.summary.specialties', { count: specialties })}{' '}
       <strong className={strong}>
         {rate === null ? '–' : <CountUp value={rate} suffix=" %" />}
       </strong>{' '}
-      davon automatisch klassifiziert und{' '}
+      {t('dash.summary.classified')}{' '}
       <strong className={strong}>
         <CountUp value={changes} />
       </strong>{' '}
-      {changes === 1 ? 'Änderung' : 'Änderungen'} in den letzten 30 Tagen.
+      {t('dash.summary.changes', { count: changes })}
     </p>
   )
 }
 
 function DashboardSkeleton() {
+  const { t } = useI18n()
   return (
-    <div aria-busy="true" aria-label="Dashboard wird geladen" className="flex flex-col gap-6">
+    <div aria-busy="true" aria-label={t('dash.loading')} className="flex flex-col gap-6">
       <Skeleton className="h-7 w-2/3 max-w-xl" />
       <div className="flex gap-1.5">
         {[5, 3, 2, 2].map((grow, i) => (
@@ -60,11 +63,12 @@ function DashboardSkeleton() {
 export function DashboardPage() {
   const { data, error, refetch, isPending } = useStats()
   const { user } = useAuth()
+  const { t } = useI18n()
 
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Überblick</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{t('dash.title')}</h1>
         {data && <Summary stats={data} />}
         {(user?.role === 'admin' || user?.role === 'doctor') && <AIUsage />}
       </header>

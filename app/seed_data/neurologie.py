@@ -1,3 +1,4 @@
+from app.seed_data.english import with_english
 from app.seed_data.links import gesundheit_gv, medlineplus, who
 
 ENTRIES = [
@@ -107,3 +108,117 @@ ENTRIES = [
         "further_reading": [medlineplus("headache", "Headache")],
     },
 ]
+
+ENTRIES = with_english(
+    ENTRIES,
+    {
+        "Migräne": {
+            "title_en": "Migraine",
+            "sections_en": {
+                "definition": (
+                    "Migraine is an attack-like headache disorder in which severe, usually "
+                    "one-sided and throbbing headaches occur repeatedly."
+                ),
+                "symptoms": (
+                    "Nausea and sensitivity to light and noise often accompany the headache. "
+                    "Some people notice an aura with visual disturbances before the attack. "
+                    "Untreated, an attack lasts several hours up to three days."
+                ),
+                "causes": (
+                    "The tendency often runs in families. Triggers differ from person to "
+                    "person, for example stress, lack of sleep, hormonal changes or skipped "
+                    "meals."
+                ),
+                "diagnostics": (
+                    "The diagnosis is based on the typical history and a neurological "
+                    "examination. A headache diary helps to recognise patterns and triggers."
+                ),
+                "therapy": (
+                    "During an attack, pain relievers or triptans, rest and a darkened room "
+                    "help. For frequent attacks, preventive treatment can be considered."
+                ),
+                "red_flags": (
+                    "A sudden, never-before-experienced worst headache, paralysis or speech "
+                    "problems are not typical migraine – call the emergency number 144 "
+                    "(Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Migraine",
+                "Headache",
+                "Aura",
+                "Nausea",
+                "Triptans",
+                "Light sensitivity",
+            ],
+        },
+        "Schlaganfall – Warnzeichen": {
+            "title_en": "Stroke – warning signs",
+            "sections_en": {
+                "definition": (
+                    "A stroke is caused by a sudden disturbance of blood flow or a bleed in "
+                    "the brain, which damages nerve cells."
+                ),
+                "symptoms": (
+                    "Warning signs are sudden paralysis or numbness on one side of the body, "
+                    "a drooping corner of the mouth, speech problems, vision problems and "
+                    "severe dizziness."
+                ),
+                "causes": (
+                    "Usually a blood clot blocks a vessel in the brain. Risk factors are high "
+                    "blood pressure, atrial fibrillation, diabetes, smoking and high blood "
+                    "fats."
+                ),
+                "diagnostics": (
+                    "In hospital, brain imaging (CT or MRI) quickly clarifies whether a "
+                    "vessel is blocked or there is a bleed."
+                ),
+                "therapy": (
+                    "A vessel blockage can be dissolved with medicines or removed with a "
+                    "catheter in the first hours. Rehabilitation and treatment of the risk "
+                    "factors follow."
+                ),
+                "red_flags": (
+                    "Every minute counts: if a stroke is suspected, call the emergency number "
+                    "144 (Austria) at once, even if the symptoms go away again."
+                ),
+            },
+            "keywords_en": [
+                "Stroke",
+                "Paralysis",
+                "Speech problems",
+                "Emergency",
+                "Brain",
+                "Blood clot",
+            ],
+        },
+        "Anamnese bei Kopfschmerzen": {
+            "title_en": "Medical history for headaches",
+            "sections_en": {
+                "definition": (
+                    "For headaches, the medical history is the most important diagnostic "
+                    "tool: most types of headache can be classified from the description."
+                ),
+                "diagnostics": (
+                    "The questions cover onset, duration, frequency, location and character "
+                    "of the headache, accompanying symptoms such as nausea or visual "
+                    "disturbances, triggering factors, medication, past illnesses and family "
+                    "history."
+                ),
+                "red_flags": (
+                    "A sudden, never-before-experienced worst headache, fever with a stiff "
+                    "neck or new neurological deficits require immediate assessment – call "
+                    "the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Headache",
+                "Medical history",
+                "Duration",
+                "Triggers",
+                "Nausea",
+                "Warning signs",
+            ],
+        },
+    },
+)

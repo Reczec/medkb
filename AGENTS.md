@@ -25,7 +25,7 @@ Continue a stage by writing its plan next to the stage 1 plan (same structure: f
 
 ## Working rules
 
-- UI text German, code and API English.
+- UI text English by default with a German switch; code and API English. New texts go into **both** dictionaries (`frontend/src/i18n/messages.de.ts`, `messages.en.ts`; the German file defines the key set), never as literals in components. Entries stay German-canonical (classifier), the English version is optional.
 - Test first: a failing test, then the change, then the whole suite. Every task ends green on `pytest`, `ruff check . && ruff format --check .`, and in `frontend/`: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run e2e`.
 - One commit per task.
 - The rule-based classifier is the thesis core: keep it, keep it explainable. Its UI marker is "regelbasiert"; AI features (stage 4) get their own clearly separate marker.
@@ -44,6 +44,7 @@ Continue a stage by writing its plan next to the stage 1 plan (same structure: f
 - **shadcn CLI** via `npx shadcn` fails under npm 12 (allow-scripts error). Run `./node_modules/.bin/shadcn add <component>` from `frontend/`. Generated components import `cn` from the `cn` package. `src/index.css` must keep `@import "shadcn/tailwind.css"`, which supplies the `data-open` and `data-horizontal` variants.
 - Stack versions are newer than most training data: Vite 8, TypeScript 6 (no `baseUrl`, only `paths`), React Router 8 (`react-router`, `createBrowserRouter`), Tailwind v4 (tokens in `src/index.css`, no config file), `motion` (`motion/react`), oxlint instead of ESLint. Check the installed package's types before assuming an API.
 - **Frontend test helpers** live in `src/test/utils.tsx`: `renderWithProviders` (memory router + QueryClient) and `mockFetch`, which answers by the *longest* matching URL substring. Give specific routes keys that are longer than the generic ones.
+- **Language.** The frontend sends `Accept-Language`; the backend answers messages, ICD-11, search and AI in that language (`app/i18n.py`, English default). `renderWithProviders` defaults to `lang="de"` so older tests keep German strings; pass `lang: 'en'` to test English. e2e specs set `localStorage['medkb:lang']='de'` in an init script (`e2e/i18n.spec.ts` covers the English default). German AI cache keys are unchanged; English adds the language to the key. Drafts stay German.
 - **Backend reload.** A uvicorn started before a backend change keeps serving old code; restart it. FastAPI serves `frontend/dist` (see `app/spa.py`), so after `npm run build` the whole app runs on :8000.
 - **Auth in tests.** Backend: fixtures `client` (admin), `doctor_client`, `patient_client`, `anon_client` in `tests/conftest.py`; bcrypt runs with 4 rounds there. Frontend unit tests: `renderWithProviders(..., { user: TEST_USERS.patient })` (default admin; `withAuth: true` for the real provider). e2e: `loginAs(page, role)` in `e2e/smoke.spec.ts`.
 - **New columns** on existing tables need an entry in `ADDED_COLUMNS` (`app/database.py`): `create_all` never alters tables.

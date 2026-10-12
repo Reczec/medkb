@@ -1,3 +1,4 @@
+from app.seed_data.english import with_english
 from app.seed_data.links import medlineplus
 
 ENTRIES = [
@@ -101,3 +102,109 @@ ENTRIES = [
         "further_reading": [medlineplus("polycysticovarysyndrome", "Polycystic Ovary Syndrome")],
     },
 ]
+
+ENTRIES = with_english(
+    ENTRIES,
+    {
+        "Endometriose": {
+            "title_en": "Endometriosis",
+            "sections_en": {
+                "definition": (
+                    "In endometriosis, tissue similar to the lining of the womb grows outside "
+                    "the womb, for example on the ovaries or the peritoneum."
+                ),
+                "symptoms": (
+                    "The leading symptom is severe period pain. Lower abdominal pain, pain "
+                    "during intercourse and sometimes an unfulfilled wish for a child are "
+                    "added."
+                ),
+                "causes": (
+                    "The exact cause is unclear. Backward flow of menstrual blood and "
+                    "hormonal and immunological factors are discussed."
+                ),
+                "diagnostics": (
+                    "A gynaecological examination and ultrasound give hints; the diagnosis is "
+                    "often confirmed only by keyhole surgery of the abdomen."
+                ),
+                "therapy": (
+                    "Pain relievers, hormonal treatment and surgical removal of the lesions "
+                    "ease the symptoms. Treatment depends on symptoms and the wish for a "
+                    "child."
+                ),
+                "red_flags": (
+                    "Sudden, very severe lower abdominal pain with circulatory problems or "
+                    "fever requires immediate assessment – call the emergency number 144 "
+                    "(Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Endometriosis",
+                "Period pain",
+                "Womb",
+                "Lower abdominal pain",
+                "Hormones",
+                "Fertility",
+            ],
+        },
+        "Wechseljahre (Klimakterium)": {
+            "title_en": "Menopause (climacteric)",
+            "sections_en": {
+                "definition": (
+                    "The menopause is the natural transition phase in which the ovaries stop "
+                    "producing hormones. Menopause itself is the last menstrual period, "
+                    "usually around the age of 50."
+                ),
+                "symptoms": (
+                    "Common are hot flushes, sweating, sleep problems, mood swings and "
+                    "vaginal dryness."
+                ),
+                "therapy": (
+                    "Exercise, a balanced diet and relaxation help many women. For severe "
+                    "symptoms, hormone treatment can make sense after consultation."
+                ),
+                "red_flags": (
+                    "Bleeding after the menopause is not normal and should be investigated by "
+                    "a gynaecologist."
+                ),
+            },
+            "keywords_en": [
+                "Menopause",
+                "Hot flushes",
+                "Hormones",
+                "Sleep problems",
+                "Mood swings",
+                "Gynaecologist",
+            ],
+        },
+        "Polyzystisches Ovarsyndrom (PCOS)": {
+            "title_en": "Polycystic ovary syndrome (PCOS)",
+            "sections_en": {
+                "definition": (
+                    "Polycystic ovary syndrome is a common hormonal disorder in women of "
+                    "reproductive age in which more male hormones are produced."
+                ),
+                "symptoms": (
+                    "Typical are an irregular cycle or missing periods, increased body hair, "
+                    "acne and difficulty becoming pregnant."
+                ),
+                "causes": (
+                    "A predisposition and reduced insulin action play a role; overweight "
+                    "makes the symptoms worse."
+                ),
+                "diagnostics": (
+                    "The diagnosis is based on cycle disorders, hormone levels in the blood "
+                    "and an ultrasound of the ovaries."
+                ),
+                "therapy": (
+                    "Weight loss and exercise often improve cycle and metabolism. Depending "
+                    "on the goal, hormonal contraceptives or fertility treatment help."
+                ),
+                "red_flags": (
+                    "Sudden severe lower abdominal pain can point to a burst or twisted cyst "
+                    "and must be assessed at once."
+                ),
+            },
+            "keywords_en": ["PCOS", "Ovaries", "Irregular cycle", "Acne", "Insulin", "Fertility"],
+        },
+    },
+)

@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useI18n } from '@/i18n/context'
 import { formatDate, formatRelative } from '@/lib/format'
 import { auditAction } from '@/lib/audit'
 import { useAudit } from '@/lib/queries'
@@ -8,11 +9,12 @@ import { cn } from '@/lib/utils'
 
 export function AuditTable() {
   const audit = useAudit(100)
+  const { t, lang } = useI18n()
 
   if (audit.error) return <ErrorState error={audit.error} onRetry={() => audit.refetch()} />
   if (audit.isPending) return <Skeleton className="h-64 rounded-xl" />
   if (audit.data.length === 0) {
-    return <p className="text-sm text-muted-foreground">Noch keine Änderungen protokolliert.</p>
+    return <p className="text-sm text-muted-foreground">{t('audit.empty')}</p>
   }
 
   return (
@@ -20,11 +22,11 @@ export function AuditTable() {
       <table className="w-full min-w-[560px] text-sm">
         <thead>
           <tr className="border-b text-left text-xs text-muted-foreground">
-            <th className="px-5 py-3 font-medium">Zeit</th>
-            <th className="px-3 py-3 font-medium">Aktion</th>
-            <th className="px-3 py-3 font-medium">Wer</th>
-            <th className="px-3 py-3 font-medium">Eintrag</th>
-            <th className="px-5 py-3 font-medium">Detail</th>
+            <th className="px-5 py-3 font-medium">{t('audit.time')}</th>
+            <th className="px-3 py-3 font-medium">{t('audit.action')}</th>
+            <th className="px-3 py-3 font-medium">{t('audit.actor')}</th>
+            <th className="px-3 py-3 font-medium">{t('audit.entry')}</th>
+            <th className="px-5 py-3 font-medium">{t('audit.detail')}</th>
           </tr>
         </thead>
         <tbody className="divide-y">
@@ -33,14 +35,14 @@ export function AuditTable() {
             return (
               <tr key={entry.id} className="transition-colors hover:bg-muted/50">
                 <td className="px-5 py-3 whitespace-nowrap text-muted-foreground">
-                  <time dateTime={entry.timestamp} title={formatDate(entry.timestamp)}>
-                    {formatRelative(entry.timestamp)}
+                  <time dateTime={entry.timestamp} title={formatDate(entry.timestamp, lang)}>
+                    {formatRelative(entry.timestamp, lang)}
                   </time>
                 </td>
                 <td className="px-3 py-3">
                   <span className={cn('inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium', action.className)}>
                     <action.icon className="size-3.5" aria-hidden />
-                  {action.label}
+                    {action.key ? t(action.key) : action.raw}
                   </span>
                 </td>
                 <td className="px-3 py-3 font-mono text-xs whitespace-nowrap">{entry.actor ?? '—'}</td>

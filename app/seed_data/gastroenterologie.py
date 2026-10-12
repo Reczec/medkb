@@ -1,3 +1,4 @@
+from app.seed_data.english import with_english
 from app.seed_data.links import medlineplus
 
 ENTRIES = [
@@ -110,3 +111,124 @@ ENTRIES = [
         "further_reading": [medlineplus("gallstones", "Gallstones")],
     },
 ]
+
+ENTRIES = with_english(
+    ENTRIES,
+    {
+        "Sodbrennen und Reflux": {
+            "title_en": "Heartburn and acid reflux",
+            "sections_en": {
+                "definition": (
+                    "Heartburn occurs when stomach acid flows back into the oesophagus. If it "
+                    "happens often, it is called reflux disease."
+                ),
+                "symptoms": (
+                    "Affected people feel a burning behind the breastbone, sour regurgitation "
+                    "and sometimes an irritating cough, often after large meals or when lying "
+                    "down."
+                ),
+                "causes": (
+                    "A weakened sphincter at the entrance of the stomach, overweight, fatty "
+                    "food, alcohol, smoking and stress promote reflux."
+                ),
+                "diagnostics": (
+                    "With typical symptoms a trial of treatment is often enough. A "
+                    "gastroscopy clarifies persistent symptoms and warning signs."
+                ),
+                "therapy": (
+                    "Smaller meals, no late eating and a raised head of the bed help. Acid "
+                    "blockers relieve the symptoms reliably."
+                ),
+                "red_flags": (
+                    "Difficulty swallowing, unintended weight loss, vomiting blood or black "
+                    "stools must be assessed promptly. Chest pain can also come from the "
+                    "heart – if in doubt call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Heartburn",
+                "Reflux",
+                "Oesophagus",
+                "Stomach acid",
+                "Gastroscopy",
+                "Acid blockers",
+            ],
+        },
+        "Reizdarmsyndrom": {
+            "title_en": "Irritable bowel syndrome",
+            "sections_en": {
+                "definition": (
+                    "Irritable bowel syndrome is a common functional disorder of the gut: the "
+                    "symptoms are real, although no organic cause is found."
+                ),
+                "symptoms": (
+                    "Typical are recurring abdominal pain, bloating and changed bowel habits "
+                    "with diarrhoea, constipation or both alternating."
+                ),
+                "causes": (
+                    "A more sensitive perception of the gut, altered gut movement, stress and "
+                    "sometimes a previous intestinal infection play a part."
+                ),
+                "diagnostics": (
+                    "The diagnosis is made when the typical symptoms have lasted for some "
+                    "time and other diseases such as coeliac disease or chronic bowel "
+                    "inflammation have been ruled out."
+                ),
+                "therapy": (
+                    "An adjusted diet, exercise, stress reduction and, depending on the main "
+                    "complaint, targeted medicines help."
+                ),
+                "red_flags": (
+                    "Blood in the stool, weight loss, symptoms at night, fever or onset after "
+                    "the age of 50 do not fit irritable bowel syndrome and should be "
+                    "investigated."
+                ),
+            },
+            "keywords_en": [
+                "Irritable bowel",
+                "Bloating",
+                "Diarrhoea",
+                "Constipation",
+                "Abdominal pain",
+                "Stress",
+            ],
+        },
+        "Gallensteine (Cholelithiasis)": {
+            "title_en": "Gallstones (cholelithiasis)",
+            "sections_en": {
+                "definition": (
+                    "Gallstones are solid deposits in the gallbladder or bile ducts. Many "
+                    "people carry them without noticing."
+                ),
+                "symptoms": (
+                    "When a stone moves, cramping pain in the right upper abdomen (biliary "
+                    "colic) occurs, often after fatty food, with nausea and vomiting."
+                ),
+                "causes": (
+                    "Risk factors are female sex, overweight, rapid weight loss, higher age "
+                    "and family predisposition."
+                ),
+                "diagnostics": (
+                    "An abdominal ultrasound shows the stones reliably. Blood tests give "
+                    "hints of inflammation or a blocked bile duct."
+                ),
+                "therapy": (
+                    "Stones without symptoms are usually not treated. After colic, the "
+                    "gallbladder is usually removed by keyhole surgery."
+                ),
+                "red_flags": (
+                    "Fever with upper abdominal pain, yellow skin or eyes or severe lasting "
+                    "pain require immediate assessment."
+                ),
+            },
+            "keywords_en": [
+                "Gallstones",
+                "Gallbladder",
+                "Colic",
+                "Upper abdomen",
+                "Ultrasound",
+                "Bile duct",
+            ],
+        },
+    },
+)

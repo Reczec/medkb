@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'motion/react'
 import { Link } from 'react-router'
+import { useI18n } from '@/i18n/context'
 import { categoryStyle } from '@/lib/categories'
 import type { CountItem } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -28,12 +29,13 @@ export function SpecialtyStrip({
   showShare = true,
 }: SpecialtyStripProps) {
   const reduced = useReducedMotion()
+  const { t, categoryLabel } = useI18n()
   const filled = items.filter((item) => item.count > 0).sort((a, b) => b.count - a.count)
   const empty = items.length - filled.length
   const filtering = Boolean(active)
 
   return (
-    <nav aria-label="Fachgebiete" className={className}>
+    <nav aria-label={t('specialty.nav')} className={className}>
       <ul className="flex items-end gap-1 overflow-x-auto border-b-2 px-1 pt-2">
         {filled.map((item, index) => {
           const style = categoryStyle(item.name)
@@ -47,7 +49,7 @@ export function SpecialtyStrip({
                 aria-hidden
               />
               <span data-tab-label className="text-[13px] font-medium whitespace-nowrap">
-                {item.name}
+                {categoryLabel(item.name)}
               </span>
               <span className="tabular text-[13px] font-semibold text-muted-foreground">
                 {item.count}
@@ -99,7 +101,7 @@ export function SpecialtyStrip({
 
       {showShare && (
       <div className="mt-4 flex items-center gap-3">
-        <span className="shrink-0 text-xs text-muted-foreground">Anteil der Einträge</span>
+        <span className="shrink-0 text-xs text-muted-foreground">{t('specialty.share')}</span>
         <div className="flex h-2 flex-1 gap-0.5 overflow-hidden rounded-full" aria-hidden>
         {filled.map((item, index) => {
           const style = categoryStyle(item.name)
@@ -108,7 +110,7 @@ export function SpecialtyStrip({
             <motion.span
               key={item.name}
               data-share={item.name}
-              title={`${item.name}: ${item.count}`}
+              title={`${categoryLabel(item.name)}: ${item.count}`}
               className="h-full min-w-1 transition-opacity duration-300"
               style={{ flexGrow: item.count, flexBasis: 0, background: style.color, opacity: dimmed ? 0.3 : 1 }}
               initial={reduced ? false : { scaleX: 0 }}
@@ -123,7 +125,7 @@ export function SpecialtyStrip({
 
       {empty > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">
-          {empty === 1 ? '1 weiteres Fachgebiet' : `${empty} weitere Fachgebiete`} ohne Einträge
+          {t('specialty.empty', { count: empty })}
         </p>
       )}
     </nav>

@@ -23,8 +23,10 @@ const study = {
   authors: ['A Example'], more_authors: false, url: 'https://pubmed.ncbi.nlm.nih.gov/123456/',
 }
 
-// Keep browser tests independent of upstream APIs, credentials and rate limits.
+// Keep browser tests independent of upstream APIs, credentials and rate limits. The interface
+// defaults to English; these flows run in German (i18n.spec.ts covers the default and the switch).
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('medkb:lang', 'de'))
   await page.route('**/api/sources/**', async (route) => {
     const path = new URL(route.request().url()).pathname
     const result = path.endsWith('/latest-studies')

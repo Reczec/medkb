@@ -15,7 +15,7 @@ The free hosting sleeps after 15 minutes without visitors; the first request the
 ![Demo: doctor dashboard, entry with PubMed studies and ICD-11, AI summary; patient warning signs; AI assistant](docs/media/demo.gif)
 
 FastAPI + SQLAlchemy (SQLite or PostgreSQL), React 19 + TypeScript (Vite, Tailwind CSS,
-shadcn/ui, Motion, Recharts, TanStack Query). The UI is in German, code and API in English.
+shadcn/ui, Motion, Recharts, TanStack Query). The UI is in English with a one-click switch to German (EN | DE), code and API in English.
 
 ## Background
 
@@ -28,14 +28,18 @@ a CI setup. Built with AI assistance (Claude).
 
 ## Features
 
+- **English and German**: the whole interface, all 47 entries, server messages, ICD-11 and AI
+  answers follow the chosen language (English by default, remembered per browser). The rule-based
+  classifier works on the German text, so German stays the canonical language of an entry; the
+  English version is optional per entry and falls back field by field with a visible note
 - **Structured entries**: sections (definition, symptoms, causes, diagnostics, therapy, warning
   signs), English term, ICD-11 code, active ingredients and checked further-reading links
   (gesundheit.gv.at, WHO, MedlinePlus); 47 example entries across 16 specialties
 - **Live sources for staff**: newest PubMed articles per entry and per specialty, WHO ICD-11 title
   and definition, openFDA drug labels. Cached for 24 h; an unavailable source shows a retry, never
   an error page
-- **Search**: multi-term keyword search over title, content and keywords (all terms must match),
-  case-insensitive including umlauts, ranked by relevance (title > keywords > content),
+- **Search**: multi-term keyword search over title, content and keywords in both languages
+  (all terms must match), case-insensitive including umlauts, ranked by relevance (title > keywords > content),
   filters for category and document type, pagination
 - **Automatic classification**: a transparent, rule-based scoring of German medical vocabulary
   suggests a category (e.g. HNO, Neurologie, Kardiologie) and keywords. The user always keeps
@@ -147,8 +151,9 @@ limit. Patients see the entry content and warning signs without requesting these
 
 For ICD-11, register at [WHO ICD API](https://icd.who.int/icdapi), open **View API access key(s)**
 and put `ICD_CLIENT_ID` and `ICD_CLIENT_SECRET` in `.env`. Without them the tab reports that
-ICD-11 is not configured. The defaults are `ICD_RELEASE=2026-01` and `ICD_LANGUAGE=de`;
-the German response is marked as a WHO prerelease. Use `en` for English.
+ICD-11 is not configured. ICD-11 follows the interface language (`Accept-Language`); the
+German response is marked as a WHO prerelease. `ICD_LANGUAGE` (default `de`) is only the
+fallback for clients that send no language, and `ICD_RELEASE` defaults to `2026-01`.
 
 `SOURCES_TIMEOUT=8` sets the upstream request timeout in seconds; `SOURCE_CACHE_HOURS=24`
 sets the database cache lifetime. The panels show their source and retrieval time, and offer
@@ -200,8 +205,11 @@ Optional explicit cache warmup (never automatic on startup):
 ```powershell
 .venv/Scripts/python.exe -m app.ai.prewarm --limit 1
 # Omit --limit for all entries: 47 × 8 role/feature variants = 376 potential calls.
+.venv/Scripts/python.exe -m app.ai.prewarm --lang en --pause 4   # the English answers (376 more)
 ```
 
+The AI answers in the interface language (English default); German and English answers are cached
+separately, and drafts are always written in German because the classifier works on German text.
 The trusted operator job uses the global budget, while public clients keep their separate
 30-call limit. Repeated warmup reuses cached results; failures are counted in its summary.
 Without a key it exits without requests. Run after example seeding; respect provider rate limits.

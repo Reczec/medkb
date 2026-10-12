@@ -66,7 +66,9 @@ def test_document_without_code_is_empty(doctor_client, client, keys, who):
 
 def test_lookup_returns_title_definition_and_browser_link(doctor_client, client, keys, who):
     doc = icd_doc(client)
-    body = doctor_client.get(f"/api/sources/documents/{doc['id']}/icd11").json()
+    body = doctor_client.get(
+        f"/api/sources/documents/{doc['id']}/icd11", headers={"Accept-Language": "de"}
+    ).json()
 
     assert body["status"] == "ok"
     assert body["data"] == {
@@ -164,3 +166,28 @@ def test_malformed_entity_language_is_unavailable_and_not_cached(
     who[2].mock(return_value=httpx.Response(200, json=ENTITY_JSON))
     assert doctor_client.get(path).json()["status"] == "ok"
     assert who[2].call_count == 2
+
+
+def test_icd_language_follows_the_request_and_is_cached_per_language(
+    doctor_client, client, keys, who
+):
+    doc = icd_doc(client)
+    url = f"/api/sources/documents/{doc['id']}/icd11"
+    who[2].mock(
+        return_value=httpx.Response(
+            200, json={"code": "8A80", "title": {"@language": "en", "@value": "Migraine"}}
+        )
+    )
+    en = doctor_client.get(url, headers={"Accept-Language": "en"}).json()
+    assert who[1].calls.last.request.headers["Accept-Language"] == "en"
+    assert en["data"]["language"] == "en" and en["data"]["title"] == "Migraine"
+
+    who[2].mock(return_value=httpx.Response(200, json=ENTITY_JSON))
+    de = doctor_client.get(url, headers={"Accept-Language": "de"}).json()
+    assert who[1].calls.last.request.headers["Accept-Language"] == "de"
+    assert de["data"]["title"] == "Migräne"
+
+    calls = who[1].call_count
+    doctor_client.get(url, headers={"Accept-Language": "en"})
+    doctor_client.get(url, headers={"Accept-Language": "de"})
+    assert who[1].call_count == calls  # both languages are served from the cache

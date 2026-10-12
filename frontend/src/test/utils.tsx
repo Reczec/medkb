@@ -3,6 +3,8 @@ import { render } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { AuthContext, type AuthContextValue } from '@/features/auth/context'
+import { I18nProvider } from '@/i18n/I18nProvider'
+import type { Lang } from '@/i18n/lang'
 import type { AuthUser } from '@/lib/auth'
 import type { Document } from '@/lib/types'
 import { createMemoryRouter, RouterProvider, type RouteObject } from 'react-router'
@@ -21,6 +23,7 @@ export function renderWithProviders(
     client = makeQueryClient(),
     withAuth = false,
     user = TEST_USERS.admin as AuthUser | null,
+    lang = 'de' as Lang,
   } = {},
 ) {
   const router = createMemoryRouter([{ path: route, element: ui }, ...routes], {
@@ -37,11 +40,13 @@ export function renderWithProviders(
   }
   const result = render(
     <QueryClientProvider client={client}>
-      {withAuth ? (
-        <AuthProvider>{routed}</AuthProvider>
-      ) : (
-        <AuthContext.Provider value={auth}>{routed}</AuthContext.Provider>
-      )}
+      <I18nProvider lang={lang}>
+        {withAuth ? (
+          <AuthProvider>{routed}</AuthProvider>
+        ) : (
+          <AuthContext.Provider value={auth}>{routed}</AuthContext.Provider>
+        )}
+      </I18nProvider>
     </QueryClientProvider>,
   )
   return { ...result, router, client, auth }
@@ -71,6 +76,7 @@ export const TEST_USERS: Record<'admin' | 'doctor' | 'patient', AuthUser> = {
 
 type Stage3Field =
   | 'term_en' | 'icd11_code' | 'medications' | 'sections' | 'further_reading' | 'ai_generated'
+  | 'title_en' | 'content_en' | 'sections_en' | 'keywords_en'
 
 /** A plain free-text entry's values for the fields added in stage 3. */
 export const PLAIN_FIELDS: Pick<Document, Stage3Field> = {
@@ -80,4 +86,8 @@ export const PLAIN_FIELDS: Pick<Document, Stage3Field> = {
   sections: null,
   further_reading: [],
   ai_generated: false,
+  title_en: null,
+  content_en: null,
+  sections_en: null,
+  keywords_en: [],
 }

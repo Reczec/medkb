@@ -130,6 +130,10 @@ class Sections(BaseModel):
 
 class FurtherReadingLink(BaseModel):
     label: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+    label_en: (
+        Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+        | None
+    ) = None
     url: Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)]
 
     @field_validator("url")
@@ -164,6 +168,11 @@ class DocumentCreate(BaseModel):
     sections: Sections | None = None
     further_reading: FurtherReading = Field(default_factory=list)
     ai_generated: bool = False
+    # Optional English version; German above stays canonical.
+    title_en: Title | None = None
+    content_en: Content | None = None
+    sections_en: Sections | None = None
+    keywords_en: list[str] = Field(default_factory=list)
 
     @field_validator("category")
     @classmethod
@@ -174,6 +183,11 @@ class DocumentCreate(BaseModel):
     @classmethod
     def _keywords(cls, value: list[str] | None) -> list[str] | None:
         return _clean_keywords(value)
+
+    @field_validator("keywords_en")
+    @classmethod
+    def _keywords_en(cls, value: list[str]) -> list[str]:
+        return _clean_keywords(value) or []
 
     @field_validator("term_en")
     @classmethod
@@ -196,6 +210,8 @@ class DocumentCreate(BaseModel):
             self.content = compose_content(self.sections.model_dump())
         elif self.content is None:
             raise ValueError("Either 'content' or 'sections' is required.")
+        if self.sections_en is not None:
+            self.content_en = compose_content(self.sections_en.model_dump(), "en")
         return self
 
 
@@ -214,6 +230,11 @@ class DocumentUpdate(BaseModel):
     # New sections recompose the content; content sent without sections makes it free text.
     sections: Sections | None = None
     further_reading: FurtherReading | None = None
+    # English version: null clears a field; sections_en recompose content_en.
+    title_en: Title | None = None
+    content_en: Content | None = None
+    sections_en: Sections | None = None
+    keywords_en: list[str] | None = None  # null or [] clears
     reclassify: bool = False  # re-run the classifier for category (and keywords)
 
     @field_validator("category")
@@ -224,6 +245,11 @@ class DocumentUpdate(BaseModel):
     @field_validator("keywords")
     @classmethod
     def _keywords(cls, value: list[str] | None) -> list[str] | None:
+        return _clean_keywords(value)
+
+    @field_validator("keywords_en")
+    @classmethod
+    def _keywords_en(cls, value: list[str] | None) -> list[str] | None:
         return _clean_keywords(value)
 
     @field_validator("term_en")
@@ -278,6 +304,10 @@ class DocumentOut(BaseModel):
     sections: dict[str, str | None] | None = None
     further_reading: list[FurtherReadingLink] = Field(default_factory=list)
     ai_generated: bool = False
+    title_en: str | None = None
+    content_en: str | None = None
+    sections_en: dict[str, str | None] | None = None
+    keywords_en: list[str] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
 
@@ -286,7 +316,7 @@ class DocumentOut(BaseModel):
     def _utc(cls, value: datetime) -> datetime:
         return as_utc(value)
 
-    @field_validator("medications", "further_reading", mode="before")
+    @field_validator("medications", "further_reading", "keywords_en", mode="before")
     @classmethod
     def _null_list(cls, value: Any) -> Any:
         # Rows from before v2 stage 3 can hold NULL in the added columns.
@@ -343,6 +373,7 @@ class CountItem(BaseModel):
 class RecentItem(BaseModel):
     id: int
     title: str
+    title_en: str | None = None
     category: str
     updated_at: datetime
 
@@ -413,8 +444,17 @@ class ArchiveEntry(BaseModel):
     sections: Sections | None = None
     further_reading: FurtherReading = Field(default_factory=list)
     ai_generated: bool = False
+    title_en: Title | None = None
+    content_en: Content | None = None
+    sections_en: Sections | None = None
+    keywords_en: list[str] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
+
+    @field_validator("keywords_en")
+    @classmethod
+    def _keywords_en(cls, value: list[str]) -> list[str]:
+        return _clean_keywords(value) or []
 
     @field_validator("category")
     @classmethod

@@ -13,12 +13,6 @@ export interface TokenResponse {
   user: AuthUser
 }
 
-export const ROLE_LABELS: Record<Role, string> = {
-  admin: 'Admin',
-  doctor: 'Ärztin / Arzt',
-  patient: 'Patient:in',
-}
-
 const KEY = 'token'
 
 /** The login token lives in sessionStorage: it survives reloads, not closing the tab. */

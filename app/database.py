@@ -83,6 +83,10 @@ ADDED_COLUMNS = [
     ("documents", "sections", "JSON"),
     ("documents", "further_reading", "JSON DEFAULT '[]'"),
     ("documents", "ai_generated", "BOOLEAN DEFAULT FALSE"),
+    ("documents", "title_en", "VARCHAR(200)"),
+    ("documents", "content_en", "TEXT"),
+    ("documents", "sections_en", "JSON"),
+    ("documents", "keywords_en", "JSON DEFAULT '[]'"),
 ]
 
 
