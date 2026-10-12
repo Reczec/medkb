@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-10-12T17:31:53.781298+00:00",
+  "threshold": 0.6,
+  "rule": "maximize dev Hit@5 with both unrelated controls rejected, then MRR@5, then highest threshold",
+  "dev_report_sha256": "072e937fb9956fd46123c8f7a002d1e8ebc10b9ec4ed19285938876ca11fc95a",
+  "frozen_dataset_sha": "28ccfe70a6dd4f19f304f81d5bbfd92cb0c5ad56fa245a1c10b6e5bd0f49dd0d",
+  "held_out_at_decision": "not_run",
+  "dev_hit_at_5": 1.0,
+  "dev_mrr_at_5": 1.0,
+  "dev_unrelated_acceptance": 0
+}
