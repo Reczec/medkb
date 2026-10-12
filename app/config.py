@@ -48,6 +48,12 @@ class Settings(BaseSettings):
     ai_timeout: float = Field(default=30, gt=0, le=120)
     ai_daily_limit: int = Field(default=500, ge=1)
     ai_client_daily_limit: int = Field(default=30, ge=1)
+    # Semantic retrieval is opt-in until its persisted index and real evaluation are ready.
+    rag_enabled: bool = False
+    embedding_api_key: str = ""
+    embedding_timeout: float = Field(default=15, gt=0, le=120)
+    rag_min_similarity: float = Field(default=0.45, ge=0, le=1)
+    rag_max_chunks: int = Field(default=5000, ge=1, le=5000)
     # Behind a reverse proxy: the request header that carries the visitor's IP, set by the
     # proxy itself (e.g. True-Client-IP on Render). Empty = the connection's address. Only set
     # it when the proxy overwrites the header, otherwise visitors could reset their quota.
