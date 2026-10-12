@@ -16,8 +16,8 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 
 ## Status
 
-Azure extension (2026-10-13): local Bicep/OIDC/GHCR deployment and operator tools are being verified;
-**no live Azure deployment yet**. Read [operator guide](docs/AZURE.md) and
+Azure extension (2026-10-13): manual deployment is live and application-verified;
+**protected OIDC delivery, rollback/restoration and cold wake verified; cost reporting delayed**. Read [operator guide](docs/AZURE.md) and
 [activation record](docs/reviews/2026-10-13-azure-deployment.md) before any Azure action. Main work is
 authorized; workflow stays disabled unless `AZURE_DEMO_ENABLED=true` is explicitly configured after
 bootstrap. Require current trial spending protection, separate free `medkb_azure` database, EUR 5

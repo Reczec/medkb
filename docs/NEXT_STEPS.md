@@ -4,8 +4,9 @@ Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onr
 
 ## Azure portfolio extension
 
-Local Bicep/OIDC deployment tools are implemented; live activation is pending authentication,
-verified trial spending protection and free isolated Neon capacity. Follow the exact prerequisites
+The manual Azure deployment is live and roles, bilingual RAG, reset persistence and quotas passed.
+Cold wake was measured at 22.937 seconds; protected OIDC delivery and rollback/restoration passed.
+Next: manually check delayed costs/remaining credit and clean up before trial expiry. Follow the prerequisites
 and pending live checklist in [the Azure record](reviews/2026-10-13-azure-deployment.md) and
 [operator guide](AZURE.md). Approved credit target EUR 5 (not a hard cap), trial expiry 2026-10-20.
 No personal cash charges, offer upgrade or removed spending limit. Render stays the permanent demo.

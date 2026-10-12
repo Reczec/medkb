@@ -1,7 +1,9 @@
 # Temporary Azure demo — operator guide
 
-Status: implementation in progress; no Azure deployment is claimed. Render remains the permanent
-demo at https://medkb.onrender.com. The approved Azure trial expires **2026-10-20**.
+Status: manual deployment is live at
+https://medkb-azure-demo.whiterock-973337bb.northeurope.azurecontainerapps.io.
+Application checks, cold wake, protected OIDC delivery and image rollback passed; see the deployment record.
+Render remains the permanent demo at https://medkb.onrender.com. The approved Azure trial expires **2026-10-20**.
 
 ## Cost controls
 
@@ -77,6 +79,11 @@ with exact current keys/signature/dimensions and a final corpus check. No genera
 in this Azure change; the supported fallback is the existing resumable index command above.
 
 Tooling observed 2026-10-13: official Azure CLI ZIP 2.91.0 and Bicep 0.48.1, local ignored scratch only.
+After completion, installed tools and protected local authentication profiles are retained under
+ignored `.superpowers/azure-operator/`; temporary plan scratch is removed. For this checkout's CLI:
+set `AZURE_CONFIG_DIR` to the absolute `.superpowers/azure-operator/azure-config` directory and add
+`.superpowers/azure-operator/tools/azure-cli/bin` to PATH before running the operator commands.
+On Windows the helper resolves that CLI's bundled Python directly. These local files must never be committed.
 Azure CLI device-code login was denied with error 530035; no security policy was weakened. Normal browser login succeeded on 2026-10-13; fresh ARM evidence confirmed an enabled FreeTrial
 subscription with spendingLimit=On. The browser connection then became unavailable; Neon sign-in
 was verified through official Neon CLI 8.4.1. The organization is Free; the isolated project uses
@@ -101,7 +108,10 @@ verify the MedKB package visibility in GitHub. Anonymous manifest inspection mus
 
 Create protected environment `azure-demo` restricted to main, with a required reviewer where the
 repository plan supports it. Exact federation: issuer `https://token.actions.githubusercontent.com`,
-subject `repo:Reczec/medkb:environment:azure-demo`, audience `api://AzureADTokenExchange`.
+subject matching the repository's actual OIDC format, audience `api://AzureADTokenExchange`.
+This repository uses `repo:OWNER@OWNER-ID/REPO@REPO-ID:environment:azure-demo` (immutable IDs).
+Read the actual issued subject; do not substitute the older name-only format or a wildcard.
+See [GitHub's OIDC reference](https://docs.github.com/en/actions/reference/security/oidc).
 Create a dedicated user-assigned managed identity `medkb-azure-demo-deployer` in the demo group;
 assign Contributor **only** to `/subscriptions/YOUR_SUBSCRIPTION/resourceGroups/medkb-azure-demo-portfolio`.
 Confirm that exact access grant before executing bootstrap; do not grant subscription-wide access.
@@ -156,10 +166,10 @@ No automatic deletion, billing upgrade or recurring monitor is installed by this
 
 Filesystem archives are ephemeral across scale-to-zero/revisions; no durable storage is added.
 Logs have no persistent searchable workspace: use bounded log streams, deployment logs and platform
-metrics. Cold-wake latency needs a measured live observation and is not promised. If the existing
+metrics. One cold wake took 22.937 seconds, followed by a 0.157-second warm health request; latency is not promised. If the existing
 Gemini key is reused, its upstream quota is shared with Render even though database quotas/cache are
-isolated. RAG reset persistence, real cited JSON/SSE answers, spoofed-IP checks, rollback and costing
-are pending until recorded in the deployment review. Never imply permanent Azure hosting in the CV.
+isolated. RAG reset persistence, cited JSON/SSE answers and spoofed-IP checks passed on 2026-10-13.
+Image rollback/restoration passed; current costs remain delayed. Never imply permanent Azure hosting in the CV.
 
 ### Review-hardened operator boundaries
 

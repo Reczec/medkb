@@ -20,8 +20,10 @@ shadcn/ui, Motion, Recharts, TanStack Query). The UI is in English with a one-cl
 ## Azure cloud extension
 
 Azure portfolio extension: Bicep infrastructure, guarded OIDC/GHCR delivery, health verification and
-rollback/cleanup tools are prepared for a temporary Container Apps Consumption demo. **Azure activation
-is pending** account/cost-protection and isolated-database checks; Render remains the public demo.
+rollback/cleanup tools support a temporary Container Apps Consumption demo.
+[Azure demo](https://medkb-azure-demo.whiterock-973337bb.northeurope.azurecontainerapps.io) is manually
+deployed and verified, including protected GitHub OIDC delivery and compatible image rollback.
+The trial expires 2026-10-20; Render remains the permanent public demo.
 See the [operator guide](docs/AZURE.md) and [implementation record](docs/reviews/2026-10-13-azure-deployment.md).
 
 ## Background
