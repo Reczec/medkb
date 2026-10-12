@@ -40,7 +40,7 @@ and destination before those operations; no grant is made by the preflight.
 ## Infrastructure and secure parameter ownership
 
 `infra/azure/main.bicep` uses Microsoft.App API 2025-07-01, a Consumption-only environment with
-log destination `none`, and one HTTPS app on port 8000 with 0.5 vCPU/1 GiB, scale 0..1 and Single
+logging disabled (unset destination, never literal `"none"`), and one HTTPS app on port 8000 with 0.5 vCPU/1 GiB, scale 0..1 and Single
 revision mode. It creates no identity/role grants or paid supporting services. Bicep's secure types
 are string/object, so the secret list is wrapped in `@secure() appSecrets object` under `items`.
 
@@ -143,8 +143,8 @@ expiry if Azure permits access; it does not require an unexpired trial. Resource
 time and reported costs may arrive later. Scale-to-zero is not equivalent to cleanup or a hard cost cap.
 
 A group-scoped nominal 5-unit budget with actual alerts at 50/80/100 percent was created on 2026-10-13;
-Azure has not returned current spend/currency yet. Confirm billing currency before treating the budget
-as exactly EUR 5. In Cost Management, select the
+The active billing profile was subsequently verified as EUR, confirming the 5-EUR alert amount.
+Azure has not returned current spend yet. In Cost Management, select the
 **demo resource-group scope**, create a monthly budget for **5 in the actual billing currency**, and
 set actual-cost notifications at 50/80/100 percent. If the billing currency is not EUR, do not silently
 equate amounts: confirm a corresponding limit before creation. Confirm the notification address and
@@ -177,3 +177,9 @@ Azure refused new customers in West Europe during identity bootstrap. North Euro
 Bicep now defaults to North Europe; both European regions remain allowed. The demo group metadata
 location remains West Europe, which does not control application resource placement. Full tests
 passed after the change (895 backend, 227 frontend unit, 38 e2e).
+
+The live 2025-07-01 provider rejects literal destination='none'. The official Azure CLI maps its
+logical none option to null. Bicep leaves the optional destination unset (appLogsConfiguration={}).
+[Official CLI mapping](https://github.com/Azure/azure-cli/blob/dev/src/azure-cli/azure/cli/command_modules/containerapp/containerapp_env_decorator.py)
+The corrected live what-if showed exactly two Creates (environment/app) and Ignore for the existing
+managed identity. No extra logs resource, resource deletion or role change was proposed.

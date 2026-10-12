@@ -191,7 +191,7 @@ def test_compiled_template_has_only_bounded_consumption_resources(tmp_path):
     }
     environment = next(r for r in resources if r["type"].endswith("managedEnvironments"))
     app = next(r for r in resources if r["type"].endswith("containerApps"))
-    assert environment["properties"]["appLogsConfiguration"]["destination"] == "none"
+    assert environment["properties"]["appLogsConfiguration"] == {}
     assert environment["properties"]["workloadProfiles"] == [
         {"name": "Consumption", "workloadProfileType": "Consumption"}
     ]

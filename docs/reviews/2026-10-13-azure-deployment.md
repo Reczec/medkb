@@ -136,3 +136,21 @@ Activation retry on 2026-10-13: browser transport remains closed. GitHub auth di
 - North Europe contract observed RED on the old compiled default, then GREEN; full verification:
   895 backend passed/1 skip, ruff clean, 227 frontend unit/38 e2e passed, frontend lint/typecheck/build green.
 - Container Apps provider registration and first image bootstrap in progress; app not deployed yet.
+
+### Live template correction and first image
+
+The actual provider rejected literal appLogsConfiguration.destination='none', although schema/SDK
+wording describes logical 'none'. Official CLI implementation serializes that choice to null.
+Ruling: leave optional destination unset (empty appLogsConfiguration), preserving disabled logging
+without creating Log Analytics; cost if wrong is provider refusal. Compiled regression observed RED
+then GREEN. The corrected live what-if proposes exactly environment/app Create and identity Ignore.
+
+The tested main 3688002 CI succeeded, local container health passed, and its image was published as
+sha256:870ac92c70b93a9aba09cb54f0c72410b375fe19a53e33cd4eaecd87a1d9d8af. User set GHCR visibility
+Public. A fresh anonymous registry token request and exact manifest GET returned HTTP 200; package
+API independently confirmed public visibility. Temporary Docker registry credential was removed.
+
+Azure billing account type MicrosoftCustomerAgreement, active profile currency EUR: budget amount 5
+is confirmed EUR 5. Cost query returned no rows, budget currentSpend null; this is not evidence of a
+final zero invoice. Protected trial remains enabled; no offer upgrade or spending-limit removal.
+Final unset-logging verification: 895 backend passed/1 skipped, ruff clean, frontend lint/typecheck/build green, 227 unit tests and 38 e2e passed. Trial-credit REST endpoints returned 404; latest remaining-credit observation stays dated 2026-10-12 rather than falsely refreshed.
