@@ -5,6 +5,33 @@ import { mockFetch, renderWithProviders, TEST_USERS } from '@/test/utils'
 
 afterEach(() => vi.unstubAllGlobals())
 
+it.each([
+  ['en', 'Your question', 'Ask', 'Semantic + keyword search', 'Source excerpt'],
+  ['de', 'Deine Frage', 'Frage stellen', 'Semantische + Stichwortsuche', 'Quellenauszug'],
+] as const)('shows retrieval and source evidence in %s', async (lang, label, action, mode, disclosure) => {
+  mockFetch({ '/api/ai/ask': { text: 'Evidence [1].', cached: false,
+    retrieval: { mode: 'hybrid', indexed_chunks: 12 },
+    citations: [{ index: 1, id: 5, title: 'Migräne', section: 'symptoms', excerpt: '<script>untrusted</script>' }] } })
+  renderWithProviders(<AssistantPage />, { lang })
+  fireEvent.change(screen.getByLabelText(label), { target: { value: 'Pounding head?' } })
+  fireEvent.click(screen.getByRole('button', { name: action }))
+  expect(await screen.findByText(mode)).toBeInTheDocument()
+  const toggle = screen.getByText(disclosure, { exact: false })
+  expect(toggle.tagName).toBe('SUMMARY')
+  expect(screen.getByText('<script>untrusted</script>')).toBeInTheDocument()
+  expect(document.querySelector('script')).toBeNull()
+})
+
+it('explains keyword fallback without implying semantic success', async () => {
+  mockFetch({ '/api/ai/ask': { text: 'No sources.', cached: false, citations: [],
+    retrieval: { mode: 'lexical', reason: 'index_incomplete', indexed_chunks: 0 } } })
+  renderWithProviders(<AssistantPage />, { lang: 'en' })
+  fireEvent.change(screen.getByLabelText('Your question'), { target: { value: 'Example?' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Ask' }))
+  expect(await screen.findByText('Keyword search')).toBeInTheDocument()
+  expect(screen.getByText('The semantic index is not ready.')).toBeInTheDocument()
+})
+
 it('offers patient explanations and warning signs, with a labelled result', async () => {
   mockFetch({ '/api/ai/documents/5/explain': { text: 'Allgemeine Erklärung.', cached: true, citations: [] } })
   renderWithProviders(<DocumentAI documentId={5} />, { user: TEST_USERS.patient })

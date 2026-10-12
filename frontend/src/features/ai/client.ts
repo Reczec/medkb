@@ -1,12 +1,13 @@
 import { getApiLanguage } from '@/i18n/lang'
 import { translate, type TranslationKey } from '@/i18n/translate'
 import { api, ApiError } from '@/lib/api'
-import type { DocumentCreate } from '@/lib/types'
+import type { DocumentCreate, SectionKey } from '@/lib/types'
 
 export interface AIResult {
   text: string
   cached: boolean
-  citations: { index: number; id: number; title: string }[]
+  citations: { index: number; id: number; title: string; section?: SectionKey | 'content'; excerpt?: string }[]
+  retrieval?: { mode: 'hybrid' | 'lexical'; reason?: 'disabled' | 'index_incomplete' | 'embedding_unavailable'; indexed_chunks: number }
   draft?: DocumentCreate
   classification?: { category: string; confidence: number; reasoning: string }
 }
