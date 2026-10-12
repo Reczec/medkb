@@ -1,0 +1,106 @@
+name: Azure demo
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Exact main commit with successful push CI
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: azure-demo
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: >-
+      github.repository == 'Reczec/medkb' && vars.AZURE_DEMO_ENABLED == 'true' &&
+      ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == 'Reczec/medkb'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sha: ${{ steps.guard.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          persist-credentials: false
+      - id: guard
+        run: python -m scripts.azure.ci_guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  image:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.verify.outputs.sha }}
+          persist-credentials: false
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - id: build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/reczec/medkb:${{ needs.verify.outputs.sha }}
+          labels: org.opencontainers.image.source=https://github.com/Reczec/medkb
+
+  deploy:
+    needs: [verify, image]
+    runs-on: ubuntu-latest
+    environment: azure-demo
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_TRIAL_EXPIRES_ON: ${{ vars.AZURE_TRIAL_EXPIRES_ON }}
+      IMAGE: ghcr.io/reczec/medkb@${{ needs.image.outputs.digest }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.verify.outputs.sha }}
+          persist-credentials: false
+      - name: Verify anonymous GHCR access
+        run: docker manifest inspect "$IMAGE" > /dev/null
+      - uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: az bicep install --version v0.48.1
+      - name: Protected trial, what-if and apply
+        run: |
+          args=(--subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$AZURE_RESOURCE_GROUP"
+                --app "$AZURE_APP_NAME" --image "$IMAGE" --expires-on "$AZURE_TRIAL_EXPIRES_ON")
+          python -m scripts.azure.deploy "${args[@]}"
+          python -m scripts.azure.deploy "${args[@]}" --apply
+      - name: Bounded HTTPS health check
+        run: |
+          host=$(az containerapp show --subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_APP_NAME" --query properties.configuration.ingress.fqdn -o tsv)
+          curl --fail --retry 12 --retry-all-errors --retry-delay 5 --max-time 10 --retry-max-time 180 "https://$host/api/health"
