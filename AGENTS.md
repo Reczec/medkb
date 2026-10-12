@@ -9,6 +9,7 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 - **Stage 3 completion and handoff** (commits, reviews, decisions and remaining verification): [docs/reviews/2026-10-11-stage3-completion.md](docs/reviews/2026-10-11-stage3-completion.md)
 - **Stage 4 completion** (AI contracts, decisions, tests and verification boundaries): [docs/reviews/2026-10-11-stage4-completion.md](docs/reviews/2026-10-11-stage4-completion.md)
 - **Stage 5 deployment record** (live checks, decisions): [docs/reviews/2026-10-12-stage5-deployment.md](docs/reviews/2026-10-12-stage5-deployment.md)
+- **Bilingual release** (English default, German switch; live checks, open warmup): [docs/reviews/2026-10-12-mehrsprachigkeit.md](docs/reviews/2026-10-12-mehrsprachigkeit.md)
 - **Next steps** (after the public launch): [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)
 
 ## Status

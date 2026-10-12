@@ -2,6 +2,10 @@
 
 Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onrender.com. See the [stage 5 record](reviews/2026-10-12-stage5-deployment.md).
 
+## Still to do for the bilingual release
+
+- English AI cache warmup after the next UTC midnight (`python -m app.ai.prewarm --lang en --pause 4` against Neon), then re-record the README GIF and screenshots. See the [record](reviews/2026-10-12-mehrsprachigkeit.md).
+
 ## Still to verify live
 
 1. ~~Cold start~~: measured 22 s after 18 idle minutes (2026-10-12).
