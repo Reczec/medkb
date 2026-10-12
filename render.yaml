@@ -28,9 +28,12 @@ services:
         sync: false
       - key: AI_MODEL
         value: gemini-3.5-flash-lite
-      # Enable manually only after building the persisted index and measuring retrieval.
+      # Public index imported and checked against all current bilingual chunks (2026-10-12).
+      # New deployments need a complete persisted index; otherwise retrieval falls back.
       - key: RAG_ENABLED
-        value: "false"
+        value: "true"
+      - key: RAG_MIN_SIMILARITY
+        value: "0.60"
       - key: ICD_CLIENT_ID
         sync: false
       - key: ICD_CLIENT_SECRET

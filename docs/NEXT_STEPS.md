@@ -11,9 +11,10 @@ Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onr
 Implementation and evaluation are recorded in [the RAG handoff](reviews/2026-10-12-rag-chatbot.md).
 The real isolated benchmark passed all declared retrieval targets (20 questions, 95% Hit@1,
 100% Hit@5, MRR .975); development-selected threshold 0.60 is frozen.
-Before public semantic enablement: build the current index on Neon using the explicit operator
-CLI, verify coverage in both languages, then set `RAG_ENABLED=true` and the development-selected
-threshold in Render. Code deployment keeps RAG disabled. Index rows survive demo resets and
+Public semantic retrieval is enabled after importing the validated, exactly matching index into
+Neon (542 chunks: 271 per language). Render and its Blueprint use `RAG_ENABLED=true` with the
+development-selected threshold 0.60. See the [activation record](reviews/2026-10-12-rag-public-activation.md).
+Index rows survive demo resets and
 unchanged seeds reuse their vectors; edited/restored content requires a resumable rebuild.
 Complete the saved human answer-support rubric; mechanical source indices alone do not prove
 answer quality. The bilingual document-cache warmup remains separate from query embeddings.

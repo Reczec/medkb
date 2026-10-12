@@ -173,3 +173,7 @@ CSV rubric requires supported/total claims and appropriate abstention; this is n
 validation. Dataset fingerprints, failures and raw rankings make the small curated sample auditable.
 The existing English document-cache warmup and refreshed README demo media remain independent
 follow-ups. See [next steps](../NEXT_STEPS.md) and [evaluation commands](../../evaluation/rag/README.md).
+
+Subsequent user-authorized operation: the public Neon index and Render activation are now
+completed in the [public activation record](2026-10-12-rag-public-activation.md). The disabled
+state above describes the original code release, before this separate production operation.
