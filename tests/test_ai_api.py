@@ -126,7 +126,13 @@ def test_grounded_ask_cites_actual_entries_and_role_prompt(patient_client, clien
         json={"question": "Migräne", "history": [{"role": "user", "content": "Hallo"}]},
     )
     assert response.status_code == 200
-    assert response.json()["citations"] == [{"index": 1, "id": doc["id"], "title": "Migräne"}]
+    reference = response.json()["citations"][0]
+    assert {key: reference[key] for key in ("index", "id", "title")} == {
+        "index": 1,
+        "id": doc["id"],
+        "title": "Migräne",
+    }
+    assert reference["excerpt"] == doc["content"]
     assert "B1" in fake.calls[0][0]["content"]
     assert "individual diagnoses" in fake.calls[0][0]["content"]
     assert "144" in fake.calls[0][0]["content"]

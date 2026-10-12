@@ -102,6 +102,7 @@ def normalize(
             marks = [int(n) for n in re.findall(r"\[(\d+)\]", text)]
             if not marks or any(n < 1 or n > len(citations) for n in marks):
                 raise ValueError("Unverifiable citation")
+            result["citations"] = [ref for ref in citations if ref["index"] in set(marks)]
         result["text"] += "\n\n" + message("notice", lang)
         return result
     except (ValueError, TypeError, AttributeError, ValidationError) as exc:
@@ -125,6 +126,7 @@ async def execute(
     stream: bool = False,
     cache_identity: str | None = None,
     lang: Lang = "de",
+    retrieval_metadata: dict | None = None,
 ) -> Any:
     references = citations or []
     cacheable = feature not in ("ask", "draft", "classify")
@@ -144,6 +146,8 @@ async def execute(
 
     def finish(text: str) -> dict:
         result = normalize(feature, text, inputs, references, lang)
+        if retrieval_metadata is not None:
+            result["retrieval"] = retrieval_metadata
         if cacheable:
             store.write_cache(db, key, feature, document_id, settings, result)
         return result

@@ -19,6 +19,8 @@ from app.models import AICache, AIUsage, utcnow
 
 GLOBAL = "global"
 PROMPT_VERSION = "stage4-v3"
+# Only the uncached ask prompt changed. Keep warmed document explanations valid.
+ASK_PROMPT_VERSION = "rag-v1"
 
 
 def day() -> str:
@@ -39,7 +41,7 @@ def cache_key(
 ) -> str:
     """German keeps the key it always had (warmed answers stay valid); English adds the language."""
     identity = [
-        PROMPT_VERSION,
+        ASK_PROMPT_VERSION if feature == "ask" else PROMPT_VERSION,
         feature,
         document_id,
         inputs,
