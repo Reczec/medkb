@@ -65,6 +65,14 @@ a CI setup.
 
 ## Architecture
 
+The assistant also supports **hybrid RAG**: bilingual section chunks, normalized 768-dimensional
+Gemini embeddings, content-aware persisted vectors, cosine relevance gating and reciprocal-rank
+fusion with keyword search. Answers contain server-owned source indices and inspectable excerpts.
+An incomplete index or unavailable embedding provider shows an explicit keyword fallback.
+`RAG_ENABLED=false` remains the release default until indexing and real evaluation pass.
+See the [frozen evaluation and commands](evaluation/rag/README.md) and
+[implementation record](docs/reviews/2026-10-12-rag-chatbot.md) for measured evidence and limits.
+
 ```mermaid
 flowchart LR
     UI["React UI<br/>TypeScript / Vite"] -- "REST /api (JSON, SSE)" --> API["FastAPI app<br/>roles via JWT"]

@@ -1,6 +1,6 @@
 # MedKB RAG chatbot design
 
-Date: 2026-10-12. Status: proposed for user review; implementation not started.
+Date: 2026-10-12. Status: approved by user; implementation complete, operator evaluation/release verification in progress. See the completion record for actual evidence and deviations.
 
 ## Intent and current state
 

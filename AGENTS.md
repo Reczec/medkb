@@ -11,6 +11,7 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 - **Stage 5 deployment record** (live checks, decisions): [docs/reviews/2026-10-12-stage5-deployment.md](docs/reviews/2026-10-12-stage5-deployment.md)
 - **Bilingual release** (English default, German switch; live checks, open warmup): [docs/reviews/2026-10-12-mehrsprachigkeit.md](docs/reviews/2026-10-12-mehrsprachigkeit.md)
 - **Next steps** (after the public launch): [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)
+- **RAG extension** (index, evaluation, release boundaries): [docs/reviews/2026-10-12-rag-chatbot.md](docs/reviews/2026-10-12-rag-chatbot.md), [evaluation commands](evaluation/rag/README.md).
 
 ## Status
 
@@ -37,6 +38,7 @@ Continue a stage by writing its plan next to the stage 1 plan (same structure: f
 - **Deployment.** `main` auto-deploys to Render (Blueprint `render.yaml`); every deploy restarts the service and resets the demo data. Secrets live only in the Render dashboard. Neon uses the direct (non-pooler) endpoint. `node frontend/scripts/record-demo.mjs` re-records the README media against a running instance.
 
 - **AI tests/setup.** No key means HTTP503 `ai_not_configured`; override `get_provider` with a fake or intercept `/api/ai/**` in browser tests. Never call a paid/live model in tests. SSE partial text is provisional until `done`. Bump `app.ai.store.PROMPT_VERSION` after prompt changes. Quotas and cache survive demo reset; successful semantic content snapshots exclude IDs/reset timestamps; canonical source/title seed identity also survives PostgreSQL resets. Explicit CLI: `python -m app.ai.prewarm --limit 1`; trusted warmup still respects the global budget.
+- **RAG.** Default off until an operator-built current index and real evaluation pass. `python -m app.rag.index_cli --pause 4` resumes content-addressed bilingual vectors; it never runs on page load. `python -m app.rag.evaluate --split dev --sweep --output PATH` tunes only on dev; freeze before the held-out test run. Native Gemini model001 currently requires top-level REST `taskType`/`outputDimensionality` to return768; `embedContentConfig` was accepted but ignored for dimensions in the live probe. Reject wrong-sized vectors. Ask prompt version is separate (`ASK_PROMPT_VERSION`); other warmed document caches retain their version. Edited content makes index coverage incomplete and visibly falls back to keywords; rebuilding is explicit. Never use fake vectors as semantic-quality evidence.
 
 - **e2e** needs a fresh `npm run build`, and `PYTHON` pointing at the venv's Python. From `frontend/` in PowerShell: `$env:PYTHON = (Resolve-Path ../.venv/Scripts/python.exe).Path; npm run e2e`. Use an absolute path: Playwright launches from the repository root. It starts its own uvicorn on port 8765 with a throwaway seeded SQLite DB.
 - **Sources in tests.** The autouse respx fixture `network` blocks real outbound HTTP in backend tests; register mock responses there. Browser tests intercept every `/api/sources/**` request with `page.route`, including dashboard studies. Keep these mocks when adding tests.

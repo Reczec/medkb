@@ -39,7 +39,8 @@ def test_native_embedding_batch_contract(network, test_settings, task, expected)
 
     payload = json.loads(route.calls[0].request.content)
     request = payload["requests"][0]
-    assert request["config"] == {"taskType": expected, "outputDimensionality": 768}
+    assert request["taskType"] == expected
+    assert request["outputDimensionality"] == 768
     assert request["content"]["parts"][0]["text"] == "safe example"
     assert route.call_count == 1
 

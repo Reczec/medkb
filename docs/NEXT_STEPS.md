@@ -6,6 +6,16 @@ Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onr
 
 - English AI cache warmup after the next UTC midnight (`python -m app.ai.prewarm --lang en --pause 4` against Neon), then re-record the README GIF and screenshots. See the [record](reviews/2026-10-12-mehrsprachigkeit.md).
 
+## RAG extension
+
+Implementation and evaluation are recorded in [the RAG handoff](reviews/2026-10-12-rag-chatbot.md).
+Before public semantic enablement: build the current index on Neon using the explicit operator
+CLI, verify coverage in both languages, then set `RAG_ENABLED=true` and the development-selected
+threshold in Render. Code deployment keeps RAG disabled. Index rows survive demo resets and
+unchanged seeds reuse their vectors; edited/restored content requires a resumable rebuild.
+Complete the saved human answer-support rubric; mechanical source indices alone do not prove
+answer quality. The bilingual document-cache warmup remains separate from query embeddings.
+
 ## Still to verify live
 
 1. ~~Cold start~~: measured 22 s after 18 idle minutes (2026-10-12).
