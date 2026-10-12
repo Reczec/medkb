@@ -1,6 +1,6 @@
 # MedKB semantic RAG chatbot implementation plan
 
-> **For agentic workers:** Use superpowers:executing-plans to implement task-by-task in this session; one fresh whole-branch review after implementation. User approved and tasks1–4 completed; task5 implementation is green, operator measurements and final review in progress. The completion record is the authoritative execution evidence.
+> **For agentic workers:** Use superpowers:executing-plans to implement task-by-task in this session; one fresh whole-branch review after implementation. User approved; all five tasks and the grouped final-review fixes are complete. Real held-out targets passed. The completion record is the authoritative execution evidence; public semantic enablement still requires the production index.
 
 **Goal:** Extend the bilingual MedKB assistant with measured semantic retrieval and excerpt-grounded answers.
 

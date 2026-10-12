@@ -69,7 +69,12 @@ The assistant also supports **hybrid RAG**: bilingual section chunks, normalized
 Gemini embeddings, content-aware persisted vectors, cosine relevance gating and reciprocal-rank
 fusion with keyword search. Answers contain server-owned source indices and inspectable excerpts.
 An incomplete index or unavailable embedding provider shows an explicit keyword fallback.
-`RAG_ENABLED=false` remains the release default until indexing and real evaluation pass.
+On 20 frozen bilingual questions, real Gemini retrieval achieved 95% Hit@1 versus 50% for the
+keyword baseline (both 100% Hit@5), with MRR@5 .975 versus .675. Three prespecified synonym cases
+improved rank. All 20 generated answers passed citation-index validation; human factual-support
+review remains pending. This small curated benchmark is not clinical validation.
+`RAG_ENABLED=false` remains the release default; public semantic enablement requires a current
+Neon index and explicit Render configuration. The real isolated evaluation has passed.
 See the [frozen evaluation and commands](evaluation/rag/README.md) and
 [implementation record](docs/reviews/2026-10-12-rag-chatbot.md) for measured evidence and limits.
 
