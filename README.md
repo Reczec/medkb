@@ -17,7 +17,15 @@ The free hosting sleeps after 15 minutes without visitors; the first request the
 FastAPI + SQLAlchemy (SQLite or PostgreSQL), React 19 + TypeScript (Vite, Tailwind CSS,
 shadcn/ui, Motion, Recharts, TanStack Query). The UI is in English with a one-click switch to German (EN | DE), code and API in English.
 
+## Azure cloud extension
+
+Azure portfolio extension: Bicep infrastructure, guarded OIDC/GHCR delivery, health verification and
+rollback/cleanup tools are prepared for a temporary Container Apps Consumption demo. **Azure activation
+is pending** account/cost-protection and isolated-database checks; Render remains the public demo.
+See the [operator guide](docs/AZURE.md) and [implementation record](docs/reviews/2026-10-13-azure-deployment.md).
+
 ## Background
+
 
 This project re-implements my part of my diploma thesis at TGM Wien (HTL, Wirtschaftsingenieurwesen –
 Betriebsinformatik, 2026). The thesis was a team project on AI-assisted systems in medicine; my chapter

@@ -27,7 +27,7 @@ prominently rather than claim permanent free hosting. No automated follow-up sch
 Approval clarification, 2026-10-13: the user explicitly does not authorize consuming the whole trial
 credit. The implementation plan proposes EUR 5 as the project's operating limit, with alerts at
 50/80/100 percent and manual shutdown/cleanup at the limit or before trial expiry. This small limit
-is subject to plan review. Billing delays mean it cannot guarantee a EUR 5 maximum; if that guarantee
+was approved with the Native implementation plan on 2026-10-13. Billing delays mean it cannot guarantee a EUR 5 maximum; if that guarantee
 is required, do not provision. The enforceable trial spending protection remains a separate prerequisite.
 
 ## Selected architecture and alternatives
@@ -157,6 +157,6 @@ boundaries and how to reproduce/clean up. Do not change CV claims to imply a per
 - [Azure spending limit](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit)
 - [Avoid charges with a free account](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/avoid-charges-free-account)
 
-Next handoff: user reviews this written design, then write the implementation plan and obtain its
-execution-method approval before implementation. Live provisioning additionally requires verified
+Handoff status: written design and Native implementation plan approved 2026-10-13. Local implementation
+is proceeding. Live provisioning additionally requires verified
 cost protection and confirmation for scoped identity grants/secret transmission where applicable.

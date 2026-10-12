@@ -26,6 +26,37 @@ def validate_target(
         raise ValueError("Resource group must be a named medkb-azure-demo-* group")
 
 
+def validate_rag_readiness(coverage: dict[str, tuple[int, int]]) -> None:
+    if any(coverage.get(lang) != (271, 271) for lang in ("de", "en")):
+        raise ValueError("Complete current bilingual index (271 chunks per language) required")
+
+
+def rag_coverage(db, settings) -> dict[str, tuple[int, int]]:
+    from app.rag.index import corpus, vectors
+
+    result = {}
+    for lang in ("de", "en"):
+        current = corpus(db, settings, (lang,))
+        result[lang] = (len({chunk.key for chunk in current}), len(vectors(db, current)))
+    return result
+
+
+def verify_rag_database(database_url: str) -> None:
+    from sqlalchemy import create_engine, text
+    from sqlalchemy.orm import Session
+
+    from app.config import Settings
+    from app.database import normalize_url
+
+    engine = create_engine(normalize_url(database_url), connect_args={"connect_timeout": 10})
+    try:
+        with Session(engine) as db:
+            db.execute(text("SET TRANSACTION READ ONLY"))
+            validate_rag_readiness(rag_coverage(db, Settings(_env_file=None)))
+    finally:
+        engine.dispose()
+
+
 def az_json(arguments: list[str], *, timeout_seconds: float = 600) -> dict | list:
     """Capture CLI output. Never expose raw stderr: it can contain app credentials."""
     executable = shutil.which("az")
