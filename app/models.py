@@ -86,6 +86,16 @@ class AICache(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class Embedding(Base):
+    """Content-addressed retrieval vectors; retained across resets, never tied to old IDs."""
+
+    __tablename__ = "embeddings"
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    signature: Mapped[str] = mapped_column(String(64), index=True)
+    vector: Mapped[list[float]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class AIUsage(Base):
     """UTC-day reservations, keyed by HMAC client identity (or the global counter)."""
 
