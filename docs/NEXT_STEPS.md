@@ -9,6 +9,8 @@ Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onr
 ## RAG extension
 
 Implementation and evaluation are recorded in [the RAG handoff](reviews/2026-10-12-rag-chatbot.md).
+The real isolated benchmark passed all declared retrieval targets (20 questions, 95% Hit@1,
+100% Hit@5, MRR .975); development-selected threshold 0.60 is frozen.
 Before public semantic enablement: build the current index on Neon using the explicit operator
 CLI, verify coverage in both languages, then set `RAG_ENABLED=true` and the development-selected
 threshold in Render. Code deployment keeps RAG disabled. Index rows survive demo resets and

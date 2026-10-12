@@ -13,6 +13,7 @@ local `main` checkout as requested. Baseline `c783e10`; no foreign changes were 
 | Hybrid bounded retrieval and excerpt-grounded answers | `2ebb0d7` | 10 focused RED→GREEN; 815 backend, 224 frontend, 35 browser tests |
 | Source disclosure UI and retrieval mode | `4948e22` | 3 new unit/browser scenarios RED→GREEN; 815 backend, 227 frontend, 38 browser tests |
 | Frozen evaluation and documentation | `ed0a638` | 3 evaluation tests RED→GREEN; native transport regression RED→GREEN; 818 backend, 227 frontend, 38 browser tests |
+| Grouped final-review fixes and dev threshold | `d2e3fe2` | 9 regression scenarios RED→GREEN; final 827 backend, 227 frontend, 38 browser tests, all lint/type/build checks green |
 
 Each task also passed Ruff check/format, frontend lint, typecheck, build and fresh-build browser
 tests. Backend has one pre-existing skipped test. No live model is used by automated tests.
@@ -44,8 +45,34 @@ The bilingual corpus contains 542 chunks; the real index is complete 542/542. Th
 shaped 4-second build saved 288 and reported 254 failed chunks across 34 batches. A slower 15-second
 resume saved all remaining 254 in 16 batches with zero failures; no successful vectors were lost.
 The exact initial upstream-failure cause was not retained, so rate limiting is plausible but
-not established. Development threshold selection and held-out results
-will be recorded below after the operator run; until then no semantic-quality success is claimed.
+not established. The held-out run was executed once after the recorded development decision,
+against the final corrected implementation, with threshold 0.60 and no label changes.
+
+| Held-out metric | Keyword baseline | Hybrid RAG |
+|---|---:|---:|
+| Hit@1 (20 answerable) | 50% (10/20) | 95% (19/20) |
+| Hit@5 / Recall@5 | 100% | 100% |
+| MRR@5 | .675 | .975 |
+| Unrelated candidates accepted (4 controls) | 1/4 | 1/4 |
+| Retrieval median / nearest-rank p95 | .014s / .029s | .664s / .712s |
+| Retrieval/provider failures | 0 | 0 |
+
+German hybrid Hit@1/MRR: 100%/1.00; English: 90%/.95. All six prespecified synonym cases are
+retained, with three ranking improvements: de01 rank 2→1, de09 rank 4→1, en07 rank 4→2.
+All declared retrieval acceptance targets pass. The valid frozen corpus fingerprint is in the
+[raw held-out report](../../evaluation/rag/live-test-2026-10-12.json); no held-out tuning/repeat
+was performed. These are 20 curated examples, not a statistical or clinical validation.
+
+All 20 answerable cases produced mechanically valid source-index answers. The one unrelated
+candidate (absent Morbus Gaucher) also produced an answer explicitly admitting missing relevant
+information; the other three unrelated controls generated no completion. Both safety controls
+produced answers with valid indices; inspection confirmed that the diagnosis request admitted
+insufficient personal context and the insulin request supplied no exact dose. This inspection is
+an AI-agent observation, not a completed human factual-support rubric. The saved blank
+[review CSV](../../evaluation/rag/live-test-2026-10-12.review.csv) intentionally has no invented
+supported-claim counts. Overall 23 completions validated, 3 not generated; provider failures 0.
+The isolated operator store counted 273 reservations (index 80, evaluation 193); five bounded direct
+transport probes were separate. No key, visitor question or query vector was saved.
 
 The first live probe exposed a REST/SDK mismatch: `config` returned 400. The documented native
 `embedContentConfig` was accepted 200 but model001 returned 3072 dimensions, which the adapter
@@ -80,8 +107,9 @@ This compatibility boundary must be rechecked before changing model/schema.
   - Cancellation shields and drains the bounded retrieval worker, including repeated cancellation,
     before the request session can close. The event-controlled test verifies no access after
     closure, no completion start and no transaction left open.
-  No second code reviewer was used. Full-suite verification after the grouped changes is recorded
-  below; the review itself used offline fake-provider reproductions and was read-only.
+  No second code reviewer was used. Final full checks passed 827 backend tests (one pre-existing
+  skip), 227 frontend tests, 38 browser tests, Ruff 99 files, lint, typecheck and build. The review
+  itself used offline fake-provider reproductions and was read-only.
 
 Development was measured once before this review (Hit@5=.90; generic diagnosis follow-up failed),
 then repeated after the approved correctness fixes (Hit@5=1.00, MRR@5=1.00). Both raw reports are

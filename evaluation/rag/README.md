@@ -1,5 +1,12 @@
 # Frozen MedKB RAG evaluation
 
+Recorded live result: [held-out report](live-test-2026-10-12.json),
+[development grid](live-dev-2026-10-12.json), [threshold decision](threshold-decision.json),
+[pre-review development diagnostic](live-dev-initial-2026-10-12.json), and the intentionally blank
+[human review rubric](live-test-2026-10-12.review.csv). Hybrid Hit@1=95%, Hit@5=100%, MRR@5=.975;
+lexical baseline 50%/100%/.675. All declared retrieval targets passed; source-index validation
+succeeded for 20 answerable completions. Human factual-support scoring remains pending.
+
 `questions.json` was frozen before live embedding measurements on 2026-10-12: ten development
 questions, two separate development controls, twenty held-out answerable questions (ten German,
 ten English), four unrelated held-out controls and two safety controls. Labels use canonical

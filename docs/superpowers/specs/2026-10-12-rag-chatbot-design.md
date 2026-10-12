@@ -1,6 +1,6 @@
 # MedKB RAG chatbot design
 
-Date: 2026-10-12. Status: approved by user; implementation complete, operator evaluation/release verification in progress. See the completion record for actual evidence and deviations.
+Date: 2026-10-12. Status: approved by user; implementation and real held-out retrieval evaluation complete. Code release verification follows; public semantic enablement requires the Neon index. See the completion record for actual evidence and deviations.
 
 ## Intent and current state
 
