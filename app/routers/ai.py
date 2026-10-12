@@ -7,7 +7,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.ai import retrieval, service, store
+from app.ai import service, store
 from app.ai.provider import AIProvider, get_provider
 from app.ai.schemas import AskRequest, DraftRequest, StudyRequest
 from app.auth import CurrentUser, require_role
@@ -15,6 +15,7 @@ from app.config import Settings, get_settings
 from app.database import get_db
 from app.i18n import RequestLang, message
 from app.models import Document
+from app.rag import retrieval as rag
 from app.schemas import ClassifyRequest
 from app.sources.cache import cached
 from app.sources.http import http_client
@@ -91,17 +92,16 @@ async def ask(
     lang: RequestLang,
     stream: bool = False,
 ):
-    documents = retrieval.find(db, body)
-    english = lang == "en"
-    references = [
-        {"index": i, "id": d.id, "title": (d.title_en if english and d.title_en else d.title)}
-        for i, d in enumerate(documents, 1)
-    ]
-    if not documents:
+    found = await asyncio.to_thread(
+        rag.retrieve, db, body, lang, settings, None, identity(request, settings)
+    )
+    references = found.citations
+    if not found.entries:
         result = {
             "text": message("ai_no_entries", lang) + " " + message("notice", lang),
             "cached": False,
             "citations": [],
+            "retrieval": found.metadata,
         }
         if stream:
 
@@ -114,10 +114,7 @@ async def ask(
         return result
     inputs = {
         **body.model_dump(),
-        "entries": [
-            {**ref, "content": doc.content_en if english and doc.content_en else doc.content}
-            for ref, doc in zip(references, documents, strict=True)
-        ],
+        "entries": found.entries,
     }
     return await service.execute(
         db,
@@ -128,6 +125,7 @@ async def ask(
         inputs,
         user.role,
         citations=references,
+        retrieval_metadata=found.metadata,
         stream=stream,
         lang=lang,
     )

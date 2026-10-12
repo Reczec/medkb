@@ -45,7 +45,8 @@ def instructions(feature: str, lang: Lang) -> str:
             "Summarize only the abstract. State the limits of the study; do not invent results."
         ),
         "ask": (
-            "Answer only from the entries found. Support statements with [1], [2] etc. Use only "
+            "Answer only from the exact source excerpts found. "
+            "Support statements with [1], [2] etc. Use only "
             "existing source indices. If the context is not sufficient, say so explicitly and "
             "support this limit with the most relevant entry."
         ),
