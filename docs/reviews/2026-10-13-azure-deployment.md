@@ -1,9 +1,13 @@
-# Azure implementation and pending activation
+# Azure deployment and remaining verification
 
-Date: 2026-10-13. Status: local implementation reviewed and verified; live activation pending; **Azure is not deployed**.
+Date: 2026-10-13. Status: **manual Azure deployment is live and application checks passed**.
+GitHub OIDC delivery, compatible rollback/restoration and cold wake are verified.
+Cost reporting remains delayed; the latest remaining-credit balance is still the dated portal observation.
+Live demo: https://medkb-azure-demo.whiterock-973337bb.northeurope.azurecontainerapps.io
 Approved spec/plan: [design](../superpowers/specs/2026-10-12-azure-cloud-design.md),
 [implementation plan](../superpowers/plans/2026-10-13-azure-cloud.md).
 Operator commands and constraints: [AZURE.md](../AZURE.md).
+Full task ledger and implementation rulings: [execution ledger](2026-10-13-azure-execution-ledger.md).
 
 ## Delivered locally
 
@@ -40,7 +44,7 @@ ignored plan scratch. Official GitHub action SHAs were resolved from vendor tags
    deploys preserve RAG and recheck actual current corpus/signature/vectors; errors block deployment.
    Cost if wrong: activation is refused; Render is never intentionally used as the Azure database.
 
-## Live blockers and evidence boundaries
+## Historical blockers and evidence boundaries (superseded by live records below)
 
 - Azure CLI device-code login denied with code **530035**. Normal browser login was then started;
   normal login succeeded on 2026-10-13. Fresh ARM verified Enabled, FreeTrial and spendingLimit=On.
@@ -56,24 +60,84 @@ ignored plan scratch. Official GitHub action SHAs were resolved from vendor tags
   Budget scope/currency/address/support and delayed billing evidence remain pending. Personal cash
   charges, pay-as-you-go upgrades and removing spending limits are not authorized.
 
-## Activation checklist (not yet satisfied)
+## Activation checklist (partially satisfied)
 
 - [x] Complete normal Azure CLI login and run fresh protected-trial guard (2026-10-13).
 - [ ] Refresh remaining credit/offer/expiry observation.
-- [ ] Verify free Neon capacity and Render database separation; create isolated `medkb_azure`/credential.
-- [ ] Confirm exact resource-group-scoped identity grant/federation and Azure secret destination.
-- [ ] Create marked demo group, identity, approved role grant, federation and GitHub environment variables.
-- [ ] Configure EUR 5 alerts at 50/80/100 percent where supported; otherwise record manual-check fallback.
-- [ ] Publish exact tested main image and verify anonymous public digest access.
-- [ ] Bootstrap safe app secrets, apply Bicep, inspect no unintended what-if drift and ready digest.
-- [ ] Seed 47 entries; verify roles, English/German, prototype notices and deep-link reload.
-- [ ] Build/validate 271+271 current vectors; enable RAG, prove cited JSON/SSE and reset persistence.
-- [ ] Prove live rightmost-IP quota behavior; measure cold/warm latency without guaranteed claims.
-- [ ] Exercise compatible known-good rollback and restore current healthy digest.
+- [x] Verify free Neon capacity and Render database separation; create isolated `medkb_azure`/credential.
+- [x] Confirm exact resource-group-scoped identity grant/federation and Azure secret destination.
+- [x] Create marked demo group, identity, approved role grant, federation and GitHub environment variables.
+- [x] Configure EUR 5 alerts at 50/80/100 percent; billing profile currency verified EUR.
+- [x] Publish exact tested main image and verify anonymous public digest access.
+- [x] Bootstrap safe app secrets, apply Bicep, inspect what-if property paths and ready digest (provider noise below).
+- [x] Seed 47 entries; verify all roles, bilingual entry, patient write denial and HTML deep links.
+- [x] Build/validate 271+271 current vectors; enable RAG, prove cited JSON/SSE and reset persistence.
+- [x] Prove live rightmost-IP quota behavior; measure cold/warm latency without guaranteed claims.
+- [x] Exercise compatible known-good rollback and restore current healthy digest.
 - [ ] Timestamp actual credit/cost observations; inspect graph/replicas and clean up before 2026-10-20.
 
-The permanent public demo remains [Render](https://medkb.onrender.com). No Azure live URL or
-completed-deployment CV claim is justified until this checklist has real evidence.
+The permanent public demo remains [Render](https://medkb.onrender.com). Manual Azure deployment is
+demonstrated, including protected OIDC delivery and compatible image rollback. It is temporary hosting.
+
+## Live application verification, 2026-10-13
+
+The ready revision serves bootstrap image digest
+`sha256:870ac92c70b93a9aba09cb54f0c72410b375fe19a53e33cd4eaecd87a1d9d8af`.
+Consumption configuration is 0..1 replicas, 0.5 vCPU / 1 GiB, Single revision, 300-second cooldown,
+with no Log Analytics destination. HTTPS returned 200. Warm health requests took 0.140 and 0.032
+seconds; these are not cold-start measurements.
+
+The isolated Neon database contains 47 entries and 271 valid current chunks per language. All
+three demo roles authenticate; patients cannot write. German JSON and English SSE RAG answers
+returned hybrid retrieval and one citation each. Different spoofed IP prefixes produced the same
+quota identity. A real database demo reset preserved both language indexes, AI quota and the cached
+document explanation; a subsequent explanation was served from cache. Chat answers intentionally
+are not cached: the initial operator script incorrectly expected this, then was corrected without
+changing product code. Six small live LLM answers were used across both runs; automated tests use fakes.
+
+GitHub run [38322206724](https://github.com/Reczec/medkb/actions/runs/38322206724) passed its trusted
+SHA verification, but image publication failed with `permission_denied: write_package`.
+Public package visibility permits anonymous pulls; it does not grant Actions write access. The user
+confirmed adding repository Actions access and failed jobs were rerun. OIDC deployment is not yet proven.
+The repository opt-in variable is now enabled; the environment requires Reczec's deployment review.
+
+After CLI replica inventory confirmed zero replicas, one health request returned 200 in 22.937
+seconds; the next returned 200 in 0.157 seconds. This is one cold-wake observation, not a latency SLA.
+The concurrently approved OIDC job failed before any deployment with AADSTS700213: its actual
+subject includes immutable owner/repository IDs. The existing federation was updated to match
+`repo:OWNER@OWNER-ID/REPO@REPO-ID:environment:azure-demo`, keeping the same repository, environment,
+issuer, audience and resource-group-only role. No wildcard or additional grant was introduced.
+This matches [GitHub's immutable subject documentation](https://docs.github.com/en/actions/reference/security/oidc).
+The failed deployment job was rerun and **all three jobs succeeded**, including OIDC login,
+guarded what-if/apply, exact ready digest and HTTPS health verification.
+
+## Rollback, drift and final state
+
+CI image digest `sha256:7575fc0f92edb82bf4f5eab3fc88f696f59ee61334be8f5cb2fdfa82e35ce104`
+was deployed from tested main commit `7d166746429ec3f319b077164c0f9090ea7dc00e`.
+The operator then deployed the healthy bootstrap digest `870ac92c…` and verified its ready revision
+and HTTPS health, before restoring the CI digest and repeating both checks. Final revision
+`medkb-azure-demo--0000003` is ready, latest and provisioning Succeeded. Both images contain the same
+application/schema; their intervening changes are infrastructure/documentation. This image rollback
+does not restore database state. RAG remains enabled and its current coverage is checked before every apply.
+
+Final resource inventory contains only the user-assigned identity, Consumption environment and app.
+No Azure registry, database, storage or paid logging workspace was created. A repeat what-if reports
+Modify for environment/app and Ignore for identity; it is **not a zero-diff preview**. Safe property-path
+inspection shows service-populated ingress/scale/environment defaults, secure secret comparison and
+probe-array ordering. Actual Startup/Readiness settings match Bicep after sorting by type. No additional
+resource creation or deletion was proposed. Secret values are captured/preserved without logging them.
+One preview failed while delivery was in progress; the final non-mutating preview completed successfully.
+
+The final 2026-10-13 resource-group ActualCost query returned no rows. The EUR 5 budget exists with
+50/80/100 percent notifications; current spend is not yet available. This is billing delay, not proof
+of zero cost. Credit REST lookups returned 404, so EUR 175.99 remains only the 2026-10-12 portal
+observation. Fresh protected-trial policy remains On. Check actual remaining credit/costs manually
+in the portal and remove the demo resources before 2026-10-20; alerts do not enforce a hard cap.
+
+Final checks rerun locally: backend with the explicit Bicep compiler, ruff check/format, actionlint,
+frontend lint/typecheck, 227 unit tests, production build and 38 browser tests. One existing backend
+skip is unrelated to Bicep. No live model calls occur in automated tests.
 
 ## Independent review and single fix pass
 
@@ -100,8 +164,9 @@ loading; its actual pre-fix failure then confirmed the retained Everyone grant. 
 Reviewer declined live provisioning/OIDC/package/rollback/alerts, Neon capacity and effective identity,
 real ingress spoofing, live RAG citations/reset persistence, billing and latency. Ruling for each:
 retain these as unfulfilled operator acceptance checks, because mocks cannot establish platform facts;
-cost if wrong is an unsupported deployment claim. Task 5 remains incomplete and the Azure workflow
-remains disabled. No second review was requested; fixes are verified by RED-to-GREEN and full suites.
+cost if wrong is an unsupported deployment claim. At review time Task 5 was incomplete and the Azure
+workflow disabled. The later live results above supersede that state. No second review was requested;
+fixes are verified by RED-to-GREEN and full suites.
 Final verification after the fix pass: 895 backend passed, 1 skipped, ruff check/format and actionlint
 clean; frontend lint/typecheck/build green, 227 unit tests and 38 e2e passed. Actual Bicep compilation
 was enabled in the backend run. GitHub CLI returned HTTP 401 Bad credentials during a read-only
@@ -113,7 +178,7 @@ GitHub settings were changed. These failures do not affect the successful Azure 
 
 Activation retry on 2026-10-13: browser transport remains closed. GitHub auth diagnosis confirmed an invalid GITHUB_TOKEN override and no stored CLI login without it. Normal gh web login was started with the override removed only in that child process; user confirmation remains pending. No Azure resources or GitHub grants created.
 
-## Current live bootstrap (supersedes the initial blockers above)
+## Earlier bootstrap checkpoint (superseded by final state above)
 
 - GitHub workflow/package scopes were explicitly approved and confirmed; main through 3f39a39 pushed,
   all six CI jobs succeeded. Subsequent region commit requires its own successful CI before publication.
