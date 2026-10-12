@@ -1,6 +1,6 @@
 # MedKB on Azure — design
 
-Date: 2026-10-12. Status: written design awaiting user review; no Azure resources created.
+Date: 2026-10-12. Status: approved by the user on 2026-10-13; no Azure resources created.
 
 ## Intent and constraints
 
@@ -23,6 +23,12 @@ Never upgrade to pay-as-you-go, remove the spending limit, enable billing for th
 new financial terms under this authorization. Azure free allowances are not a promise of zero consumption.
 Budget alerts are notifications, not hard caps. Credit expiry can disable the Azure demo; document this
 prominently rather than claim permanent free hosting. No automated follow-up scheduler is created.
+
+Approval clarification, 2026-10-13: the user explicitly does not authorize consuming the whole trial
+credit. The implementation plan proposes EUR 5 as the project's operating limit, with alerts at
+50/80/100 percent and manual shutdown/cleanup at the limit or before trial expiry. This small limit
+is subject to plan review. Billing delays mean it cannot guarantee a EUR 5 maximum; if that guarantee
+is required, do not provision. The enforceable trial spending protection remains a separate prerequisite.
 
 ## Selected architecture and alternatives
 
