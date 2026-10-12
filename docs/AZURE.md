@@ -69,3 +69,31 @@ are pending. Never publish account identifiers, emails or credentials in example
 Primary references: [spending limits](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit),
 [subscription policies](https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/get),
 [Container Apps billing](https://learn.microsoft.com/en-us/azure/container-apps/billing).
+
+## GitHub OIDC bootstrap and delivery gate
+
+The Azure workflow is **disabled by default**. Set repository variable `AZURE_DEMO_ENABLED=true`
+only after manual bootstrap, cost protection, isolated database and package visibility checks succeed.
+The first image can be built/published manually from a successful main CI commit; the regular workflow
+does not create its own permissions or application secrets. GHCR packages are often initially private:
+verify the MedKB package visibility in GitHub. Anonymous manifest inspection must succeed before Azure.
+
+Create protected environment `azure-demo` restricted to main, with a required reviewer where the
+repository plan supports it. Exact federation: issuer `https://token.actions.githubusercontent.com`,
+subject `repo:Reczec/medkb:environment:azure-demo`, audience `api://AzureADTokenExchange`.
+Create a dedicated user-assigned managed identity `medkb-azure-demo-deployer` in the demo group;
+assign Contributor **only** to `/subscriptions/YOUR_SUBSCRIPTION/resourceGroups/medkb-azure-demo-portfolio`.
+Confirm that exact access grant before executing bootstrap; do not grant subscription-wide access.
+The deploying identity cannot grant itself roles. No long-lived Azure password is stored.
+
+Environment variables: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`,
+`AZURE_RESOURCE_GROUP`, `AZURE_APP_NAME`, `AZURE_TRIAL_EXPIRES_ON`. Their actual values stay outside git.
+Routine deployment reads existing Azure app secrets with its resource-group-scoped identity.
+
+Successful **push** CI for the exact main SHA is required, including backend SQLite/PostgreSQL,
+frontend/e2e, Docker and the added Azure-contract job. PR/fork/failed/in-progress events are refused.
+Manual dispatch accepts only a full 40-character SHA with successful push CI for the same repository
+and main branch. Validation runs before package-write or id-token jobs. The published image is pinned
+by digest. The deploy job alone has id-token permission and the image job alone has packages-write.
+Workflow concurrency prevents overlapping deployment runs. Official action SHAs were resolved from
+their published tags on 2026-10-13; Bicep/actionlint versions are 0.48.1/1.7.12.
