@@ -73,8 +73,9 @@ On 20 frozen bilingual questions, real Gemini retrieval achieved 95% Hit@1 versu
 keyword baseline (both 100% Hit@5), with MRR@5 .975 versus .675. Three prespecified synonym cases
 improved rank. All 20 generated answers passed citation-index validation; human factual-support
 review remains pending. This small curated benchmark is not clinical validation.
-`RAG_ENABLED=false` remains the release default; public semantic enablement requires a current
-Neon index and explicit Render configuration. The real isolated evaluation has passed.
+The public demo enables semantic retrieval with a complete Neon index (542 bilingual chunks)
+and threshold 0.60; local settings remain opt-in. See the
+[public activation record](docs/reviews/2026-10-12-rag-public-activation.md).
 See the [frozen evaluation and commands](evaluation/rag/README.md) and
 [implementation record](docs/reviews/2026-10-12-rag-chatbot.md) for measured evidence and limits.
 

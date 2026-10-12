@@ -11,6 +11,7 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 - **Stage 5 deployment record** (live checks, decisions): [docs/reviews/2026-10-12-stage5-deployment.md](docs/reviews/2026-10-12-stage5-deployment.md)
 - **Bilingual release** (English default, German switch; live checks, open warmup): [docs/reviews/2026-10-12-mehrsprachigkeit.md](docs/reviews/2026-10-12-mehrsprachigkeit.md)
 - **Next steps** (after the public launch): [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)
+- **Public RAG activation** (Neon index, Render switch, live JSON/SSE checks): [docs/reviews/2026-10-12-rag-public-activation.md](docs/reviews/2026-10-12-rag-public-activation.md)
 - **RAG extension** (index, evaluation, release boundaries): [docs/reviews/2026-10-12-rag-chatbot.md](docs/reviews/2026-10-12-rag-chatbot.md), [evaluation commands](evaluation/rag/README.md).
 
 ## Status
