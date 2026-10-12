@@ -34,8 +34,6 @@ Never connect Azure to Render's database: demo resets would interfere. Paid capa
 GitHub identity grants and application-secret transmission require confirmation of their exact scope
 and destination before those operations; no grant is made by the preflight.
 
-## Evidence boundaries
-
 ## Infrastructure and secure parameter ownership
 
 `infra/azure/main.bicep` uses Microsoft.App API 2025-07-01, a Consumption-only environment with
@@ -61,6 +59,8 @@ blocks deployment. RAG defaults off; enabling it requires separately verified cu
 Tooling observed 2026-10-13: official Azure CLI ZIP 2.91.0 and Bicep 0.48.1, local ignored scratch only.
 Azure CLI device-code login was denied with error 530035; no security policy was weakened. Account
 protection cannot yet be claimed from CLI evidence. Neon requires sign-in before free-capacity checks.
+
+## Evidence boundaries
 
 On 2026-10-12 the portal showed an active trial with EUR 175.99 remaining and expiry 2026-10-20.
 This is a dated observation. Current trial protection, isolated Neon capacity and live Azure checks
@@ -97,3 +97,34 @@ and main branch. Validation runs before package-write or id-token jobs. The publ
 by digest. The deploy job alone has id-token permission and the image job alone has packages-write.
 Workflow concurrency prevents overlapping deployment runs. Official action SHAs were resolved from
 their published tags on 2026-10-13; Bicep/actionlint versions are 0.48.1/1.7.12.
+
+## Health, rollback and cleanup
+
+After apply, the helper waits at most 180 seconds for matching latest/ready revision names and the
+desired digest, then at most 180 seconds for HTTPS `/api/health` to return `{"status":"ok"}`. Each
+revision CLI request is limited to the remaining poll budget. A CLI success alone is not live proof.
+Standalone: `python -m scripts.azure.smoke https://YOUR_APP.azurecontainerapps.io`.
+
+Record the last healthy digest and review database compatibility before rollback. Use the same
+deployment command with that digest and `--apply`; it runs the same trial guard and health verification.
+This does not restore database contents. Record rollback evidence and return to the chosen current digest.
+
+Before trial expiry (2026-10-20) or at the EUR 5 operating target, inspect costs then preview cleanup:
+
+```powershell
+python -m scripts.azure.cleanup --subscription YOUR_SUBSCRIPTION --expected-subscription YOUR_SUBSCRIPTION --resource-group medkb-azure-demo-portfolio --expected-resource-group medkb-azure-demo-portfolio
+```
+
+Deletion additionally requires `--delete` and typing the exact group name at the prompt. The group
+must bear tag `project=medkb-azure-demo`; bootstrap must set it. Review every listed resource before
+confirming. Only this group is deleted; Neon/Render are not touched. Cleanup still works after trial
+expiry if Azure permits access; it does not require an unexpired trial. Resource deletion may take
+time and reported costs may arrive later. Scale-to-zero is not equivalent to cleanup or a hard cost cap.
+
+Budget setup is pending live authentication/resource-group creation. In Cost Management, select the
+**demo resource-group scope**, create a monthly budget for **5 in the actual billing currency**, and
+set actual-cost notifications at 50/80/100 percent. If the billing currency is not EUR, do not silently
+equate amounts: confirm a corresponding limit before creation. Confirm the notification address and
+Azure destination before entering it. Record the scope/currency/thresholds and whether the trial
+offer supports budgets. If unsupported, document that and inspect costs manually during operation.
+No automatic deletion, billing upgrade or recurring monitor is installed by this guide.

@@ -100,7 +100,3 @@ jobs:
                 --app "$AZURE_APP_NAME" --image "$IMAGE" --expires-on "$AZURE_TRIAL_EXPIRES_ON")
           python -m scripts.azure.deploy "${args[@]}"
           python -m scripts.azure.deploy "${args[@]}" --apply
-      - name: Bounded HTTPS health check
-        run: |
-          host=$(az containerapp show --subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_APP_NAME" --query properties.configuration.ingress.fqdn -o tsv)
-          curl --fail --retry 12 --retry-all-errors --retry-delay 5 --max-time 10 --retry-max-time 180 "https://$host/api/health"

@@ -26,7 +26,7 @@ def validate_target(
         raise ValueError("Resource group must be a named medkb-azure-demo-* group")
 
 
-def az_json(arguments: list[str]) -> dict | list:
+def az_json(arguments: list[str], *, timeout_seconds: float = 600) -> dict | list:
     """Capture CLI output. Never expose raw stderr: it can contain app credentials."""
     executable = shutil.which("az")
     if not executable:
@@ -37,7 +37,7 @@ def az_json(arguments: list[str]) -> dict | list:
             capture_output=True,
             text=True,
             check=False,
-            timeout=600,
+            timeout=timeout_seconds,
         )
     except (OSError, subprocess.TimeoutExpired):
         raise ValueError("Azure CLI failed or timed out; raw output suppressed") from None

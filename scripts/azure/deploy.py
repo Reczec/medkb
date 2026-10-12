@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 
 from scripts.azure.preflight import az_json, preflight
+from scripts.azure.smoke import check_deployment
 
 ROOT = Path(__file__).resolve().parents[2]
 SECRET_NAMES = {
@@ -133,6 +134,7 @@ def main() -> None:
                     "containerapp",
                     "secret",
                     "list",
+                    "--show-values",
                     "--subscription",
                     args.subscription,
                     "--resource-group",
@@ -158,6 +160,8 @@ def main() -> None:
             args.rag_enabled,
             apply=args.apply,
         )
+        if args.apply:
+            print(check_deployment(args.subscription, args.resource_group, args.app, args.image))
         if args.apply and args.bootstrap_secrets_file:
             source.unlink()
     except (ValueError, OSError, TypeError, KeyError):
