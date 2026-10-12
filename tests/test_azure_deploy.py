@@ -41,6 +41,42 @@ def test_parameters_preserve_secrets_and_reference_them(capsys):
     assert capsys.readouterr().out == ""
 
 
+def test_routine_cli_requests_and_preserves_actual_secret_values(monkeypatch, capsys):
+    captured = []
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "deploy",
+            "--subscription",
+            "subscription",
+            "--resource-group",
+            "medkb-azure-demo-test",
+            "--app",
+            "demo",
+            "--image",
+            IMAGE,
+            "--expires-on",
+            "2026-10-20",
+        ],
+    )
+    monkeypatch.setattr(deploy, "preflight", lambda *args: None)
+    monkeypatch.setattr(
+        deploy,
+        "az_json",
+        lambda arguments: (
+            SECRETS if "--show-values" in arguments else [{"name": s["name"]} for s in SECRETS]
+        ),
+    )
+
+    def apply(subscription, resource_group, app, image, secrets, rag_enabled, **kwargs):
+        captured.append(deploy.build_parameters(image, secrets, rag_enabled))
+
+    monkeypatch.setattr(deploy, "run_deployment", apply)
+    deploy.main()
+    assert captured[0]["appSecrets"]["value"]["items"] == SECRETS
+    assert "provider-private-key" not in capsys.readouterr().out
+
+
 @pytest.mark.parametrize(
     "secrets",
     [
