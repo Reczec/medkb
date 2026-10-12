@@ -134,6 +134,34 @@ Rulings made during execution:
 
 ## Release and remaining boundaries
 
+All implementation/evaluation records were pushed to `main` at `229a837` after a fresh fetch
+confirmed no remote divergence. The substantive grouped review fix is `d2e3fe2`.
+The validated real index is preserved locally in ignored `.rag-evaluation-2026-10-12.db` after
+moving it out of the plan scratch workspace; vectors and credentials are not committed.
+To inspect semantics locally with the built frontend:
+
+```powershell
+$env:DATABASE_URL = 'sqlite:///./.rag-evaluation-2026-10-12.db'
+$env:RAG_ENABLED = 'true'
+$env:RAG_MIN_SIMILARITY = '0.60'
+.venv/Scripts/python.exe -m uvicorn app.main:app --port 8000
+```
+
+This preserved file exists only in this checkout. Fresh clones must follow the seed/index commands
+in the evaluation README. Local usage reservations remain in it; an unchanged demo reset reuses
+the real vectors.
+
+GitHub [CI run 38285910881](https://github.com/Reczec/medkb/actions/runs/38285910881) passed all
+five jobs for `229a837`: SQLite on Python 3.12/3.13, PostgreSQL 16, frontend including browser
+tests, and Docker build/container smoke checks. Local final checks remain 827/227/38 as above.
+On 2026-10-12 at 17:45:14 UTC the public Render demo answered health 200, patient demo login 200,
+English no-context JSON 200 and German SSE 200 with terminal `done`. Both API forms included the
+new retrieval metadata; JSON reported `lexical`, `disabled`, zero indexed chunks and no citations,
+as expected for the public flag. The unique verification term matched no entry, so these operator
+checks caused no embedding/completion call. Semantic public retrieval and post-reset index
+persistence are not claimed: production indexing/enablement remains the next explicit operation.
+The final documentation-only commit follows this verified code release; it does not change runtime.
+
 `RAG_ENABLED=false` is retained in Render/default configuration. A code push alone does not
 build production vectors or enable semantics. Public enablement requires the current Neon index,
 the selected threshold and acceptable real evaluation, followed by live JSON/SSE and reset checks.
