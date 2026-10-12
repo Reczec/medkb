@@ -47,9 +47,24 @@ def test_repeated_503_has_bounded_timeout(monkeypatch):
 @pytest.mark.parametrize(
     "actual,expected,group,expected_group",
     [
-        ("other", "expected", "medkb-azure-demo-test", "medkb-azure-demo-test"),
-        ("expected", "expected", "medkb-azure-demo-other", "medkb-azure-demo-test"),
-        ("expected", "expected", "production", "production"),
+        (
+            "other",
+            "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+            "medkb-azure-demo-test",
+            "medkb-azure-demo-test",
+        ),
+        (
+            "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+            "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+            "medkb-azure-demo-other",
+            "medkb-azure-demo-test",
+        ),
+        (
+            "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+            "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+            "production",
+            "production",
+        ),
     ],
 )
 def test_cleanup_refuses_wrong_target(actual, expected, group, expected_group):
@@ -63,7 +78,7 @@ def test_preview_and_wrong_confirmation_never_delete(monkeypatch):
     def azure(arguments):
         calls.append(arguments)
         if arguments[:2] == ["account", "show"]:
-            return {"id": "expected"}
+            return {"id": "670958af-a1c1-4b8a-8fc9-0aa868ff8b44"}
         if arguments[:2] == ["group", "show"]:
             return {"tags": {"project": "medkb-azure-demo"}}
         if arguments[:2] == ["resource", "list"]:
@@ -73,11 +88,19 @@ def test_preview_and_wrong_confirmation_never_delete(monkeypatch):
     monkeypatch.setattr(cleanup, "az_json", azure)
     monkeypatch.setattr("builtins.input", lambda prompt: "wrong-group")
     cleanup.cleanup_group(
-        "expected", "expected", "medkb-azure-demo-test", "medkb-azure-demo-test", delete=False
+        "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+        "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+        "medkb-azure-demo-test",
+        "medkb-azure-demo-test",
+        delete=False,
     )
     with pytest.raises(ValueError, match="confirmation"):
         cleanup.cleanup_group(
-            "expected", "expected", "medkb-azure-demo-test", "medkb-azure-demo-test", delete=True
+            "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+            "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+            "medkb-azure-demo-test",
+            "medkb-azure-demo-test",
+            delete=True,
         )
     assert all(arguments[:2] != ["group", "delete"] for arguments in calls)
 

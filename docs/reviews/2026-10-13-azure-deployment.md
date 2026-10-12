@@ -1,6 +1,6 @@
 # Azure implementation and pending activation
 
-Date: 2026-10-13. Status: local implementation under verification; **Azure is not deployed**.
+Date: 2026-10-13. Status: local implementation reviewed and verified; live activation pending; **Azure is not deployed**.
 Approved spec/plan: [design](../superpowers/specs/2026-10-12-azure-cloud-design.md),
 [implementation plan](../superpowers/plans/2026-10-13-azure-cloud.md).
 Operator commands and constraints: [AZURE.md](../AZURE.md).
@@ -14,11 +14,11 @@ Operator commands and constraints: [AZURE.md](../AZURE.md).
   11 executable guard and parsed YAML contract tests; actionlint clean.
 - `8471d1c`: bounded revision/health checks, guarded cleanup and rollback instructions;
   9 operations tests and one real secret-list contract regression.
-- Final task adds current bilingual RAG readiness and explicit Azure-header quota regression;
-  commit and final verification counts will be recorded after review.
+- `fe6a31c`: current bilingual RAG readiness, mandatory database TLS, preserved activation flag
+  and explicit Azure-header quota regression; live acceptance remains pending.
 
 Each completed task passed full pytest/ruff and frontend lint/typecheck/unit/build/e2e checks before
-commit. Latest local checks: 883 backend tests passed, 1 skipped; 227 frontend unit tests and 38 e2e passed. Existing Starlette
+commit. Latest local checks: 895 backend tests passed, 1 skipped; 227 frontend unit tests and 38 e2e passed. Existing Starlette
 deprecation and corrupt-vector SQLAlchemy identity warnings remain. No live model is used in tests.
 Tool versions: official Azure CLI ZIP 2.91.0, Bicep 0.48.1, actionlint 1.7.12, installed only in
 ignored plan scratch. Official GitHub action SHAs were resolved from vendor tags on this date.
@@ -49,6 +49,7 @@ ignored plan scratch. Official GitHub action SHAs were resolved from vendor tags
   cannot yet be verified.
 - Portal observations on 2026-10-12: active subscription, trial credit EUR 175.99 remaining,
   trial expires 2026-10-20. Remaining credit/expiry need a fresh observation; spending protection was verified separately on 2026-10-13.
+- Fresh CLI resource-group inventory on 2026-10-13 returned an empty list.
 - No Azure resources, isolated database, managed identity, federation or role grants created.
   No application credentials transmitted to Azure; no GHCR package published; workflow stays opt-in off.
 - EUR 5 is the approved **credit-consumption operating target**, not an enforced hard cap.
@@ -57,7 +58,8 @@ ignored plan scratch. Official GitHub action SHAs were resolved from vendor tags
 
 ## Activation checklist (not yet satisfied)
 
-- [ ] Complete normal Azure CLI login; run fresh protected-trial guard and verify credit/offer/expiry.
+- [x] Complete normal Azure CLI login and run fresh protected-trial guard (2026-10-13).
+- [ ] Refresh remaining credit/offer/expiry observation.
 - [ ] Verify free Neon capacity and Render database separation; create isolated `medkb_azure`/credential.
 - [ ] Confirm exact resource-group-scoped identity grant/federation and Azure secret destination.
 - [ ] Create marked demo group, identity, approved role grant, federation and GitHub environment variables.
@@ -72,3 +74,36 @@ ignored plan scratch. Official GitHub action SHAs were resolved from vendor tags
 
 The permanent public demo remains [Render](https://medkb.onrender.com). No Azure live URL or
 completed-deployment CV claim is justified until this checklist has real evidence.
+
+## Independent review and single fix pass
+
+A fresh gpt-6-astra reviewer inspected eee88a9..fe6a31c. Five findings were accepted:
+
+- Critical: SQLAlchemy query `dbname` could override the validated URL path. Connection queries now
+  allow only enforced TLS and optional required channel binding; destination overrides are rejected.
+- Critical: captured output did not disable Azure CLI persistent logging. Child environment explicitly
+  disables file and command logging, including when the parent enables them; synthetic secret-bearing
+  failures stay suppressed.
+- Important: normal what-if pretty output was incompatible with JSON parsing. Request `--no-pretty-print`
+  and expose only resource IDs and change types, never resolved parameters or property deltas.
+- Important: Windows batch arguments could be interpreted by a shell. Invoke the installed Azure Python
+  module directly; validate subscription UUID and app name before any external request. The corrected
+  read-only preflight succeeded live on 2026-10-13.
+- Important: existing explicit broad file grants survived the previous ACL restriction. Replace the
+  entire Windows DACL with the current identity's FullControl grant; the actual Everyone-grant
+  regression failed before the fix and passed after it.
+
+Twelve focused review regressions failed before implementation and passed afterward. The ACL test
+was first corrected to use .NET directly because inherited PowerShell module paths prevented Get-Acl
+loading; its actual pre-fix failure then confirmed the retained Everyone grant. No minor findings.
+
+Reviewer declined live provisioning/OIDC/package/rollback/alerts, Neon capacity and effective identity,
+real ingress spoofing, live RAG citations/reset persistence, billing and latency. Ruling for each:
+retain these as unfulfilled operator acceptance checks, because mocks cannot establish platform facts;
+cost if wrong is an unsupported deployment claim. Task 5 remains incomplete and the Azure workflow
+remains disabled. No second review was requested; fixes are verified by RED-to-GREEN and full suites.
+Final verification after the fix pass: 895 backend passed, 1 skipped, ruff check/format and actionlint
+clean; frontend lint/typecheck/build green, 227 unit tests and 38 e2e passed. Actual Bicep compilation
+was enabled in the backend run. GitHub CLI returned HTTP 401 Bad credentials during a read-only
+repository-variable check; OIDC environment setup also requires a working GitHub session. No
+GitHub settings were changed. These failures do not affect the successful Azure CLI trial login.

@@ -39,7 +39,12 @@ def validate_database_url(url: str) -> None:
         or parsed.path != "/medkb_azure"
     ):
         raise ValueError("A separate PostgreSQL database named medkb_azure is required")
-    sslmode = urllib.parse.parse_qs(parsed.query).get("sslmode", [])
+    query = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
+    if set(query) - {"sslmode", "channel_binding"}:
+        raise ValueError("Database connection query contains unsupported overrides")
+    if "channel_binding" in query and query["channel_binding"] != ["require"]:
+        raise ValueError("Only required channel binding is supported")
+    sslmode = query.get("sslmode", [])
     if len(sslmode) != 1 or sslmode[0] not in {"require", "verify-ca", "verify-full"}:
         raise ValueError("Enforced TLS (sslmode=require or stronger) is required")
 
@@ -74,9 +79,20 @@ def build_parameters(image: str, secrets: list[dict], rag_enabled: bool) -> dict
 def restrict_file(path: Path) -> None:
     """On Windows POSIX mode alone does not remove inherited read permissions."""
     if os.name == "nt":
-        account = f"{os.environ['USERDOMAIN']}\\{os.environ['USERNAME']}"
+        script = """
+$ErrorActionPreference = 'Stop'
+$path = $env:MEDKB_SECRET_PATH
+$sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User
+$acl = New-Object System.Security.AccessControl.FileSecurity
+$acl.SetOwner($sid)
+$acl.SetAccessRuleProtection($true, $false)
+$rule = New-Object System.Security.AccessControl.FileSystemAccessRule($sid, 'FullControl', 'Allow')
+$acl.AddAccessRule($rule)
+[IO.File]::SetAccessControl($path, $acl)
+"""
         result = subprocess.run(
-            ["icacls", str(path), "/inheritance:r", "/grant:r", f"{account}:F"],
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
+            env=dict(os.environ, MEDKB_SECRET_PATH=str(path)),
             capture_output=True,
             check=False,
         )
@@ -84,6 +100,11 @@ def restrict_file(path: Path) -> None:
             raise ValueError("Cannot restrict local secret file permissions")
     else:
         path.chmod(0o600)
+
+
+def validate_app(app: str) -> None:
+    if not re.fullmatch(r"[a-z][a-z0-9-]{0,29}[a-z0-9]", app) or "--" in app:
+        raise ValueError("Invalid Container App name")
 
 
 def run_deployment(
@@ -96,8 +117,7 @@ def run_deployment(
     *,
     apply: bool,
 ) -> dict:
-    if not re.fullmatch(r"[a-z][a-z0-9-]{0,29}[a-z0-9]", app) or "--" in app:
-        raise ValueError("Invalid Container App name")
+    validate_app(app)
     parameters = build_parameters(image, secrets, rag_enabled)
     parameters["appName"] = {"value": app}
     descriptor, filename = tempfile.mkstemp(prefix="medkb-azure-", suffix=".json")
@@ -106,7 +126,7 @@ def run_deployment(
         os.close(descriptor)
         restrict_file(path)
         path.write_text(json.dumps({"parameters": parameters}), encoding="utf-8")
-        az_json(
+        result = az_json(
             [
                 "deployment",
                 "group",
@@ -122,9 +142,18 @@ def run_deployment(
                 "--parameters",
                 f"@{path}",
             ]
+            + ([] if apply else ["--no-pretty-print"])
         )
         # What-if/result bodies can include resolved app configuration. Do not return/log them.
-        return {"applied": apply}
+        if apply:
+            return {"applied": True}
+        return {
+            "applied": False,
+            "changes": [
+                {"resourceId": item["resourceId"], "changeType": item["changeType"]}
+                for item in result.get("changes", [])
+            ],
+        }
     finally:
         path.unlink(missing_ok=True)
 
@@ -142,6 +171,7 @@ def main() -> None:
     args = parser.parse_args()
     try:
         validate_digest(args.image)
+        validate_app(args.app)
         preflight(args.subscription, args.resource_group, args.expires_on)
         if args.bootstrap_secrets_file:
             # Source must be under ignored scratch; never treat a committed file as a secret store.
@@ -196,7 +226,7 @@ def main() -> None:
             verify_rag_database(
                 next(secret["value"] for secret in secrets if secret["name"] == "database-url")
             )
-        run_deployment(
+        result = run_deployment(
             args.subscription,
             args.resource_group,
             args.app,
@@ -205,6 +235,8 @@ def main() -> None:
             rag_enabled,
             apply=args.apply,
         )
+        if not args.apply and result is not None:
+            print(json.dumps(result))
         if args.apply:
             print(check_deployment(args.subscription, args.resource_group, args.app, args.image))
         if args.apply and args.bootstrap_secrets_file:
