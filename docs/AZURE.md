@@ -30,7 +30,10 @@ a guarantee that all associated charges are zero.
 
 Install Azure CLI/Bicep from Microsoft's official distribution; record versions. Verify Neon is still
 on the free plan and has spare capacity before creating a separate database/branch and credential.
-Never connect Azure to Render's database: demo resets would interfere. Paid capacity is a blocker.
+Create a separate database named `medkb_azure` with its own role/credential. Never connect Azure to
+Render's database: demo resets would interfere. The deployment helper rejects other database names
+and SQLite URLs. Require `sslmode=require` or stronger; fallback to plaintext is refused. Verify the
+Render database is different before bootstrap. Paid capacity is a blocker.
 GitHub identity grants and application-secret transmission require confirmation of their exact scope
 and destination before those operations; no grant is made by the preflight.
 
@@ -54,17 +57,35 @@ and compiled template; what-if response bodies are not printed because they can 
 Routine deployments read and preserve every existing secret through captured CLI output, including
 unknown secret names and Key Vault references, and reference recognized settings through environment
 variables. They do not need application keys in GitHub Secrets. A missing/duplicate required secret
-blocks deployment. RAG defaults off; enabling it requires separately verified current index coverage.
+blocks deployment. RAG defaults off on bootstrap and routine deployments preserve its existing flag.
+Every enabled deployment rechecks current bilingual coverage against the isolated database before
+Azure writes; `--disable-rag` explicitly turns it off. Database inspection failures are redacted.
+
+## RAG index preparation
+
+After initial startup seeds the isolated database, prepare its index explicitly. The shipped resumable
+operator command is `python -m app.rag.index_cli --pause 15`, with `DATABASE_URL` set securely to the
+isolated database and existing provider credentials loaded locally. This calls the embedding provider
+only for missing chunks and respects the global AI budget; do not run it in tests or bulk-prewarm answers.
+Expect 542 current unique vectors, 271 per language. Then deploy with `--rag-enabled`; the helper reads
+the current corpus keys, checks stored signatures and normalized 768-dimensional vectors, and requires
+both languages to report 271/271. Partial or stale vectors block activation. A read-only transaction
+is used for the PostgreSQL check. Demo reset persistence must still be demonstrated live.
+
+Reuse of existing local vectors is allowed only through a separately validated transactional import
+with exact current keys/signature/dimensions and a final corpus check. No general importer is shipped
+in this Azure change; the supported fallback is the existing resumable index command above.
 
 Tooling observed 2026-10-13: official Azure CLI ZIP 2.91.0 and Bicep 0.48.1, local ignored scratch only.
-Azure CLI device-code login was denied with error 530035; no security policy was weakened. Account
-protection cannot yet be claimed from CLI evidence. Neon requires sign-in before free-capacity checks.
+Azure CLI device-code login was denied with error 530035; no security policy was weakened. Normal browser login succeeded on 2026-10-13; fresh ARM evidence confirmed an enabled FreeTrial
+subscription with spendingLimit=On. The browser connection then became unavailable; Neon sign-in
+and free capacity cannot yet be verified.
 
 ## Evidence boundaries
 
 On 2026-10-12 the portal showed an active trial with EUR 175.99 remaining and expiry 2026-10-20.
-This is a dated observation. Current trial protection, isolated Neon capacity and live Azure checks
-are pending. Never publish account identifiers, emails or credentials in examples/screenshots.
+This is a dated observation. Current trial protection was verified on 2026-10-13. Updated credit balance, isolated Neon capacity
+and live Azure checks are pending. Never publish account identifiers, emails or credentials in examples/screenshots.
 
 Primary references: [spending limits](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit),
 [subscription policies](https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/get),
@@ -128,3 +149,12 @@ equate amounts: confirm a corresponding limit before creation. Confirm the notif
 Azure destination before entering it. Record the scope/currency/thresholds and whether the trial
 offer supports budgets. If unsupported, document that and inspect costs manually during operation.
 No automatic deletion, billing upgrade or recurring monitor is installed by this guide.
+
+## Demo limitations
+
+Filesystem archives are ephemeral across scale-to-zero/revisions; no durable storage is added.
+Logs have no persistent searchable workspace: use bounded log streams, deployment logs and platform
+metrics. Cold-wake latency needs a measured live observation and is not promised. If the existing
+Gemini key is reused, its upstream quota is shared with Render even though database quotas/cache are
+isolated. RAG reset persistence, real cited JSON/SSE answers, spoofed-IP checks, rollback and costing
+are pending until recorded in the deployment review. Never imply permanent Azure hosting in the CV.

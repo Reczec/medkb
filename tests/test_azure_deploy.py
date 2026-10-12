@@ -13,7 +13,10 @@ from scripts.azure import deploy
 ROOT = Path(__file__).resolve().parents[1]
 IMAGE = "ghcr.io/reczec/medkb@sha256:" + "a" * 64
 SECRETS = [
-    {"name": "database-url", "value": "postgresql+psycopg://isolated:secret@host/db"},
+    {
+        "name": "database-url",
+        "value": "postgresql+psycopg://isolated:secret@host/medkb_azure?sslmode=require",
+    },
     {"name": "jwt-secret", "value": "persist-this-secret"},
     {"name": "ai-api-key", "value": "provider-private-key"},
 ]
@@ -64,7 +67,11 @@ def test_routine_cli_requests_and_preserves_actual_secret_values(monkeypatch, ca
         deploy,
         "az_json",
         lambda arguments: (
-            SECRETS if "--show-values" in arguments else [{"name": s["name"]} for s in SECRETS]
+            {"properties": {"template": {"containers": [{"env": []}]}}}
+            if arguments[:2] == ["containerapp", "show"]
+            else SECRETS
+            if "--show-values" in arguments
+            else [{"name": s["name"]} for s in SECRETS]
         ),
     )
 
@@ -75,6 +82,59 @@ def test_routine_cli_requests_and_preserves_actual_secret_values(monkeypatch, ca
     deploy.main()
     assert captured[0]["appSecrets"]["value"]["items"] == SECRETS
     assert "provider-private-key" not in capsys.readouterr().out
+
+
+def test_routine_deployment_preserves_enabled_rag_and_checks_current_database(monkeypatch):
+    seen = []
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "deploy",
+            "--subscription",
+            "subscription",
+            "--resource-group",
+            "medkb-azure-demo-test",
+            "--app",
+            "demo",
+            "--image",
+            IMAGE,
+            "--expires-on",
+            "2026-10-20",
+        ],
+    )
+    monkeypatch.setattr(deploy, "preflight", lambda *args: None)
+    monkeypatch.setattr(
+        deploy,
+        "az_json",
+        lambda arguments: (
+            SECRETS
+            if arguments[:3] == ["containerapp", "secret", "list"]
+            else {
+                "properties": {
+                    "template": {
+                        "containers": [{"env": [{"name": "RAG_ENABLED", "value": "true"}]}]
+                    }
+                }
+            }
+        ),
+    )
+    monkeypatch.setattr(deploy, "verify_rag_database", lambda url: seen.append(url), raising=False)
+    monkeypatch.setattr(deploy, "run_deployment", lambda *args, **kwargs: seen.append(args[5]))
+    deploy.main()
+    assert seen == ["postgresql+psycopg://isolated:secret@host/medkb_azure?sslmode=require", True]
+
+
+@pytest.mark.parametrize("url", ["sqlite:///local.db", "postgresql://user:password@host/neondb"])
+def test_nonisolated_database_is_rejected_without_disclosing_credentials(url):
+    with pytest.raises(ValueError) as error:
+        deploy.validate_database_url(url)
+    assert "password" not in str(error.value)
+
+
+@pytest.mark.parametrize("query", ["", "?sslmode=disable", "?sslmode=prefer"])
+def test_database_password_requires_enforced_tls(query):
+    with pytest.raises(ValueError, match="TLS"):
+        deploy.validate_database_url("postgresql://user:password@host/medkb_azure" + query)
 
 
 @pytest.mark.parametrize(

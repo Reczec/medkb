@@ -501,17 +501,18 @@ def test_title_hits_break_ties_in_partial_matches(client):
     assert found[0].title == "Sepsis (Blutvergiftung)"
 
 
-def test_proxy_header_uses_the_value_the_proxy_appended(client, fake, test_settings):
+@pytest.mark.parametrize("proxy_header", ["x-real-chain", "X-Forwarded-For"])
+def test_proxy_header_uses_the_value_the_proxy_appended(client, fake, test_settings, proxy_header):
     # With a list-valued header the proxy appends the real client last; earlier values are
     # whatever the visitor sent.
     make_doc(client, title="Migräne")
     fake.answer = "Allgemeine Information [1]."
     test_settings.ai_client_daily_limit = 1
-    test_settings.client_ip_header = "x-real-chain"
+    test_settings.client_ip_header = proxy_header
     send = lambda first: client.post(  # noqa: E731
         "/api/ai/ask",
         json={"question": "Migräne"},
-        headers={"X-Real-Chain": f"{first}, 198.51.100.7"},
+        headers={proxy_header: f"{first}, 198.51.100.7"},
     )
     assert send("203.0.113.1").status_code == 200
     assert send("203.0.113.2").status_code == 429  # same real client behind a new fake prefix

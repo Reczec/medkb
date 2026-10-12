@@ -2,6 +2,14 @@
 
 Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onrender.com. See the [stage 5 record](reviews/2026-10-12-stage5-deployment.md).
 
+## Azure portfolio extension
+
+Local Bicep/OIDC deployment tools are implemented; live activation is pending authentication,
+verified trial spending protection and free isolated Neon capacity. Follow the exact prerequisites
+and pending live checklist in [the Azure record](reviews/2026-10-13-azure-deployment.md) and
+[operator guide](AZURE.md). Approved credit target EUR 5 (not a hard cap), trial expiry 2026-10-20.
+No personal cash charges, offer upgrade or removed spending limit. Render stays the permanent demo.
+
 ## Still to do for the bilingual release
 
 - English AI cache warmup after the next UTC midnight (`python -m app.ai.prewarm --lang en --pause 4` against Neon), then re-record the README GIF and screenshots. See the [record](reviews/2026-10-12-mehrsprachigkeit.md).

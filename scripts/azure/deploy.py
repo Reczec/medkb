@@ -6,9 +6,10 @@ import os
 import re
 import subprocess
 import tempfile
+import urllib.parse
 from pathlib import Path
 
-from scripts.azure.preflight import az_json, preflight
+from scripts.azure.preflight import az_json, preflight, verify_rag_database
 from scripts.azure.smoke import check_deployment
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,6 +29,21 @@ def validate_digest(image: str) -> None:
         raise ValueError("A pinned MedKB GHCR sha256 digest is required")
 
 
+def validate_database_url(url: str) -> None:
+    parsed = urllib.parse.urlsplit(url)
+    if (
+        parsed.scheme not in {"postgres", "postgresql", "postgresql+psycopg"}
+        or not parsed.hostname
+        or not parsed.username
+        or not parsed.password
+        or parsed.path != "/medkb_azure"
+    ):
+        raise ValueError("A separate PostgreSQL database named medkb_azure is required")
+    sslmode = urllib.parse.parse_qs(parsed.query).get("sslmode", [])
+    if len(sslmode) != 1 or sslmode[0] not in {"require", "verify-ca", "verify-full"}:
+        raise ValueError("Enforced TLS (sslmode=require or stronger) is required")
+
+
 def build_parameters(image: str, secrets: list[dict], rag_enabled: bool) -> dict:
     validate_digest(image)
     names = [secret.get("name") for secret in secrets]
@@ -38,6 +54,9 @@ def build_parameters(image: str, secrets: list[dict], rag_enabled: bool) -> dict
             raise ValueError("Invalid app secret name")
         if not secret.get("value") and not secret.get("keyVaultUrl"):
             raise ValueError("App secret value/reference is missing")
+    validate_database_url(
+        next(secret.get("value", "") for secret in secrets if secret["name"] == "database-url")
+    )
     return {
         "image": {"value": image},
         "appSecrets": {"value": {"items": secrets}},
@@ -115,7 +134,10 @@ def main() -> None:
     for name in ("subscription", "resource-group", "app", "image", "expires-on"):
         parser.add_argument(f"--{name}", required=True)
     parser.add_argument("--apply", action="store_true")
-    parser.add_argument("--rag-enabled", action="store_true")
+    rag = parser.add_mutually_exclusive_group()
+    rag.add_argument("--rag-enabled", dest="rag_enabled", action="store_true")
+    rag.add_argument("--disable-rag", dest="rag_enabled", action="store_false")
+    parser.set_defaults(rag_enabled=None)
     parser.add_argument("--bootstrap-secrets-file", type=Path)
     args = parser.parse_args()
     try:
@@ -128,6 +150,7 @@ def main() -> None:
                 raise ValueError("Bootstrap secret file must be inside ignored .superpowers/")
             restrict_file(source)
             secrets = json.loads(source.read_text(encoding="utf-8"))
+            rag_enabled = bool(args.rag_enabled)
         else:
             secrets = az_json(
                 [
@@ -151,20 +174,42 @@ def main() -> None:
                 }
                 for item in secrets
             ]
+            current = az_json(
+                [
+                    "containerapp",
+                    "show",
+                    "--subscription",
+                    args.subscription,
+                    "--resource-group",
+                    args.resource_group,
+                    "--name",
+                    args.app,
+                ]
+            )
+            env = current["properties"]["template"]["containers"][0].get("env", [])
+            previous = any(
+                item.get("name") == "RAG_ENABLED" and item.get("value") == "true" for item in env
+            )
+            rag_enabled = previous if args.rag_enabled is None else args.rag_enabled
+        build_parameters(args.image, secrets, rag_enabled)
+        if rag_enabled:
+            verify_rag_database(
+                next(secret["value"] for secret in secrets if secret["name"] == "database-url")
+            )
         run_deployment(
             args.subscription,
             args.resource_group,
             args.app,
             args.image,
             secrets,
-            args.rag_enabled,
+            rag_enabled,
             apply=args.apply,
         )
         if args.apply:
             print(check_deployment(args.subscription, args.resource_group, args.app, args.image))
         if args.apply and args.bootstrap_secrets_file:
             source.unlink()
-    except (ValueError, OSError, TypeError, KeyError):
+    except Exception:
         parser.exit(1, "Deployment blocked/failed; sensitive CLI and file contents suppressed.\n")
     print(
         "Deployment applied." if args.apply else "What-if completed; no resource changes applied."
