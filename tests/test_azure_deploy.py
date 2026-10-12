@@ -1,0 +1,113 @@
+"""Deployment owns a bounded graph and must not discard or expose existing secrets."""
+
+import json
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+import pytest
+
+from scripts.azure import deploy
+
+ROOT = Path(__file__).resolve().parents[1]
+IMAGE = "ghcr.io/reczec/medkb@sha256:" + "a" * 64
+SECRETS = [
+    {"name": "database-url", "value": "postgresql+psycopg://isolated:secret@host/db"},
+    {"name": "jwt-secret", "value": "persist-this-secret"},
+    {"name": "ai-api-key", "value": "provider-private-key"},
+]
+
+
+@pytest.mark.parametrize(
+    "image",
+    [
+        "ghcr.io/reczec/medkb:latest",
+        "ghcr.io/reczec/medkb@sha256:abc",
+        "evil.test/app@sha256:" + "a" * 64,
+        IMAGE + ";echo bad",
+    ],
+)
+def test_unpinned_or_wrong_repository_image_is_rejected(image):
+    with pytest.raises(ValueError, match="digest"):
+        deploy.validate_digest(image)
+
+
+def test_parameters_preserve_secrets_and_reference_them(capsys):
+    parameters = deploy.build_parameters(IMAGE, SECRETS, False)
+    assert parameters["appSecrets"]["value"]["items"] == SECRETS
+    assert parameters["ragEnabled"]["value"] is False
+    assert {"name": "AI_API_KEY", "secretRef": "ai-api-key"} in parameters["secretEnv"]["value"]
+    assert capsys.readouterr().out == ""
+
+
+@pytest.mark.parametrize(
+    "secrets",
+    [
+        [],
+        [{"name": "jwt-secret", "value": "secret"}],
+        SECRETS + [{"name": "jwt-secret", "value": "duplicate"}],
+    ],
+)
+def test_missing_or_duplicate_secrets_block_deployment(secrets):
+    with pytest.raises(ValueError):
+        deploy.build_parameters(IMAGE, secrets, False)
+
+
+def test_parameter_file_is_deleted_even_when_cli_fails(monkeypatch, tmp_path, capsys):
+    seen = []
+
+    def fail(arguments):
+        path = Path(arguments[arguments.index("--parameters") + 1].removeprefix("@"))
+        seen.append(path)
+        data = json.loads(path.read_text())
+        assert (
+            data["parameters"]["appSecrets"]["value"]["items"][2]["value"] == "provider-private-key"
+        )
+        assert "provider-private-key" not in " ".join(arguments)
+        raise ValueError("Azure CLI failed; raw output suppressed")
+
+    monkeypatch.setattr(deploy, "az_json", fail)
+    with pytest.raises(ValueError):
+        deploy.run_deployment(
+            "subscription", "medkb-azure-demo-test", "demo", IMAGE, SECRETS, False, apply=False
+        )
+    assert len(seen) == 1 and not seen[0].exists()
+    assert "provider-private-key" not in capsys.readouterr().out
+
+
+def test_compiled_template_has_only_bounded_consumption_resources(tmp_path):
+    compiler = os.environ.get("BICEP_EXE") or shutil.which("bicep")
+    if not compiler:
+        pytest.skip("Bicep compiler required; dedicated IaC CI job runs this contract")
+    destination = tmp_path / "template.json"
+    subprocess.run(
+        [compiler, "build", str(ROOT / "infra/azure/main.bicep"), "--outfile", str(destination)],
+        check=True,
+    )
+    template = json.loads(destination.read_text())
+    resources = template["resources"]
+    if isinstance(resources, dict):
+        resources = list(resources.values())
+    assert {r["type"] for r in resources} == {
+        "Microsoft.App/managedEnvironments",
+        "Microsoft.App/containerApps",
+    }
+    environment = next(r for r in resources if r["type"].endswith("managedEnvironments"))
+    app = next(r for r in resources if r["type"].endswith("containerApps"))
+    assert environment["properties"]["appLogsConfiguration"]["destination"] == "none"
+    assert environment["properties"]["workloadProfiles"] == [
+        {"name": "Consumption", "workloadProfileType": "Consumption"}
+    ]
+    configuration = app["properties"]["configuration"]
+    assert configuration["activeRevisionsMode"] == "Single"
+    assert configuration["ingress"]["external"] is True
+    assert configuration["ingress"]["allowInsecure"] is False
+    assert configuration["ingress"]["targetPort"] == 8000
+    assert app["properties"]["template"]["scale"]["minReplicas"] == 0
+    assert app["properties"]["template"]["scale"]["maxReplicas"] == 1
+    compute = app["properties"]["template"]["containers"][0]["resources"]
+    assert compute["cpu"] == "[json('0.5')]"
+    assert compute["memory"] == "1Gi"
+    assert template["parameters"]["appSecrets"]["type"] == "secureObject"
+    assert set(template["outputs"]) == {"hostname"}
