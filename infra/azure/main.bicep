@@ -2,8 +2,8 @@ targetScope = 'resourceGroup'
 
 param appName string
 param environmentName string = '${appName}-env'
-@allowed(['westeurope'])
-param location string = 'westeurope'
+@allowed(['westeurope', 'northeurope'])
+param location string = 'northeurope'
 param image string
 @secure()
 param appSecrets object

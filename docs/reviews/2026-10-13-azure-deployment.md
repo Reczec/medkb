@@ -112,3 +112,27 @@ GitHub settings were changed. These failures do not affect the successful Azure 
 
 
 Activation retry on 2026-10-13: browser transport remains closed. GitHub auth diagnosis confirmed an invalid GITHUB_TOKEN override and no stored CLI login without it. Normal gh web login was started with the override removed only in that child process; user confirmation remains pending. No Azure resources or GitHub grants created.
+
+## Current live bootstrap (supersedes the initial blockers above)
+
+- GitHub workflow/package scopes were explicitly approved and confirmed; main through 3f39a39 pushed,
+  all six CI jobs succeeded. Subsequent region commit requires its own successful CI before publication.
+- Official Neon CLI 8.4.1 installed without lifecycle scripts in ignored scratch; login succeeded.
+  OS keyring unsupported, so the session is in an owner-only ignored directory. No secrets committed.
+- Verified existing organization plan Free and one existing MedKB project. Created a distinct free
+  medkb-azure-demo project, fixed 0.25 CU, own medkb_azure database/medkb_azure_owner role. Actual SQL
+  current_database/current_user matched exactly. Seeded 47 entries and imported 542 existing normalized
+  current-signature vectors transactionally; final coverage de=271/271 and en=271/271. No model requests.
+- User explicitly approved database/role creation, RG-scoped Contributor/OIDC and app secret transfer.
+  Marked group created; West Europe rejected new customers. North Europe identity creation succeeded.
+  Ruling: default application region changes to North Europe, an allowed European fallback under the
+  design's availability condition; cost if wrong: provisioning fails with spending protection retained.
+- Assigned dedicated managed identity Contributor only on the demo group, exact repository/environment
+  issuer/subject/audience federation. No subscription-level role assignment.
+- GitHub azure-demo restricts branches to main and requires Reczec review. Automatic approval initially
+  rejected self-approval; user explicitly approved it, then configuration succeeded. Autodeploy is off.
+- Group-scoped budget nominal amount 5, actual alerts 50/80/100 percent to the signed-in account.
+  API currentSpend was null: current cost and billing currency still need evidence; alerts are no cap.
+- North Europe contract observed RED on the old compiled default, then GREEN; full verification:
+  895 backend passed/1 skip, ruff clean, 227 frontend unit/38 e2e passed, frontend lint/typecheck/build green.
+- Container Apps provider registration and first image bootstrap in progress; app not deployed yet.
