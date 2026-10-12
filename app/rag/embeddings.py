@@ -61,7 +61,9 @@ class GeminiEmbeddings:
                             {
                                 "model": f"models/{MODEL}",
                                 "content": {"parts": [{"text": text}]},
-                                "config": config,
+                                # Model 001 currently ignores embedContentConfig's dimension;
+                                # the supported legacy REST fields return the required 768.
+                                **config,
                             }
                             for text in texts
                         ]
