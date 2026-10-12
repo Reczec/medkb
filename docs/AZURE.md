@@ -158,3 +158,16 @@ metrics. Cold-wake latency needs a measured live observation and is not promised
 Gemini key is reused, its upstream quota is shared with Render even though database quotas/cache are
 isolated. RAG reset persistence, real cited JSON/SSE answers, spoofed-IP checks, rollback and costing
 are pending until recorded in the deployment review. Never imply permanent Azure hosting in the CV.
+
+### Review-hardened operator boundaries
+
+The Windows helper invokes Azure's bundled Python module directly, never az.cmd. Install the official
+ZIP/MSI layout; missing bundled Python fails closed. Child `AZURE_LOGGING_ENABLE_LOG_FILE=false`
+disables both CLI file logging and command metadata/error file logging in verified CLI 2.91.0.
+Secret files receive a fresh current-identity-only DACL before use. Connection URL queries permit only
+`sslmode` and optional `channel_binding=require`, preventing database/host/user overrides.
+
+What-if explicitly requests JSON. Its public summary includes only resource IDs and change types;
+resolved property deltas remain suppressed because they may contain credentials. Review the summary
+against the two-resource graph; do not apply an unexpected resource change. Actual drift inspection
+and idempotence remain live acceptance checks.

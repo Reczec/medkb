@@ -59,4 +59,8 @@ def test_wrong_or_ambiguous_target_is_rejected(actual, expected, group):
 
 
 def test_exact_demo_target_is_allowed():
-    validate_target("expected", "expected", "medkb-azure-demo-test")
+    validate_target(
+        "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+        "670958af-a1c1-4b8a-8fc9-0aa868ff8b44",
+        "medkb-azure-demo-test",
+    )

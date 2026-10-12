@@ -2,10 +2,12 @@
 
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
 from datetime import UTC, date, datetime
+from pathlib import Path
 
 
 def validate_trial(account: dict, expires_on: str, today: date) -> None:
@@ -20,7 +22,12 @@ def validate_trial(account: dict, expires_on: str, today: date) -> None:
 def validate_target(
     actual_subscription: str, expected_subscription: str, resource_group: str
 ) -> None:
-    if not expected_subscription or actual_subscription != expected_subscription:
+    if (
+        not re.fullmatch(
+            r"[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}", expected_subscription
+        )
+        or actual_subscription != expected_subscription
+    ):
         raise ValueError("Subscription does not match the explicit expected target")
     if not re.fullmatch(r"medkb-azure-demo-[a-z0-9][a-z0-9-]{0,39}", resource_group):
         raise ValueError("Resource group must be a named medkb-azure-demo-* group")
@@ -62,9 +69,18 @@ def az_json(arguments: list[str], *, timeout_seconds: float = 600) -> dict | lis
     executable = shutil.which("az")
     if not executable:
         raise ValueError("Azure CLI is missing; install the official distribution")
+    command = [executable]
+    if Path(executable).suffix.lower() in {".cmd", ".bat"}:
+        python = Path(executable).resolve().parent.parent / "python.exe"
+        if not python.is_file():
+            raise ValueError("Azure CLI bundled Python is missing; batch execution is refused")
+        command = [str(python), "-IBm", "azure.cli"]
+    environment = dict(os.environ)
+    environment["AZURE_LOGGING_ENABLE_LOG_FILE"] = "false"
     try:
         result = subprocess.run(
-            [executable, *arguments, "--output", "json", "--only-show-errors"],
+            [*command, *arguments, "--output", "json", "--only-show-errors"],
+            env=environment,
             capture_output=True,
             text=True,
             check=False,
