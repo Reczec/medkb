@@ -106,4 +106,9 @@ Final verification after the fix pass: 895 backend passed, 1 skipped, ruff check
 clean; frontend lint/typecheck/build green, 227 unit tests and 38 e2e passed. Actual Bicep compilation
 was enabled in the backend run. GitHub CLI returned HTTP 401 Bad credentials during a read-only
 repository-variable check; OIDC environment setup also requires a working GitHub session. No
-GitHub settings were changed. These failures do not affect the successful Azure CLI trial login.`c6d6069` contains the verified review corrections. The authorized `git push origin main` was attempted but failed with invalid username/token; all Azure commits remain local. Reauthenticate GitHub before retrying push and configuring the deployment environment.
+GitHub settings were changed. These failures do not affect the successful Azure CLI trial login.
+
+`c6d6069` contains the verified review corrections. The authorized `git push origin main` was attempted but failed with invalid username/token; all Azure commits remain local. Reauthenticate GitHub before retrying push and configuring the deployment environment.
+
+
+Activation retry on 2026-10-13: browser transport remains closed. GitHub auth diagnosis confirmed an invalid GITHUB_TOKEN override and no stored CLI login without it. Normal gh web login was started with the override removed only in that child process; user confirmation remains pending. No Azure resources or GitHub grants created.
