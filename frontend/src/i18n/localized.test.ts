@@ -32,7 +32,7 @@ it('uses the English version field by field', () => {
     sections_en: { definition: 'English.' },
     keywords_en: ['Runny nose'],
   }
-  expect(localized(doc, 'en')).toEqual({
+  expect(localized(doc, 'en')).toMatchObject({
     title: 'Common cold',
     content: 'English text.',
     sections: { definition: 'English.' },
@@ -67,6 +67,12 @@ it('flags an entry that has no English version at all', () => {
   const result = localized(base, 'en')
   expect(result.title).toBe('Erkältung')
   expect(result.fallback).toBe(true)
+})
+
+it('says which language each field is really in', () => {
+  const half = { ...base, title_en: 'Common cold' }
+  expect(localized(half, 'en')).toMatchObject({ titleLang: 'en', contentLang: 'de', keywordsLang: 'de' })
+  expect(localized(base, 'de')).toMatchObject({ titleLang: 'de', contentLang: 'de', keywordsLang: 'de' })
 })
 
 it('always shows German in German', () => {

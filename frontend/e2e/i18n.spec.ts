@@ -19,7 +19,7 @@ async function loginAs(page: Page, role: Role): Promise<string> {
 }
 
 const switchTo = (page: Page, name: 'English' | 'German' | 'Englisch' | 'Deutsch') =>
-  page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click()
+  page.getByRole('button', { name: new RegExp(name) }).filter({ visible: true }).first().click()
 
 test('the login page is English by default and the demo opens in English', async ({ page }) => {
   await page.goto('/login')
@@ -88,7 +88,7 @@ test('the language switch fits the phone login without overflow', async ({ page 
   await page.waitForLoadState('networkidle')
   const group = page.getByRole('group', { name: 'Language' }).filter({ visible: true })
   await expect(group).toBeVisible()
-  await group.getByRole('button', { name: 'German' }).click()
+  await group.getByRole('button', { name: /German/ }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Anmelden' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375)
 })

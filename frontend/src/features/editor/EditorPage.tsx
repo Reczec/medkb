@@ -28,7 +28,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { AUTO, CategoryPicker } from '@/features/editor/CategoryPicker'
-import { EnglishVersion } from '@/features/editor/EnglishVersion'
+import { EnglishVersion, englishProblems } from '@/features/editor/EnglishVersion'
 import { Field } from '@/features/editor/Field'
 import { KeywordInput, mergeKeywords } from '@/features/editor/KeywordInput'
 import { SectionFields } from '@/features/editor/SectionFields'
@@ -198,7 +198,8 @@ function EditorForm({ meta, document }: { meta: Meta; document?: Document }) {
   const dirty = document ? Object.keys(changes!).length > 0 : JSON.stringify(form) !== JSON.stringify(initial)
   const valid = form.title.trim().length >= 3 && (form.mode === 'sections'
     ? Object.keys(cleanSections(form.sections)).length > 0
-    : form.content.trim().length >= 10)
+    : form.content.trim().length >= 10) &&
+    englishProblems(form.titleEn, form.contentEn, form.mode).length === 0
 
   const changeMode = (mode: FormState['mode']) => {
     setForm((current) => {

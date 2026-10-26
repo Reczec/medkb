@@ -24,9 +24,8 @@ export function LanguageSwitch({
           <button
             key={code}
             type="button"
-            lang={code}
             aria-pressed={active}
-            aria-label={t(`lang.${code}`)}
+            aria-label={`${code.toUpperCase()} – ${t(`lang.${code}`)}`}
             title={t(`lang.${code}`)}
             onClick={() => setLang(code)}
             className={cn(

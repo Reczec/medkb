@@ -439,6 +439,10 @@ export const de = {
 
   // app
   'app.title': 'MedKB – Medizinische Wissensdatenbank',
+
+  // english version validation
+  'editor.en.titleShort': 'Der englische Titel braucht mindestens 3 Zeichen.',
+  'editor.en.contentShort': 'Der englische Inhalt braucht mindestens 10 Zeichen.',
 } as const
 
 export type MessageKey = keyof typeof de
