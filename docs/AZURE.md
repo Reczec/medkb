@@ -1,9 +1,8 @@
 # Temporary Azure demo — operator guide
 
-Status: manual deployment is live at
-https://medkb-azure-demo.whiterock-973337bb.northeurope.azurecontainerapps.io.
-Application checks, cold wake, protected OIDC delivery and image rollback passed; see the deployment record.
-Render remains the permanent demo at https://medkb.onrender.com. The approved Azure trial expires **2026-10-20**.
+Status: the manual deployment passed its application checks, cold wake, protected OIDC delivery and
+image rollback (see the deployment record). The approved Azure trial expired on **2026-10-20**, so the
+demo is offline and is not revived. Render remains the permanent demo at https://medkb.onrender.com.
 
 ## Cost controls
 

@@ -16,12 +16,10 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 
 ## Status
 
-Azure extension (2026-10-13): manual deployment is live and application-verified;
-**protected OIDC delivery, rollback/restoration and cold wake verified; cost reporting delayed**. Read [operator guide](docs/AZURE.md) and
-[activation record](docs/reviews/2026-10-13-azure-deployment.md) before any Azure action. Main work is
-authorized; workflow stays disabled unless `AZURE_DEMO_ENABLED=true` is explicitly configured after
-bootstrap. Require current trial spending protection, separate free `medkb_azure` database, EUR 5
-operating target (not hard cap), cleanup before 2026-10-20, and exact scoped-grant/secret confirmations.
+Azure extension (2026-10-13): was deployed and verified; **the free trial expired on 2026-10-20 and the
+demo is offline** (no paid upgrade, no revival planned). Read the [operator guide](docs/AZURE.md) and
+[record](docs/reviews/2026-10-13-azure-deployment.md) before any Azure action. The workflow stays
+disabled unless `AZURE_DEMO_ENABLED=true` is explicitly configured.
 
 | Stage (spec §12) | State |
 |---|---|
