@@ -59,7 +59,7 @@ test('dashboard summarises the seeded knowledge base', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Überblick' })).toBeVisible()
   const summary = page.getByTestId('summary')
-  await expect(summary).toContainText('47')
+  await expect(summary).toContainText('103')
   await expect(page.getByRole('navigation', { name: 'Fachgebiete' }).getByRole('link')).toHaveCount(16)
   await captureReview(page, 'dashboard')
 })
@@ -79,12 +79,13 @@ test('every filing tab shows its full name and the drawer edge shows the share',
   expect(new Set(tops).size).toBe(1) // one drawer edge, no second row
   const share = (name: string) =>
     strip.locator(`[data-share="${name}"]`).evaluate((el) => el.getBoundingClientRect().width)
-  const neuro = await share('Neurologie') // 3 entries
-  const hno = await share('HNO') // 3
-  const general = await share('Allgemeinmedizin') // 2
-  expect(neuro).toBeCloseTo(hno, 0)
-  expect(neuro).toBeGreaterThan(general)
-  expect(neuro / general).toBeCloseTo(1.5, 1)
+  const neuro = await share('Neurologie') // 8 entries
+  const hno = await share('HNO') // 6
+  const eyes = await share('Augenheilkunde') // 6
+  const gynecology = await share('Gynäkologie') // 5
+  expect(hno).toBeCloseTo(eyes, 0)
+  expect(neuro).toBeGreaterThan(hno)
+  expect(neuro / gynecology).toBeCloseTo(1.6, 1)
   // The share bar is its own labelled element, not the edge the tabs stand on.
   const tabsBottom = await strip.getByRole('list').evaluate((el) => el.getBoundingClientRect().bottom)
   const barTop = await strip.locator('[data-share]').first().evaluate((el) => el.getBoundingClientRect().top)
