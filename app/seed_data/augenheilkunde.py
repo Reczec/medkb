@@ -354,7 +354,7 @@ EXTRA = with_english(
                     "selben Tag ärztlich vorstellen."
                 ),
             },
-            "further_reading": [medlineplus("eyelidproblems", "Eyelid problems")],
+            "further_reading": [medlineplus("eyeinfections", "Eye infections")],
         },
     ],
     {

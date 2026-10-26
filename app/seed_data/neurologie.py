@@ -395,6 +395,48 @@ EXTRA = with_english(
             },
             "further_reading": [medlineplus("headache", "Headache")],
         },
+        {
+            "title": "Schwindel",
+            "doc_type": "Symptom",
+            "expected_category": "Neurologie",
+            "term_en": "Dizziness",
+            "icd11_code": "MB48",
+            "medications": ["dimenhydrinate"],
+            "sections": {
+                "definition": (
+                    "Schwindel ist die Empfindung, dass sich die Umgebung oder man selbst "
+                    "dreht, schwankt oder wegzukippen droht. Er hat viele Ursachen."
+                ),
+                "symptoms": (
+                    "Man unterscheidet Drehschwindel, Schwankschwindel und das Gefühl "
+                    "kurz vor einer Ohnmacht. Häufig kommen Übelkeit, Schweißausbrüche "
+                    "und Unsicherheit beim Gehen hinzu."
+                ),
+                "causes": (
+                    "Häufige Ursachen sind Störungen des Gleichgewichtsorgans im "
+                    "Innenohr (zum Beispiel Lagerungsschwindel), niedriger Blutdruck, "
+                    "Flüssigkeitsmangel, Medikamente und Angst. Seltener liegt eine "
+                    "Erkrankung des Gehirns zugrunde."
+                ),
+                "diagnostics": (
+                    "Die Ärztin fragt nach Auslösern und Dauer, misst den Blutdruck im "
+                    "Liegen und Stehen und prüft Augenbewegungen und Gleichgewicht. Bei "
+                    "Bedarf folgen weitere Untersuchungen durch HNO oder Neurologie."
+                ),
+                "therapy": (
+                    "Die Behandlung richtet sich nach der Ursache. Beim "
+                    "Lagerungsschwindel helfen Befreiungsmanöver, bei niedrigem Blutdruck "
+                    "mehr Trinken und langsames Aufstehen. Gleichgewichtstraining stärkt "
+                    "die Anpassung."
+                ),
+                "red_flags": (
+                    "Schwindel mit Lähmung, Sprach- oder Sehstörungen, "
+                    "heftigem Kopfschmerz, Brustschmerz, Atemnot oder Bewusstseinsverlust "
+                    "ist ein Notfall, zum Beispiel bei Schlaganfall – sofort Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("dizzinessandvertigo", "Dizziness and vertigo")],
+        },
     ],
     {
         "Epilepsie": {
@@ -562,6 +604,50 @@ EXTRA = with_english(
                 "Stress",
                 "Pain relievers",
                 "Headache diary",
+            ],
+        },
+        "Schwindel": {
+            "title_en": "Dizziness",
+            "sections_en": {
+                "definition": (
+                    "Dizziness is the sensation that the surroundings or oneself are "
+                    "spinning, swaying or about to topple. It has many causes."
+                ),
+                "symptoms": (
+                    "A distinction is made between spinning vertigo, swaying dizziness "
+                    "and the feeling of being about to faint. Nausea, sweating and "
+                    "unsteadiness when walking are common additions."
+                ),
+                "causes": (
+                    "Common causes are disorders of the balance organ in the inner ear "
+                    "(for example positional vertigo), low blood pressure, lack of "
+                    "fluids, medicines and anxiety. Less often a disease of the brain is "
+                    "the underlying cause."
+                ),
+                "diagnostics": (
+                    "The doctor asks about triggers and duration, measures blood pressure "
+                    "lying and standing and tests eye movements and balance. If needed, "
+                    "further tests by ear, nose and throat or neurology follow."
+                ),
+                "therapy": (
+                    "Treatment depends on the cause. In positional vertigo repositioning "
+                    "manoeuvres help, in low blood pressure drinking more and getting up "
+                    "slowly. Balance training strengthens adaptation."
+                ),
+                "red_flags": (
+                    "Dizziness with paralysis, speech or vision problems, severe "
+                    "headache, chest pain, breathlessness or loss of consciousness is an "
+                    "emergency, for example in a stroke – call the emergency number 144 "
+                    "(Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Dizziness",
+                "Vertigo",
+                "Balance",
+                "Inner ear",
+                "Blood pressure",
+                "Nausea",
             ],
         },
     },

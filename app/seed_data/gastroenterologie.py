@@ -355,6 +355,131 @@ EXTRA = with_english(
             },
             "further_reading": [medlineplus("ulcerativecolitis", "Ulcerative colitis")],
         },
+        {
+            "title": "Leberzirrhose",
+            "doc_type": "Diagnose",
+            "expected_category": "Gastroenterologie",
+            "term_en": "Liver cirrhosis",
+            "icd11_code": "DB93",
+            "medications": ["spironolactone", "propranolol"],
+            "sections": {
+                "definition": (
+                    "Bei der Leberzirrhose wird das Lebergewebe durch Narbengewebe ersetzt, "
+                    "sodass die Leber ihre Aufgaben nur noch eingeschränkt erfüllen kann."
+                ),
+                "symptoms": (
+                    "Anfangs treten Müdigkeit, Appetitlosigkeit und Leistungsabfall auf. "
+                    "Später kommen Gelbsucht, Wasser im Bauch (Aszites), geschwollene Beine, "
+                    "Juckreiz und eine Neigung zu Blutergüssen hinzu."
+                ),
+                "causes": (
+                    "Häufige Ursachen sind langjähriger Alkoholkonsum, chronische Virushepatitis "
+                    "(B und C) und eine Fettlebererkrankung. Seltenere Ursachen sind "
+                    "Autoimmunerkrankungen und erbliche Stoffwechselstörungen."
+                ),
+                "diagnostics": (
+                    "Blutwerte, Ultraschall und eine Messung der Lebersteifigkeit "
+                    "(Elastografie) weisen die Zirrhose nach. Bei Bedarf wird eine "
+                    "Gewebeprobe entnommen. Eine Magenspiegelung sucht nach Krampfadern der "
+                    "Speiseröhre."
+                ),
+                "therapy": (
+                    "Die Ursache wird behandelt, etwa durch Alkoholverzicht oder antivirale "
+                    "Medikamente. Entwässernde Medikamente, eiweißbewusste Ernährung und "
+                    "regelmäßige Kontrollen verhindern Komplikationen. Im Endstadium kommt "
+                    "eine Lebertransplantation in Frage."
+                ),
+                "red_flags": (
+                    "Erbrechen von Blut, schwarzer Stuhl, Verwirrtheit, starke Schläfrigkeit "
+                    "oder Fieber mit Bauchschmerzen sind lebensbedrohlich – sofort "
+                    "Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("cirrhosis", "Cirrhosis")],
+        },
+        {
+            "title": "Fettleber (Steatotische Lebererkrankung)",
+            "doc_type": "Diagnose",
+            "expected_category": "Gastroenterologie",
+            "term_en": "Fatty liver disease",
+            "icd11_code": "DB92",
+            "medications": [],
+            "sections": {
+                "definition": (
+                    "Bei der Fettleber lagert die Leber übermäßig viel Fett ein. Man "
+                    "unterscheidet die alkoholbedingte Form von der Form ohne "
+                    "Alkoholmissbrauch, die mit Übergewicht und Diabetes zusammenhängt."
+                ),
+                "symptoms": (
+                    "Meist gibt es keine Beschwerden. Manche Betroffenen verspüren "
+                    "Müdigkeit oder ein Druckgefühl im rechten Oberbauch. Die Erkrankung wird "
+                    "oft zufällig bei einer Blutuntersuchung oder einem Ultraschall entdeckt."
+                ),
+                "causes": (
+                    "Übergewicht, Bewegungsmangel, Diabetes mellitus Typ 2, erhöhte "
+                    "Blutfette und Alkohol fördern die Verfettung. Auch schnelle "
+                    "Gewichtsabnahme und manche Medikamente können beteiligt sein."
+                ),
+                "diagnostics": (
+                    "Ein Ultraschall zeigt die vermehrte Fetteinlagerung, Leberwerte im Blut "
+                    "geben Hinweise. Eine Messung der Lebersteifigkeit schätzt die "
+                    "Vernarbung ab."
+                ),
+                "therapy": (
+                    "Gewichtsabnahme von fünf bis zehn Prozent, mediterrane Ernährung, "
+                    "Bewegung und Verzicht auf Alkohol können die Leber deutlich "
+                    "entlasten. Begleiterkrankungen wie Diabetes und Bluthochdruck werden "
+                    "mitbehandelt."
+                ),
+                "red_flags": (
+                    "Gelbfärbung von Haut oder Augen, ein zunehmend dicker Bauch, "
+                    "Bluterbrechen oder Verwirrtheit weisen auf eine fortgeschrittene "
+                    "Lebererkrankung hin – rasch ärztlich abklären, bei Bluterbrechen "
+                    "Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("fattyliverdisease", "Fatty liver disease")],
+        },
+        {
+            "title": "Akute Bauchspeicheldrüsenentzündung (Pankreatitis)",
+            "doc_type": "Diagnose",
+            "expected_category": "Gastroenterologie",
+            "term_en": "Acute pancreatitis",
+            "icd11_code": "DC31",
+            "medications": ["paracetamol"],
+            "sections": {
+                "definition": (
+                    "Bei der akuten Pankreatitis entzündet sich die Bauchspeicheldrüse "
+                    "plötzlich, weil Verdauungsenzyme schon im Organ aktiv werden und es "
+                    "selbst angreifen."
+                ),
+                "symptoms": (
+                    "Heftige, gürtelförmige Schmerzen im Oberbauch, die in den Rücken "
+                    "ausstrahlen, dazu Übelkeit, Erbrechen, Fieber und ein aufgetriebener "
+                    "Bauch."
+                ),
+                "causes": (
+                    "Die häufigsten Ursachen sind Gallensteine und Alkohol. Weitere sind "
+                    "stark erhöhte Blutfette, bestimmte Medikamente und Eingriffe an den "
+                    "Gallenwegen."
+                ),
+                "diagnostics": (
+                    "Blutwerte (Lipase), Ultraschall des Bauches und bei Bedarf "
+                    "Computertomografie sichern die Diagnose und zeigen das Ausmaß."
+                ),
+                "therapy": (
+                    "Die Behandlung erfolgt im Krankenhaus: Flüssigkeit über die Vene, "
+                    "Schmerzmittel, frühe, angepasste Ernährung und die Behandlung der "
+                    "Ursache. Gallensteine werden gegebenenfalls entfernt."
+                ),
+                "red_flags": (
+                    "Anhaltende heftige Bauchschmerzen mit Erbrechen, Fieber, Kreislauf- "
+                    "problemen oder Atemnot können einen schweren Verlauf bedeuten – "
+                    "sofort Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("pancreatitis", "Pancreatitis")],
+        },
     ],
     {
         "Magenschleimhautentzündung (Gastritis)": {
@@ -479,6 +604,134 @@ EXTRA = with_english(
                 "Colonoscopy",
                 "Mesalazine",
                 "Flare-up",
+            ],
+        },
+        "Leberzirrhose": {
+            "title_en": "Liver cirrhosis",
+            "sections_en": {
+                "definition": (
+                    "In liver cirrhosis, liver tissue is replaced by scar tissue, so that "
+                    "the liver can only carry out its tasks to a limited extent."
+                ),
+                "symptoms": (
+                    "At first tiredness, loss of appetite and reduced performance occur. "
+                    "Later jaundice, fluid in the abdomen (ascites), swollen legs, itching "
+                    "and a tendency to bruise are added."
+                ),
+                "causes": (
+                    "Common causes are long-term alcohol use, chronic viral hepatitis (B "
+                    "and C) and fatty liver disease. Rarer causes are autoimmune diseases "
+                    "and inherited metabolic disorders."
+                ),
+                "diagnostics": (
+                    "Blood values, ultrasound and a measurement of liver stiffness "
+                    "(elastography) show the cirrhosis. If needed, a tissue sample is "
+                    "taken. A gastroscopy looks for varicose veins of the oesophagus."
+                ),
+                "therapy": (
+                    "The cause is treated, for example by stopping alcohol or with "
+                    "antiviral medicines. Diuretics, a protein-aware diet and regular "
+                    "check-ups prevent complications. In the end stage a liver "
+                    "transplant comes into question."
+                ),
+                "red_flags": (
+                    "Vomiting blood, black stool, confusion, marked drowsiness or fever "
+                    "with abdominal pain are life-threatening – call the emergency "
+                    "number 144 (Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Liver cirrhosis",
+                "Liver",
+                "Ascites",
+                "Jaundice",
+                "Elastography",
+                "Liver transplant",
+            ],
+        },
+        "Fettleber (Steatotische Lebererkrankung)": {
+            "title_en": "Fatty liver (steatotic liver disease)",
+            "sections_en": {
+                "definition": (
+                    "In fatty liver the liver stores too much fat. A distinction is made "
+                    "between the alcohol-related form and the form without alcohol "
+                    "misuse, which is linked to overweight and diabetes."
+                ),
+                "symptoms": (
+                    "There are usually no symptoms. Some people feel tired or have a "
+                    "feeling of pressure in the right upper abdomen. The disease is often "
+                    "found by chance during a blood test or an ultrasound."
+                ),
+                "causes": (
+                    "Overweight, lack of exercise, type 2 diabetes mellitus, raised blood "
+                    "fats and alcohol promote fat build-up. Rapid weight loss and some "
+                    "medicines can also be involved."
+                ),
+                "diagnostics": (
+                    "An ultrasound shows the increased fat storage, and liver values in "
+                    "the blood give hints. A measurement of liver stiffness estimates the "
+                    "scarring."
+                ),
+                "therapy": (
+                    "Weight loss of five to ten percent, a Mediterranean diet, exercise "
+                    "and giving up alcohol can relieve the liver markedly. Accompanying "
+                    "diseases such as diabetes and high blood pressure are treated too."
+                ),
+                "red_flags": (
+                    "A yellow colour of the skin or eyes, an increasingly large abdomen, "
+                    "vomiting of blood or confusion point to advanced liver disease – "
+                    "have it checked promptly, and for vomiting blood call the emergency "
+                    "number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Fatty liver",
+                "Liver",
+                "Overweight",
+                "Diabetes",
+                "Liver values",
+                "Mediterranean diet",
+            ],
+        },
+        "Akute Bauchspeicheldrüsenentzündung (Pankreatitis)": {
+            "title_en": "Acute inflammation of the pancreas (pancreatitis)",
+            "sections_en": {
+                "definition": (
+                    "In acute pancreatitis the pancreas suddenly becomes inflamed, "
+                    "because digestive enzymes become active within the organ and attack "
+                    "it."
+                ),
+                "symptoms": (
+                    "Severe, belt-like pain in the upper abdomen that spreads to the "
+                    "back, plus nausea, vomiting, fever and a swollen abdomen."
+                ),
+                "causes": (
+                    "The most common causes are gallstones and alcohol. Others are "
+                    "markedly raised blood fats, certain medicines and procedures on the "
+                    "bile ducts."
+                ),
+                "diagnostics": (
+                    "Blood values (lipase), an ultrasound of the abdomen and, if needed, "
+                    "computed tomography confirm the diagnosis and show its extent."
+                ),
+                "therapy": (
+                    "Treatment takes place in hospital: fluids through a vein, pain "
+                    "relief, early adapted nutrition and treatment of the cause. "
+                    "Gallstones are removed where appropriate."
+                ),
+                "red_flags": (
+                    "Lasting severe abdominal pain with vomiting, fever, circulation "
+                    "problems or breathlessness can mean a severe course – call the "
+                    "emergency number 144 (Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Pancreatitis",
+                "Pancreas",
+                "Upper abdominal pain",
+                "Gallstones",
+                "Lipase",
+                "Alcohol",
             ],
         },
     },

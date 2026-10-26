@@ -353,6 +353,48 @@ EXTRA = with_english(
             },
             "further_reading": [medlineplus("bronchitis", "Bronchitis")],
         },
+        {
+            "title": "Husten",
+            "doc_type": "Symptom",
+            "expected_category": "Pneumologie",
+            "term_en": "Cough",
+            "icd11_code": "MD12",
+            "medications": ["acetylcysteine", "dextromethorphan"],
+            "sections": {
+                "definition": (
+                    "Husten ist ein Schutzreflex, der Fremdkörper und Schleim aus den "
+                    "Atemwegen entfernt. Er ist ein häufiger Grund für den Besuch bei der "
+                    "Hausärztin oder dem Hausarzt."
+                ),
+                "symptoms": (
+                    "Man unterscheidet trockenen Reizhusten und Husten mit Auswurf. Je "
+                    "nach Dauer spricht man von akutem Husten (bis drei Wochen), "
+                    "anhaltendem und chronischem Husten (über acht Wochen)."
+                ),
+                "causes": (
+                    "Meist stecken Erkältungen und Virusinfekte dahinter. Weitere Ursachen "
+                    "sind Rauchen, Asthma, Reflux, Allergien, Medikamente (etwa "
+                    "ACE-Hemmer) und seltener Lungenerkrankungen."
+                ),
+                "diagnostics": (
+                    "Die Ärztin erfragt Dauer, Auswurf und Begleitbeschwerden, hört die "
+                    "Lunge ab und veranlasst bei anhaltendem Husten eine Röntgenaufnahme "
+                    "oder Lungenfunktionsprüfung."
+                ),
+                "therapy": (
+                    "Viel trinken, Raumluft befeuchten und Inhalation lindern die "
+                    "Beschwerden. Hustenstiller sind nur bei quälendem trockenem Husten "
+                    "sinnvoll. Wer raucht, sollte aufhören. Die Ursache wird gezielt "
+                    "behandelt."
+                ),
+                "red_flags": (
+                    "Husten mit Blut, Atemnot, Brustschmerz, hohem Fieber, ungewolltem "
+                    "Gewichtsverlust oder länger als acht Wochen gehört ärztlich "
+                    "abgeklärt. Bei starker Atemnot Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("cough", "Cough")],
+        },
     ],
     {
         "Lungenembolie": {
@@ -478,6 +520,50 @@ EXTRA = with_english(
                 "Mucus",
                 "Bronchial tubes",
                 "Respiratory infection",
+                "Inhalation",
+            ],
+        },
+        "Husten": {
+            "title_en": "Cough",
+            "sections_en": {
+                "definition": (
+                    "Coughing is a protective reflex that removes foreign bodies and "
+                    "mucus from the airways. It is a common reason for visiting the "
+                    "family doctor."
+                ),
+                "symptoms": (
+                    "A distinction is made between a dry irritating cough and a cough "
+                    "with sputum. Depending on duration one speaks of acute cough (up to "
+                    "three weeks), and persistent and chronic cough (over eight weeks)."
+                ),
+                "causes": (
+                    "Colds and viral infections are usually behind it. Other causes are "
+                    "smoking, asthma, reflux, allergies, medicines (such as ACE "
+                    "inhibitors) and, less often, lung diseases."
+                ),
+                "diagnostics": (
+                    "The doctor asks about duration, sputum and accompanying symptoms, "
+                    "listens to the lungs and, for a persistent cough, arranges an X-ray "
+                    "or a lung function test."
+                ),
+                "therapy": (
+                    "Drinking plenty, humidifying the room air and inhaling ease the "
+                    "symptoms. Cough suppressants make sense only for a tormenting dry "
+                    "cough. Smokers should stop. The cause is treated specifically."
+                ),
+                "red_flags": (
+                    "A cough with blood, breathlessness, chest pain, high fever, "
+                    "unintended weight loss or lasting longer than eight weeks should be "
+                    "checked by a doctor. For severe breathlessness call the emergency "
+                    "number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Cough",
+                "Sputum",
+                "Respiratory tract",
+                "Cold",
+                "Smoking",
                 "Inhalation",
             ],
         },
