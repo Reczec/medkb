@@ -1,5 +1,5 @@
 from app.seed_data.english import with_english
-from app.seed_data.links import medlineplus
+from app.seed_data.links import medlineplus, who
 
 ENTRIES = [
     {
@@ -214,6 +214,269 @@ ENTRIES = with_english(
                 ),
             },
             "keywords_en": ["Fever", "Baby", "Child", "Temperature", "Paediatrician", "Seizure"],
+        },
+    },
+)
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Masern",
+            "doc_type": "Diagnose",
+            "expected_category": "Pädiatrie",
+            "term_en": "Measles",
+            "icd11_code": "1F03",
+            "medications": ["paracetamol"],
+            "sections": {
+                "definition": (
+                    "Masern sind eine hochansteckende Viruserkrankung, die vor allem bei "
+                    "Kindern auftritt und schwere Komplikationen verursachen kann."
+                ),
+                "symptoms": (
+                    "Zuerst kommen hohes Fieber, Husten, Schnupfen und gerötete Augen. Nach "
+                    "einigen Tagen folgt ein roter, fleckiger Hautausschlag, der hinter den "
+                    "Ohren beginnt. Weiße Flecken in der Mundschleimhaut sind typisch."
+                ),
+                "causes": (
+                    "Das Masernvirus wird über winzige Tröpfchen beim Husten und Niesen "
+                    "übertragen und ist schon beim Aufenthalt im selben Raum ansteckend."
+                ),
+                "diagnostics": (
+                    "Die Kinderärztin erkennt die Masern am Krankheitsbild. Ein "
+                    "Laborbefund bestätigt die Diagnose; die Erkrankung ist meldepflichtig."
+                ),
+                "therapy": (
+                    "Es gibt keine ursächliche Behandlung. Bettruhe, viel Trinken und "
+                    "fiebersenkende Mittel lindern die Beschwerden. Die Schutzimpfung "
+                    "(zwei Dosen, meist als Kombinationsimpfung) schützt zuverlässig."
+                ),
+                "red_flags": (
+                    "Atemnot, anhaltendes hohes Fieber, starke Ohrenschmerzen, "
+                    "Verwirrtheit, Krampfanfälle oder Nackensteifigkeit können auf eine "
+                    "Lungen- oder Gehirnentzündung hinweisen – sofort Notruf 144."
+                ),
+            },
+            "further_reading": [
+                medlineplus("measles", "Measles"),
+                who("measles", "Measles"),
+            ],
+        },
+        {
+            "title": "Pseudokrupp (Krupp-Syndrom)",
+            "doc_type": "Diagnose",
+            "expected_category": "Pädiatrie",
+            "term_en": "Croup",
+            "icd11_code": "CA06.0",
+            "medications": ["prednisolone", "dexamethasone"],
+            "sections": {
+                "definition": (
+                    "Beim Pseudokrupp ist die Schleimhaut im Bereich des Kehlkopfes "
+                    "geschwollen. Er betrifft vor allem Kleinkinder zwischen sechs Monaten "
+                    "und drei Jahren und tritt häufig nachts auf."
+                ),
+                "symptoms": (
+                    "Bellender Husten, Heiserkeit und ein pfeifendes Geräusch beim "
+                    "Einatmen (Stridor). Bei schweren Verläufen sind die Atembewegungen "
+                    "angestrengt, und das Kind ist unruhig."
+                ),
+                "causes": (
+                    "Meist lösen Viren, besonders Parainfluenzaviren, den Infekt der oberen "
+                    "Atemwege aus. Kalte Nachtluft und Aufregung verstärken die Beschwerden."
+                ),
+                "diagnostics": (
+                    "Die Ärztin hört den typischen Husten und beurteilt die Atmung. Eine "
+                    "Bildgebung ist meist nicht nötig."
+                ),
+                "therapy": (
+                    "Ruhe bewahren, das Kind aufrecht halten und frische, kühle Luft "
+                    "zuführen. Kortison (als Saft oder Zäpfchen) lässt die Schwellung "
+                    "abklingen. Bei schwerer Atemnot werden im Krankenhaus Medikamente "
+                    "zum Inhalieren gegeben."
+                ),
+                "red_flags": (
+                    "Starke Atemnot, ein Einziehen am Brustkorb, blaue Lippen, Speicheln "
+                    "bei fieberhafter Erkrankung oder ein sehr müdes Kind sind "
+                    "Notfallzeichen – sofort Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("croup", "Croup")],
+        },
+        {
+            "title": "Aufmerksamkeitsdefizit-/Hyperaktivitätsstörung (ADHS)",
+            "doc_type": "Diagnose",
+            "expected_category": "Psychiatrie",
+            "term_en": "Attention deficit hyperactivity disorder",
+            "icd11_code": "6A05",
+            "medications": ["methylphenidate"],
+            "sections": {
+                "definition": (
+                    "ADHS ist eine Entwicklungsstörung, bei der Aufmerksamkeit, "
+                    "Impulskontrolle und Aktivität deutlich von der Altersnorm abweichen "
+                    "und den Alltag in Schule und Familie beeinträchtigen."
+                ),
+                "symptoms": (
+                    "Kinder sind unaufmerksam, leicht ablenkbar, zappelig und impulsiv. Sie "
+                    "haben Mühe, Aufgaben zu beenden oder zu warten. Bei manchen steht die "
+                    "Unaufmerksamkeit ohne Hyperaktivität im Vordergrund."
+                ),
+                "causes": (
+                    "Erbliche Faktoren spielen eine große Rolle. Frühgeburt, "
+                    "Rauchen oder Alkohol in der Schwangerschaft und weitere Einflüsse können "
+                    "beitragen. Erziehung allein verursacht ADHS nicht."
+                ),
+                "diagnostics": (
+                    "Kinderärztin, Kinderpsychiater oder Psychologen erheben die "
+                    "Entwicklung mit Fragebögen, Gesprächen und Tests. Andere Ursachen wie "
+                    "Hör- oder Sehprobleme werden ausgeschlossen."
+                ),
+                "therapy": (
+                    "Die Behandlung kombiniert Aufklärung, Elterntraining, Maßnahmen in der "
+                    "Schule und Verhaltenstherapie. In ausgeprägten Fällen können "
+                    "Medikamente helfen, die ärztlich eingestellt und kontrolliert werden."
+                ),
+                "red_flags": (
+                    "Selbstverletzung, Äußerungen über Suizid, aggressives Verhalten "
+                    "gegen sich oder andere oder Alkohol- und Drogenkonsum sollten rasch "
+                    "fachärztlich abgeklärt werden; in akuter Gefahr Notruf 144."
+                ),
+            },
+            "further_reading": [
+                medlineplus(
+                    "attentiondeficithyperactivitydisorder",
+                    "Attention deficit hyperactivity disorder",
+                )
+            ],
+        },
+    ],
+    {
+        "Masern": {
+            "title_en": "Measles",
+            "sections_en": {
+                "definition": (
+                    "Measles is a highly contagious viral disease that occurs mainly in "
+                    "children and can cause serious complications."
+                ),
+                "symptoms": (
+                    "First come high fever, cough, a runny nose and red eyes. After a few "
+                    "days a red, blotchy rash follows that starts behind the ears. White "
+                    "spots in the lining of the mouth are typical."
+                ),
+                "causes": (
+                    "The measles virus spreads through tiny droplets when coughing and "
+                    "sneezing and is infectious simply from being in the same room."
+                ),
+                "diagnostics": (
+                    "The paediatrician recognises measles from the picture of the "
+                    "illness. A laboratory result confirms the diagnosis; the disease has "
+                    "to be reported."
+                ),
+                "therapy": (
+                    "There is no treatment of the cause. Bed rest, plenty of fluids and "
+                    "fever-lowering medicines ease the symptoms. The vaccination (two "
+                    "doses, usually as a combination vaccine) protects reliably."
+                ),
+                "red_flags": (
+                    "Breathlessness, persistent high fever, severe earache, confusion, "
+                    "seizures or a stiff neck can point to pneumonia or inflammation of "
+                    "the brain – call the emergency number 144 (Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Measles",
+                "Rash",
+                "Fever",
+                "Vaccination",
+                "Children",
+                "Contagious",
+            ],
+        },
+        "Pseudokrupp (Krupp-Syndrom)": {
+            "title_en": "Croup",
+            "sections_en": {
+                "definition": (
+                    "In croup the lining around the voice box is swollen. It mainly "
+                    "affects toddlers between six months and three years of age and "
+                    "often occurs at night."
+                ),
+                "symptoms": (
+                    "A barking cough, hoarseness and a whistling sound when breathing in "
+                    "(stridor). In severe cases breathing movements are laboured and the "
+                    "child is restless."
+                ),
+                "causes": (
+                    "Viruses, especially parainfluenza viruses, usually trigger the "
+                    "infection of the upper airways. Cold night air and excitement make "
+                    "the symptoms worse."
+                ),
+                "diagnostics": (
+                    "The doctor hears the typical cough and assesses the breathing. "
+                    "Imaging is usually not needed."
+                ),
+                "therapy": (
+                    "Stay calm, keep the child upright and provide fresh, cool air. "
+                    "Cortisone (as syrup or suppository) makes the swelling go down. In "
+                    "severe breathlessness, medicines for inhalation are given in "
+                    "hospital."
+                ),
+                "red_flags": (
+                    "Severe breathlessness, drawing in at the chest, blue lips, drooling "
+                    "with a feverish illness or a very sleepy child are emergency signs – "
+                    "call the emergency number 144 (Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Croup",
+                "Barking cough",
+                "Stridor",
+                "Toddlers",
+                "Cortisone",
+                "Breathlessness",
+            ],
+        },
+        "Aufmerksamkeitsdefizit-/Hyperaktivitätsstörung (ADHS)": {
+            "title_en": "Attention deficit hyperactivity disorder (ADHD)",
+            "sections_en": {
+                "definition": (
+                    "ADHD is a developmental disorder in which attention, impulse "
+                    "control and activity differ markedly from the norm for the age and "
+                    "affect everyday life at school and in the family."
+                ),
+                "symptoms": (
+                    "Children are inattentive, easily distracted, fidgety and impulsive. "
+                    "They have trouble finishing tasks or waiting. In some, inattention "
+                    "without hyperactivity is in the foreground."
+                ),
+                "causes": (
+                    "Inherited factors play a large role. Premature birth, smoking or "
+                    "alcohol in pregnancy and other influences can contribute. Parenting "
+                    "alone does not cause ADHD."
+                ),
+                "diagnostics": (
+                    "The paediatrician, child psychiatrist or psychologist assesses "
+                    "development with questionnaires, conversations and tests. Other "
+                    "causes such as hearing or vision problems are ruled out."
+                ),
+                "therapy": (
+                    "Treatment combines information, parent training, measures at school "
+                    "and behavioural therapy. In marked cases medicines can help, which "
+                    "are set up and monitored by a doctor."
+                ),
+                "red_flags": (
+                    "Self-harm, statements about suicide, aggressive behaviour against "
+                    "oneself or others, or alcohol and drug use should be assessed by a "
+                    "specialist promptly; in acute danger call the emergency number 144 "
+                    "(Austria)."
+                ),
+            },
+            "keywords_en": [
+                "ADHD",
+                "Attention",
+                "Hyperactivity",
+                "Impulsivity",
+                "Behavioural therapy",
+                "Child",
+            ],
         },
     },
 )
