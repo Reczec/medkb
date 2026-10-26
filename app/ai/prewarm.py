@@ -22,7 +22,8 @@ async def prewarm(
     provider: AIProvider,
     limit: int | None = None,
     pause: float = 0,
-    lang: Lang = "de",
+    *,
+    lang: Lang,
 ) -> dict[str, int]:
     """Warm every role/feature variant. ``pause`` seconds between calls keeps a free provider
     tier under its per-minute limit (failed calls still use the daily budget)."""
@@ -85,7 +86,7 @@ def main() -> None:
         provider = get_provider(settings)
         languages: list[Lang] = ["de", "en"] if args.lang == "both" else [args.lang]
         for lang in languages:
-            result = asyncio.run(prewarm(db, settings, provider, args.limit, args.pause, lang))
+            result = asyncio.run(prewarm(db, settings, provider, args.limit, args.pause, lang=lang))
             print(lang, result)
 
 

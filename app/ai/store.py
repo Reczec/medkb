@@ -94,7 +94,7 @@ def _ensure_row(db: Session, identity: str, today: str) -> None:
         pass  # another request (or earlier reservation) created it
 
 
-def reserve(db: Session, identity: str, settings: Settings, lang: Lang = "de") -> None:
+def reserve(db: Session, identity: str, settings: Settings, lang: Lang) -> None:
     """Reserve once before contacting a provider. Failed attempts still cost an API call.
 
     Lock/update global before client in every request; either both increments commit or neither.

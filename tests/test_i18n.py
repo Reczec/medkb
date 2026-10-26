@@ -55,6 +55,24 @@ def test_login_error_follows_the_header(anon_client, header, expected):
     assert response.json()["detail"] == expected
 
 
+def test_ai_helpers_need_an_explicit_language():
+    """A forgotten language must fail loudly instead of answering in German."""
+    import inspect
+
+    from app.ai import prewarm, prompts, service, store
+
+    for function in (
+        prompts.messages,
+        service.execute,
+        service.normalize,
+        service.document_inputs,
+        store.reserve,
+        prewarm.prewarm,
+    ):
+        parameter = inspect.signature(function).parameters["lang"]
+        assert parameter.default is inspect.Parameter.empty, function.__qualname__
+
+
 @pytest.mark.parametrize(
     ("header", "expected"),
     [

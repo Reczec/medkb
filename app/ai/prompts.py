@@ -10,8 +10,6 @@ from typing import Any
 from app.classifier import CATEGORIES
 from app.i18n import Lang, message
 
-NOTICE = message("notice", "de")  # German notice; use message("notice", lang) for the others
-
 PLAIN = "Use plain language at CEFR level B1."
 PROFESSIONAL = "Use professional language for medical staff."
 
@@ -63,7 +61,7 @@ def instructions(feature: str, lang: Lang) -> str:
     return texts[feature]
 
 
-def messages(feature: str, role: str, inputs: Any, lang: Lang = "de") -> list[dict[str, str]]:
+def messages(feature: str, role: str, inputs: Any, lang: Lang) -> list[dict[str, str]]:
     # "Einfach erklärt" is plain language for everyone; other features follow the role.
     audience = PLAIN if role == "patient" or feature == "explain" else PROFESSIONAL
     style = FORMAT + " " if feature in TEXT_FEATURES else ""

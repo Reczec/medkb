@@ -24,7 +24,7 @@ SEED_TITLES = frozenset(item["title"] for item in SEED_DOCUMENTS)
 ENGLISH_FIELDS = {"title_en", "content_en", "sections_en", "keywords_en"}
 
 
-def document_inputs(document: Any, lang: Lang = "de") -> dict:
+def document_inputs(document: Any, lang: Lang) -> dict:
     """Bind to semantic content, not timestamps refreshed by an unchanged demo reset.
 
     The German shape is exactly what it was before the English version existed, so cache keys
@@ -64,9 +64,7 @@ def document_cache_identity(document: Any) -> str | None:
     return None
 
 
-def normalize(
-    feature: str, text: str, inputs: Any, citations: list[dict], lang: Lang = "de"
-) -> dict:
+def normalize(feature: str, text: str, inputs: Any, citations: list[dict], lang: Lang) -> dict:
     try:
         if not text.strip() or len(text) > 20_000:
             raise ValueError("Invalid output size")
@@ -121,11 +119,12 @@ async def execute(
     feature: str,
     inputs: Any,
     role: str,
+    *,
+    lang: Lang,
     document_id: int | None = None,
     citations: list[dict] | None = None,
     stream: bool = False,
     cache_identity: str | None = None,
-    lang: Lang = "de",
     retrieval_metadata: dict | None = None,
 ) -> Any:
     references = citations or []

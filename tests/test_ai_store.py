@@ -35,9 +35,9 @@ def test_cache_roundtrip_duplicate_and_reset(db_session, test_settings):
 
 def test_client_quota_stops_at_exact_limit_and_rolls_back_global(db_session, test_settings):
     for _ in range(30):
-        store.reserve(db_session, "client", test_settings)
+        store.reserve(db_session, "client", test_settings, "de")
     with pytest.raises(HTTPException) as error:
-        store.reserve(db_session, "client", test_settings)
+        store.reserve(db_session, "client", test_settings, "de")
     assert error.value.status_code == 429
     assert int(error.value.headers["Retry-After"]) > 0
     assert store.usage_today(db_session) == 30
@@ -45,9 +45,9 @@ def test_client_quota_stops_at_exact_limit_and_rolls_back_global(db_session, tes
 
 def test_global_quota_does_not_increment_other_client(db_session, test_settings):
     test_settings.ai_daily_limit = 1
-    store.reserve(db_session, "first", test_settings)
+    store.reserve(db_session, "first", test_settings, "de")
     with pytest.raises(HTTPException):
-        store.reserve(db_session, "second", test_settings)
+        store.reserve(db_session, "second", test_settings, "de")
     assert store.usage_today(db_session) == 1
     row = db_session.get(AIUsage, ("second", store.day()))
     assert row is None or row.count == 0
@@ -56,13 +56,13 @@ def test_global_quota_does_not_increment_other_client(db_session, test_settings)
 def test_quota_resets_at_utc_day_boundary(db_session, test_settings, monkeypatch):
     monkeypatch.setattr(store, "utcnow", lambda: datetime(2026, 10, 11, 23, 59, 59, tzinfo=UTC))
     test_settings.ai_client_daily_limit = 1
-    store.reserve(db_session, "client", test_settings)
+    store.reserve(db_session, "client", test_settings, "de")
     with pytest.raises(HTTPException) as error:
-        store.reserve(db_session, "client", test_settings)
+        store.reserve(db_session, "client", test_settings, "de")
     assert error.value.headers["Retry-After"] == "1"
     monkeypatch.setattr(store, "utcnow", lambda: datetime(2026, 10, 12, tzinfo=UTC))
     assert store.usage_today(db_session) == 0
-    store.reserve(db_session, "client", test_settings)
+    store.reserve(db_session, "client", test_settings, "de")
     assert store.usage_today(db_session) == 1
 
 
@@ -81,7 +81,7 @@ def test_parallel_last_slot_is_reserved_only_once(tmp_path, test_settings):
     def attempt(name):
         with Session(target) as db:
             try:
-                store.reserve(db, name, test_settings)
+                store.reserve(db, name, test_settings, "de")
                 return True
             except HTTPException:
                 return False
