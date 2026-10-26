@@ -34,10 +34,18 @@ IDS = [d["title"][:30] for d in SEED_DOCUMENTS]
 
 
 def test_entry_count_and_specialty_coverage():
-    assert 44 <= len(SEED_DOCUMENTS) <= 48
+    assert 90 <= len(SEED_DOCUMENTS) <= 110
     per_category = Counter(d["expected_category"] for d in SEED_DOCUMENTS)
     assert set(per_category) == set(CATEGORIES)
-    assert min(per_category.values()) >= 2
+    assert min(per_category.values()) >= 5
+
+
+def test_first_release_entries_keep_their_ids():
+    # Links such as /wissen/7 must keep pointing at the same entry: additions go at the end.
+    titles = [d["title"] for d in SEED_DOCUMENTS[:47]]
+    assert titles[6] == "Migräne"
+    assert titles[0].startswith("Akute Mittelohrentzündung")
+    assert titles[46].startswith("Impfungen und Vorsorgeuntersuchungen")
 
 
 def test_source_marks_editorial_demo_content():
