@@ -28,7 +28,7 @@ import { DocumentNotFound } from '@/features/documents/DocumentNotFound'
 import { FurtherReading } from '@/features/documents/FurtherReading'
 import { SectionedContent } from '@/features/documents/SectionedContent'
 import { useI18n } from '@/i18n/context'
-import { localized } from '@/i18n/localized'
+import { langAttr, localized } from '@/i18n/localized'
 import type { TranslationKey } from '@/i18n/translate'
 import { ApiError } from '@/lib/api'
 import { formatDate, formatRelative } from '@/lib/format'
@@ -201,9 +201,14 @@ export function DocumentPage() {
   const text = localized(document, lang)
   const paragraphs = text.content.split(/\n\s*\n/).filter((p) => p.trim())
   const content = text.sections ? (
-    <SectionedContent sections={text.sections} />
+    <div lang={langAttr(text.contentLang, lang)}>
+      <SectionedContent sections={text.sections} />
+    </div>
   ) : (
-    <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
+    <div
+      lang={langAttr(text.contentLang, lang)}
+      className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed"
+    >
       {paragraphs.map((paragraph, index) => (
         <p key={index} className="whitespace-pre-line [overflow-wrap:anywhere]">
           {paragraph}
@@ -229,7 +234,10 @@ export function DocumentPage() {
 
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex min-w-0 flex-col gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight [overflow-wrap:anywhere] lg:text-4xl">
+          <h1
+            lang={langAttr(text.titleLang, lang)}
+            className="text-3xl font-semibold tracking-tight [overflow-wrap:anywhere] lg:text-4xl"
+          >
             {text.title}
           </h1>
           <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">

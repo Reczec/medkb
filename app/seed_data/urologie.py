@@ -234,3 +234,258 @@ ENTRIES = with_english(
         },
     },
 )
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Harninkontinenz (Blasenschwäche)",
+            "doc_type": "Diagnose",
+            "expected_category": "Urologie",
+            "term_en": "Urinary incontinence",
+            "icd11_code": "MF50.2",
+            "medications": ["solifenacin", "mirabegron"],
+            "sections": {
+                "definition": (
+                    "Bei der Harninkontinenz geht unwillkürlich Urin ab, weil die Blase den "
+                    "Harn nicht sicher halten kann."
+                ),
+                "symptoms": (
+                    "Bei der Belastungsinkontinenz geht Urin beim Husten, Niesen oder Heben "
+                    "ab. Bei der Dranginkontinenz tritt plötzlich starker Harndrang auf, den "
+                    "man nicht mehr aufhalten kann."
+                ),
+                "causes": (
+                    "Eine geschwächte Beckenbodenmuskulatur nach Geburten, im Alter oder "
+                    "nach Operationen, eine überaktive Blase, eine vergrößerte Prostata, "
+                    "Harnwegsinfekte, Medikamente und Nervenerkrankungen können dahinterstecken."
+                ),
+                "diagnostics": (
+                    "Die Urologin erfragt Trinkmenge, Häufigkeit und Auslöser, oft mit einem "
+                    "Blasentagebuch. Es folgen Urinuntersuchung, Ultraschall und bei Bedarf "
+                    "eine Messung des Blasendrucks."
+                ),
+                "therapy": (
+                    "Beckenbodentraining, Blasentraining, Gewichtsabnahme und angepasste "
+                    "Trinkmengen helfen oft. Medikamente beruhigen eine überaktive Blase, "
+                    "bei Belastungsinkontinenz kann eine Operation sinnvoll sein."
+                ),
+                "red_flags": (
+                    "Plötzlich auftretende Blasenschwäche mit Taubheit im Intimbereich, "
+                    "Beinschwäche oder Rückenschmerzen kann auf eine Nervenschädigung "
+                    "hinweisen – umgehend ärztlich abklären, bei Lähmungen Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("urinaryincontinence", "Urinary incontinence")],
+        },
+        {
+            "title": "Akute Nierenbeckenentzündung (Pyelonephritis)",
+            "doc_type": "Diagnose",
+            "expected_category": "Urologie",
+            "term_en": "Pyelonephritis",
+            "icd11_code": "GB51",
+            "medications": ["ciprofloxacin", "ibuprofen"],
+            "sections": {
+                "definition": (
+                    "Bei der Nierenbeckenentzündung sind das Nierenbecken und das "
+                    "Nierengewebe durch Bakterien entzündet, meist als Folge eines "
+                    "aufsteigenden Harnwegsinfekts."
+                ),
+                "symptoms": (
+                    "Fieber mit Schüttelfrost, Flankenschmerzen, ein klopfempfindlicher "
+                    "Rücken, Brennen beim Wasserlassen und ein allgemeines Krankheitsgefühl."
+                ),
+                "causes": (
+                    "Meist steigen Darmbakterien, vor allem E. coli, über die Harnröhre und "
+                    "die Blase zur Niere auf. Harnstau durch Nierensteine, Diabetes und "
+                    "Schwangerschaft erhöhen das Risiko."
+                ),
+                "diagnostics": (
+                    "Urinuntersuchung mit Urinkultur, Blutuntersuchung auf Entzündungswerte "
+                    "und ein Ultraschall der Nieren, um einen Harnstau auszuschließen."
+                ),
+                "therapy": (
+                    "Behandelt wird mit einem Antibiotikum, in schweren Fällen im "
+                    "Krankenhaus über die Vene. Viel Trinken und Fiebersenkung "
+                    "unterstützen. Ein Harnstau muss rasch beseitigt werden."
+                ),
+                "red_flags": (
+                    "Hohes Fieber mit Schüttelfrost, Benommenheit, sehr schneller Puls oder "
+                    "niedriger Blutdruck können auf eine Sepsis hinweisen – sofort Notruf "
+                    "144."
+                ),
+            },
+            "further_reading": [medlineplus("urinarytractinfections", "Urinary tract infections")],
+        },
+        {
+            "title": "Prostatakrebs",
+            "doc_type": "Diagnose",
+            "expected_category": "Urologie",
+            "term_en": "Prostate cancer",
+            "icd11_code": "2C82",
+            "medications": ["bicalutamide"],
+            "sections": {
+                "definition": (
+                    "Prostatakrebs ist ein bösartiger Tumor der Vorsteherdrüse und die "
+                    "häufigste Krebserkrankung bei Männern."
+                ),
+                "symptoms": (
+                    "Im Frühstadium gibt es meist keine Beschwerden. Später können "
+                    "Probleme beim Wasserlassen, Blut im Urin oder Samen, Rücken- und "
+                    "Knochenschmerzen auftreten."
+                ),
+                "causes": (
+                    "Das Risiko steigt mit dem Alter. Familiäre Häufung und erbliche "
+                    "Veranlagung spielen eine Rolle; weitere Ursachen sind nicht sicher "
+                    "bekannt."
+                ),
+                "diagnostics": (
+                    "Der Urologe tastet die Prostata ab und bestimmt gegebenenfalls den PSA-"
+                    "Wert im Blut. Bei Auffälligkeiten folgen Magnetresonanztomografie und "
+                    "eine Gewebeprobe. Der PSA-Test hat Vor- und Nachteile und wird "
+                    "individuell besprochen."
+                ),
+                "therapy": (
+                    "Je nach Ausbreitung und Aggressivität kommen aktive Überwachung, "
+                    "Operation, Bestrahlung oder eine Hormontherapie in Frage. Über das "
+                    "Vorgehen entscheidet ein ärztliches Team gemeinsam mit dem Patienten."
+                ),
+                "red_flags": (
+                    "Starke neue Rückenschmerzen mit Taubheit oder Schwäche der Beine, "
+                    "Probleme mit Blase und Darm oder Harnverhalt sind dringend – sofort "
+                    "ärztliche Hilfe, bei Lähmungen Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("prostatecancer", "Prostate cancer")],
+        },
+    ],
+    {
+        "Harninkontinenz (Blasenschwäche)": {
+            "title_en": "Urinary incontinence (weak bladder)",
+            "sections_en": {
+                "definition": (
+                    "In urinary incontinence urine leaks involuntarily, because the "
+                    "bladder cannot hold the urine reliably."
+                ),
+                "symptoms": (
+                    "In stress incontinence urine leaks when coughing, sneezing or "
+                    "lifting. In urge incontinence a sudden strong urge to urinate occurs "
+                    "that cannot be held back."
+                ),
+                "causes": (
+                    "A weakened pelvic floor after childbirth, in old age or after "
+                    "operations, an overactive bladder, an enlarged prostate, urinary "
+                    "tract infections, medicines and nerve diseases can be behind it."
+                ),
+                "diagnostics": (
+                    "The urologist asks about the amount drunk, frequency and triggers, "
+                    "often with a bladder diary. Urine tests, an ultrasound and, if "
+                    "needed, a measurement of the bladder pressure follow."
+                ),
+                "therapy": (
+                    "Pelvic floor training, bladder training, weight loss and adjusted "
+                    "drinking amounts often help. Medicines calm an overactive bladder; "
+                    "in stress incontinence an operation can make sense."
+                ),
+                "red_flags": (
+                    "Sudden bladder weakness with numbness in the genital area, leg "
+                    "weakness or back pain can point to nerve damage – have it checked at "
+                    "once, and call the emergency number 144 (Austria) for paralysis."
+                ),
+            },
+            "keywords_en": [
+                "Urinary incontinence",
+                "Bladder",
+                "Pelvic floor",
+                "Urge",
+                "Bladder diary",
+                "Urologist",
+            ],
+        },
+        "Akute Nierenbeckenentzündung (Pyelonephritis)": {
+            "title_en": "Acute kidney infection (pyelonephritis)",
+            "sections_en": {
+                "definition": (
+                    "In pyelonephritis the renal pelvis and kidney tissue are inflamed by "
+                    "bacteria, usually as a result of an ascending urinary tract "
+                    "infection."
+                ),
+                "symptoms": (
+                    "Fever with shivering, pain in the flank, a back that is tender to "
+                    "tapping, burning on urination and a general feeling of illness."
+                ),
+                "causes": (
+                    "Usually gut bacteria, above all E. coli, ascend through the urethra "
+                    "and the bladder to the kidney. A blocked urine flow from kidney "
+                    "stones, diabetes and pregnancy raise the risk."
+                ),
+                "diagnostics": (
+                    "A urine test with urine culture, a blood test for inflammation "
+                    "markers and an ultrasound of the kidneys to rule out a blocked urine "
+                    "flow."
+                ),
+                "therapy": (
+                    "It is treated with an antibiotic, in severe cases in hospital "
+                    "through a vein. Drinking plenty and lowering the fever support the "
+                    "treatment. A blockage of the urine flow must be removed quickly."
+                ),
+                "red_flags": (
+                    "High fever with shivering, drowsiness, a very fast pulse or low "
+                    "blood pressure can point to sepsis – call the emergency number 144 "
+                    "(Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Kidney infection",
+                "Pyelonephritis",
+                "Flank pain",
+                "Fever",
+                "Antibiotic",
+                "Urine culture",
+            ],
+        },
+        "Prostatakrebs": {
+            "title_en": "Prostate cancer",
+            "sections_en": {
+                "definition": (
+                    "Prostate cancer is a malignant tumour of the prostate gland and the "
+                    "most common cancer in men."
+                ),
+                "symptoms": (
+                    "In the early stage there are usually no symptoms. Later, problems "
+                    "passing urine, blood in the urine or semen, and back and bone pain "
+                    "can occur."
+                ),
+                "causes": (
+                    "The risk rises with age. Cases in the family and inherited tendency "
+                    "play a role; other causes are not known for certain."
+                ),
+                "diagnostics": (
+                    "The urologist feels the prostate and, where appropriate, measures "
+                    "the PSA value in the blood. If there are abnormalities, magnetic "
+                    "resonance imaging and a tissue sample follow. The PSA test has "
+                    "advantages and disadvantages and is discussed individually."
+                ),
+                "therapy": (
+                    "Depending on spread and aggressiveness, active surveillance, "
+                    "surgery, radiotherapy or hormone therapy come into question. A "
+                    "medical team decides on the approach together with the patient."
+                ),
+                "red_flags": (
+                    "New severe back pain with numbness or weakness of the legs, problems "
+                    "with bladder and bowel or being unable to pass urine are urgent – "
+                    "seek medical help at once, and call the emergency number 144 "
+                    "(Austria) for paralysis."
+                ),
+            },
+            "keywords_en": [
+                "Prostate cancer",
+                "Prostate",
+                "PSA",
+                "Urologist",
+                "Radiotherapy",
+                "Active surveillance",
+            ],
+        },
+    },
+)

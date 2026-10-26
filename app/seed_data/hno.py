@@ -231,3 +231,260 @@ ENTRIES = with_english(
         },
     },
 )
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Heuschnupfen (allergische Rhinitis)",
+            "doc_type": "Diagnose",
+            "expected_category": "HNO",
+            "term_en": "Allergic rhinitis",
+            "icd11_code": "CA08.0",
+            "medications": ["loratadine", "cetirizine", "fluticasone"],
+            "sections": {
+                "definition": (
+                    "Heuschnupfen ist eine allergische Entzündung der Nasenschleimhaut, die "
+                    "durch Pollen oder andere Allergene in der Luft ausgelöst wird."
+                ),
+                "symptoms": (
+                    "Typisch sind Niesattacken, eine laufende oder verstopfte Nase sowie "
+                    "juckende, tränende Augen und ein Juckreiz im Gaumen. Die Beschwerden "
+                    "treten saisonal bei Pollenflug oder ganzjährig bei Hausstaubmilben- und "
+                    "Tierhaarallergie auf."
+                ),
+                "causes": (
+                    "Das Immunsystem reagiert überempfindlich auf eigentlich harmlose Stoffe "
+                    "wie Gräser-, Birken- oder Haselpollen. Eine familiäre Neigung zu "
+                    "Allergien (Atopie) erhöht das Risiko."
+                ),
+                "diagnostics": (
+                    "Die HNO-Ärztin oder der Allergologe erfragt den Verlauf der Beschwerden "
+                    "im Jahr und führt einen Hauttest (Prick-Test) oder eine Blutuntersuchung "
+                    "auf spezifische Antikörper durch."
+                ),
+                "therapy": (
+                    "Allergenkontakt möglichst meiden, Antihistaminika und kortisonhaltige "
+                    "Nasensprays lindern die Beschwerden. Eine spezifische Immuntherapie "
+                    "(Hyposensibilisierung) kann die Allergie langfristig abschwächen."
+                ),
+                "red_flags": (
+                    "Pfeifende Atmung, Atemnot oder Engegefühl in der Brust können auf ein "
+                    "Asthma hinweisen und gehören ärztlich abgeklärt. Bei Atemnot oder "
+                    "Schwellung von Gesicht und Zunge sofort Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("hayfever", "Hay fever")],
+        },
+        {
+            "title": "Akute Mandelentzündung (Tonsillitis)",
+            "doc_type": "Diagnose",
+            "expected_category": "HNO",
+            "term_en": "Tonsillitis",
+            "icd11_code": "CA03",
+            "medications": ["penicillin V", "ibuprofen", "paracetamol"],
+            "sections": {
+                "definition": (
+                    "Bei der akuten Mandelentzündung sind die Gaumenmandeln im Rachen "
+                    "entzündet, meist durch Viren, seltener durch Bakterien."
+                ),
+                "symptoms": (
+                    "Starke Halsschmerzen, Schluckbeschwerden, Fieber, gerötete und "
+                    "geschwollene Mandeln, teils mit weißlichen Belägen, sowie geschwollene "
+                    "Lymphknoten am Hals."
+                ),
+                "causes": (
+                    "Auslöser sind in den meisten Fällen Erkältungsviren. Bakterielle "
+                    "Mandelentzündungen werden vor allem durch Streptokokken verursacht und "
+                    "durch Tröpfcheninfektion übertragen."
+                ),
+                "diagnostics": (
+                    "Die Ärztin oder der Arzt untersucht den Rachen und tastet den Hals ab. "
+                    "Ein Abstrich mit Schnelltest zeigt, ob Streptokokken beteiligt sind."
+                ),
+                "therapy": (
+                    "Bei Virusinfekten helfen Ruhe, ausreichend Flüssigkeit sowie Schmerz- und "
+                    "Fiebermittel. Bakterielle Infektionen mit Streptokokken werden mit einem "
+                    "Antibiotikum behandelt. Bei häufigen Rückfällen kann eine Operation der "
+                    "Mandeln erwogen werden."
+                ),
+                "red_flags": (
+                    "Sehr starke einseitige Schmerzen, eine Kieferklemme, kaum noch mögliches "
+                    "Schlucken, Atemnot oder eine kloßige Sprache können auf einen Abszess "
+                    "hinweisen – umgehend ärztlich abklären lassen, bei Atemnot Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("tonsillitis", "Tonsillitis")],
+        },
+        {
+            "title": "Hörsturz",
+            "doc_type": "Diagnose",
+            "expected_category": "HNO",
+            "term_en": "Sudden sensorineural hearing loss",
+            "icd11_code": "AB55",
+            "medications": ["prednisolone"],
+            "sections": {
+                "definition": (
+                    "Ein Hörsturz ist ein plötzlicher, meist einseitiger Hörverlust des "
+                    "Innenohrs ohne erkennbare äußere Ursache."
+                ),
+                "symptoms": (
+                    "Das Gehör wird innerhalb von Stunden schlechter, oft begleitet von einem "
+                    "Druckgefühl im Ohr, Ohrgeräuschen (Tinnitus) und manchmal Schwindel. "
+                    "Schmerzen treten in der Regel nicht auf."
+                ),
+                "causes": (
+                    "Die genaue Ursache ist meist unklar. Diskutiert werden Durchblutungs- "
+                    "störungen des Innenohrs, Virusinfekte und Stress."
+                ),
+                "diagnostics": (
+                    "Der Ohrenarzt untersucht das Trommelfell und führt einen Hörtest "
+                    "(Audiometrie) durch. Andere Ursachen wie ein Ohrpfropf, eine "
+                    "Mittelohrentzündung oder ein Tumor am Hörnerv werden ausgeschlossen."
+                ),
+                "therapy": (
+                    "Die Behandlung sollte rasch beginnen und besteht meist aus hochdosiertem "
+                    "Kortison. Ein Teil der Betroffenen erholt sich vollständig, bei anderen "
+                    "bleibt ein Resthörverlust."
+                ),
+                "red_flags": (
+                    "Ein plötzlicher Hörverlust ist ein dringender HNO-Befund und sollte noch "
+                    "am selben Tag untersucht werden. Zusätzliche Lähmungen, Sprach- oder "
+                    "Sehstörungen sprechen für einen Schlaganfall – sofort Notruf 144."
+                ),
+            },
+            "further_reading": [
+                medlineplus("hearingdisordersanddeafness", "Hearing disorders and deafness")
+            ],
+        },
+    ],
+    {
+        "Heuschnupfen (allergische Rhinitis)": {
+            "title_en": "Hay fever (allergic rhinitis)",
+            "sections_en": {
+                "definition": (
+                    "Hay fever is an allergic inflammation of the lining of the nose, "
+                    "triggered by pollen or other allergens in the air."
+                ),
+                "symptoms": (
+                    "Typical signs are sneezing fits, a runny or blocked nose, itchy, watery "
+                    "eyes and an itchy palate. The symptoms occur seasonally during the "
+                    "pollen season, or all year round with house dust mite or pet allergy."
+                ),
+                "causes": (
+                    "The immune system reacts too strongly to substances that are actually "
+                    "harmless, such as grass, birch or hazel pollen. A family tendency to "
+                    "allergies (atopy) raises the risk."
+                ),
+                "diagnostics": (
+                    "The ear, nose and throat doctor or allergist asks about the course of "
+                    "the symptoms over the year and performs a skin prick test or a blood "
+                    "test for specific antibodies."
+                ),
+                "therapy": (
+                    "Avoid contact with the allergen where possible; antihistamines and "
+                    "cortisone nasal sprays relieve the symptoms. Specific immunotherapy "
+                    "(desensitisation) can weaken the allergy in the long term."
+                ),
+                "red_flags": (
+                    "Wheezing, shortness of breath or tightness in the chest can point to "
+                    "asthma and should be checked by a doctor. For breathlessness or "
+                    "swelling of the face or tongue call the emergency number 144 (Austria) "
+                    "at once."
+                ),
+            },
+            "keywords_en": [
+                "Hay fever",
+                "Allergic rhinitis",
+                "Pollen",
+                "Sneezing",
+                "Antihistamines",
+                "Immunotherapy",
+            ],
+        },
+        "Akute Mandelentzündung (Tonsillitis)": {
+            "title_en": "Acute tonsillitis",
+            "sections_en": {
+                "definition": (
+                    "In acute tonsillitis the palatine tonsils in the throat are inflamed, "
+                    "usually because of viruses and less often because of bacteria."
+                ),
+                "symptoms": (
+                    "Severe sore throat, pain when swallowing, fever, red and swollen "
+                    "tonsils, sometimes with whitish coating, and swollen lymph nodes in the "
+                    "neck."
+                ),
+                "causes": (
+                    "In most cases cold viruses are the trigger. Bacterial tonsillitis is "
+                    "mainly caused by streptococci and spreads through droplets."
+                ),
+                "diagnostics": (
+                    "The doctor examines the throat and feels the neck. A swab with a rapid "
+                    "test shows whether streptococci are involved."
+                ),
+                "therapy": (
+                    "For viral infections rest, enough fluids and pain and fever relievers "
+                    "help. Bacterial infections with streptococci are treated with an "
+                    "antibiotic. If the infection keeps coming back, an operation on the "
+                    "tonsils can be considered."
+                ),
+                "red_flags": (
+                    "Very severe pain on one side, a stiff jaw, hardly being able to "
+                    "swallow, breathlessness or a muffled voice can point to an abscess – "
+                    "have it checked at once, and call the emergency number 144 (Austria) "
+                    "for breathlessness."
+                ),
+            },
+            "keywords_en": [
+                "Tonsillitis",
+                "Sore throat",
+                "Tonsils",
+                "Streptococci",
+                "Fever",
+                "Antibiotic",
+            ],
+        },
+        "Hörsturz": {
+            "title_en": "Sudden hearing loss",
+            "sections_en": {
+                "definition": (
+                    "Sudden hearing loss is a sudden, usually one-sided loss of hearing in "
+                    "the inner ear without an obvious external cause."
+                ),
+                "symptoms": (
+                    "Hearing gets worse within hours, often with a feeling of pressure in "
+                    "the ear, ringing in the ear (tinnitus) and sometimes dizziness. Pain "
+                    "does not usually occur."
+                ),
+                "causes": (
+                    "The exact cause is usually unclear. Circulation problems of the inner "
+                    "ear, viral infections and stress are being discussed."
+                ),
+                "diagnostics": (
+                    "The ear doctor examines the eardrum and performs a hearing test "
+                    "(audiometry). Other causes such as an earwax plug, a middle ear "
+                    "infection or a tumour of the hearing nerve are ruled out."
+                ),
+                "therapy": (
+                    "Treatment should start quickly and usually consists of high-dose "
+                    "cortisone. Some people recover completely, in others some hearing loss "
+                    "remains."
+                ),
+                "red_flags": (
+                    "Sudden hearing loss is an urgent ear, nose and throat finding and "
+                    "should be examined on the same day. Additional paralysis, speech or "
+                    "vision problems point to a stroke – call the emergency number 144 "
+                    "(Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Sudden hearing loss",
+                "Hearing",
+                "Inner ear",
+                "Tinnitus",
+                "Audiometry",
+                "Cortisone",
+            ],
+        },
+    },
+)

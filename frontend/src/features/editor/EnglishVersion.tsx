@@ -16,6 +16,22 @@ export interface EnglishFields {
   keywordsEn: string[]
 }
 
+type EnglishProblem = 'editor.en.titleShort' | 'editor.en.contentShort'
+
+/** What the API would reject in the English text, as message keys. */
+export function englishProblems(
+  titleEn: string,
+  contentEn: string,
+  mode: 'text' | 'sections',
+): EnglishProblem[] {
+  const problems: EnglishProblem[] = []
+  const title = titleEn.trim()
+  if (title !== '' && title.length < 3) problems.push('editor.en.titleShort')
+  const content = contentEn.trim()
+  if (mode === 'text' && content !== '' && content.length < 10) problems.push('editor.en.contentShort')
+  return problems
+}
+
 interface EnglishVersionProps {
   value: EnglishFields
   /** Follows the German text: sections or free text. */
@@ -50,6 +66,11 @@ export function EnglishVersion({ value, mode, onChange, defaultOpen }: EnglishVe
       {open && (
         <div id={panelId} className="flex flex-col gap-5">
           <p className="text-sm text-muted-foreground">{t('editor.en.hint')}</p>
+          {englishProblems(value.titleEn, value.contentEn, mode).map((key) => (
+            <p key={key} role="alert" className="text-sm text-destructive">
+              {t(key)}
+            </p>
+          ))}
           <Field id="title-en" label={t('editor.en.title')}>
             <Input
               id="title-en"

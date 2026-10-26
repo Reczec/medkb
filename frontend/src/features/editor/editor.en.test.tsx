@@ -169,6 +169,22 @@ it('converts the typed English text when an AI draft switches the layout', async
   expect(screen.getByLabelText('Definition (English)')).toHaveValue('My English text.')
 })
 
+it('blocks saving a too short English version with a readable hint', async () => {
+  mockFetch({ '/api/meta': meta, '/api/classify': classification })
+  renderEditor()
+  await fillNewEntry()
+  fireEvent.click(screen.getByRole('button', { name: /English version/ }))
+  fireEvent.change(screen.getByLabelText('Title (English)'), { target: { value: 'ab' } })
+  expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+  expect(screen.getByText('The English title needs at least 3 characters.')).toBeInTheDocument()
+  fireEvent.change(screen.getByLabelText('Title (English)'), { target: { value: 'Palpitations' } })
+  fireEvent.change(screen.getByLabelText('Content (English)'), { target: { value: 'Flu' } })
+  expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+  expect(screen.getByText('The English content needs at least 10 characters.')).toBeInTheDocument()
+  fireEvent.change(screen.getByLabelText('Content (English)'), { target: { value: '' } })
+  expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+})
+
 it('opens the English version of a translated entry and clears a field with null', async () => {
   const fetchMock = mockFetch({ '/api/meta': meta, '/api/classify': classification, '/api/documents/9': translated })
   const { router } = renderEditor('/wissen/9/bearbeiten')

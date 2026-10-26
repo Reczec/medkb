@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import { FileTab } from '@/components/specialty/FileTab'
 import { useAuth } from '@/features/auth/context'
 import { useI18n } from '@/i18n/context'
-import { localized } from '@/i18n/localized'
+import { langAttr, localized } from '@/i18n/localized'
 import { formatDate, formatRelative } from '@/lib/format'
 import type { Document } from '@/lib/types'
 
@@ -32,6 +32,7 @@ export function DocumentCard({ document }: { document: Document }) {
       <article className="relative flex flex-1 flex-col gap-3 rounded-xl border bg-card p-5 shadow-sheet transition-[box-shadow,border-color] duration-200 ease-out group-hover:shadow-lift group-focus-visible:ring-2 group-focus-visible:ring-ring">
         <h2
           id={titleId}
+          lang={langAttr(text.titleLang, lang)}
           className="line-clamp-2 text-lg leading-snug font-semibold [overflow-wrap:anywhere]"
         >
           {text.title}
@@ -53,7 +54,10 @@ export function DocumentCard({ document }: { document: Document }) {
             </span>
           )}
         </p>
-        <p className="line-clamp-3 text-sm leading-relaxed [overflow-wrap:anywhere] text-muted-foreground">
+        <p
+          lang={langAttr(text.contentLang, lang)}
+          className="line-clamp-3 text-sm leading-relaxed [overflow-wrap:anywhere] text-muted-foreground"
+        >
           {text.content}
         </p>
 

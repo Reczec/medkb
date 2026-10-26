@@ -94,6 +94,24 @@ it('shows German text with a note when an entry has no English version', async (
   expect(screen.getByRole('status')).toHaveTextContent('Only available in German')
 })
 
+it('marks German fallback text as German for screen readers', async () => {
+  mockFetch({ '/api/documents/8': germanOnly, '/api/classify': classification })
+  renderPage(germanOnly)
+  expect(await screen.findByRole('heading', { level: 1, name: 'Nur Deutsch' })).toHaveAttribute('lang', 'de')
+  expect(screen.getByText('Nur ein deutscher Text.').closest('[lang]')).toHaveAttribute('lang', 'de')
+})
+
+it('does not mark translated text as German', async () => {
+  mockFetch({ '/api/documents/7': translated, '/api/classify': classification })
+  renderPage(translated)
+  expect(await screen.findByRole('heading', { level: 1, name: 'Migraine' })).not.toHaveAttribute('lang')
+})
+
+it('marks the German title of a card without English version', () => {
+  renderWithProviders(<DocumentCard document={germanOnly} />, { ...en, user: TEST_USERS.patient })
+  expect(screen.getByRole('heading', { name: 'Nur Deutsch' })).toHaveAttribute('lang', 'de')
+})
+
 it('names the tabs in English and explains the classifier language', async () => {
   mockFetch({ '/api/documents/7': translated, '/api/classify': classification })
   renderPage(translated)

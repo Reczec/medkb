@@ -16,12 +16,10 @@ MedKB is a medical knowledge base (FastAPI + React) being grown from a diploma-t
 
 ## Status
 
-Azure extension (2026-10-13): manual deployment is live and application-verified;
-**protected OIDC delivery, rollback/restoration and cold wake verified; cost reporting delayed**. Read [operator guide](docs/AZURE.md) and
-[activation record](docs/reviews/2026-10-13-azure-deployment.md) before any Azure action. Main work is
-authorized; workflow stays disabled unless `AZURE_DEMO_ENABLED=true` is explicitly configured after
-bootstrap. Require current trial spending protection, separate free `medkb_azure` database, EUR 5
-operating target (not hard cap), cleanup before 2026-10-20, and exact scoped-grant/secret confirmations.
+Azure extension (2026-10-13): was deployed and verified; **the free trial expired on 2026-10-20 and the
+demo is offline** (no paid upgrade, no revival planned). Read the [operator guide](docs/AZURE.md) and
+[record](docs/reviews/2026-10-13-azure-deployment.md) before any Azure action. The workflow stays
+disabled unless `AZURE_DEMO_ENABLED=true` is explicitly configured.
 
 | Stage (spec §12) | State |
 |---|---|
@@ -51,7 +49,7 @@ Continue a stage by writing its plan next to the stage 1 plan (same structure: f
 - **e2e** needs a fresh `npm run build`, and `PYTHON` pointing at the venv's Python. From `frontend/` in PowerShell: `$env:PYTHON = (Resolve-Path ../.venv/Scripts/python.exe).Path; npm run e2e`. Use an absolute path: Playwright launches from the repository root. It starts its own uvicorn on port 8765 with a throwaway seeded SQLite DB.
 - **Sources in tests.** The autouse respx fixture `network` blocks real outbound HTTP in backend tests; register mock responses there. Browser tests intercept every `/api/sources/**` request with `page.route`, including dashboard studies. Keep these mocks when adding tests.
 - **ICD-11** needs `ICD_CLIENT_ID` and `ICD_CLIENT_SECRET`. The WHO OAuth token is cached in process (`app/sources/icd11.py`); the test fixture resets it. Source responses are cached separately in the database for `SOURCE_CACHE_HOURS`.
-- **Seed content** lives in `app/seed_data/<specialty>.py`, assembled in `app/seed_data/__init__.py`. `scripts/check_seed_sources.py` checks further-reading links and, when WHO credentials exist, ICD codes. All 44 bundled ICD codes were live-verified on 2026-10-12.
+- **Seed content** lives in `app/seed_data/<specialty>.py`, assembled in `app/seed_data/__init__.py`. `scripts/check_seed_sources.py` checks further-reading links and, when WHO credentials exist, ICD codes. All 97 bundled ICD codes and 134 links were live-verified on 2026-10-26.
 - **shadcn CLI** via `npx shadcn` fails under npm 12 (allow-scripts error). Run `./node_modules/.bin/shadcn add <component>` from `frontend/`. Generated components import `cn` from the `cn` package. `src/index.css` must keep `@import "shadcn/tailwind.css"`, which supplies the `data-open` and `data-horizontal` variants.
 - Stack versions are newer than most training data: Vite 8, TypeScript 6 (no `baseUrl`, only `paths`), React Router 8 (`react-router`, `createBrowserRouter`), Tailwind v4 (tokens in `src/index.css`, no config file), `motion` (`motion/react`), oxlint instead of ESLint. Check the installed package's types before assuming an API.
 - **Frontend test helpers** live in `src/test/utils.tsx`: `renderWithProviders` (memory router + QueryClient) and `mockFetch`, which answers by the *longest* matching URL substring. Give specific routes keys that are longer than the generic ones.

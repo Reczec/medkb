@@ -77,7 +77,7 @@ it('stores the choice, updates <html lang> and the API language', () => {
       <Probe />
     </I18nProvider>,
   )
-  fireEvent.click(screen.getByRole('button', { name: 'German' }))
+  fireEvent.click(screen.getByRole('button', { name: /German/ }))
   expect(localStorage.getItem('medkb:lang')).toBe('de')
   expect(document.documentElement.lang).toBe('de')
   expect(getApiLanguage()).toBe('de')
@@ -95,7 +95,7 @@ it('works when storage is blocked', () => {
     </I18nProvider>,
   )
   act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'German' }))
+    fireEvent.click(screen.getByRole('button', { name: /German/ }))
   })
   expect(screen.getByTestId('probe').textContent).toContain('de|')
   blocked.mockRestore()
@@ -123,7 +123,7 @@ it('keeps the state of the page when the language changes', () => {
     </I18nProvider>,
   )
   fireEvent.change(screen.getByLabelText('draft'), { target: { value: 'unsaved text' } })
-  fireEvent.click(screen.getByRole('button', { name: 'German' }))
+  fireEvent.click(screen.getByRole('button', { name: /German/ }))
   expect(screen.getByLabelText('draft')).toHaveValue('unsaved text')
 })
 
@@ -133,7 +133,7 @@ it('marks the active language with aria-pressed', () => {
       <LanguageSwitch />
     </I18nProvider>,
   )
-  expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute('aria-pressed', 'true')
-  expect(screen.getByRole('button', { name: 'German' })).toHaveAttribute('aria-pressed', 'false')
+  expect(screen.getByRole('button', { name: /English/ })).toHaveAttribute('aria-pressed', 'true')
+  expect(screen.getByRole('button', { name: /German/ })).toHaveAttribute('aria-pressed', 'false')
   expect(screen.getByRole('group', { name: 'Language' })).toBeInTheDocument()
 })

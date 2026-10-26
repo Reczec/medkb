@@ -442,4 +442,8 @@ export const en: Record<MessageKey, string> = {
   // app
   'app.title': 'MedKB – Medical knowledge base',
 
+  // english version validation
+  'editor.en.titleShort': 'The English title needs at least 3 characters.',
+  'editor.en.contentShort': 'The English content needs at least 10 characters.',
+
 }

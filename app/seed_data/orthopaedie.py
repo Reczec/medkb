@@ -1,5 +1,5 @@
 from app.seed_data.english import with_english
-from app.seed_data.links import medlineplus
+from app.seed_data.links import medlineplus, who
 
 ENTRIES = [
     {
@@ -217,6 +217,258 @@ ENTRIES = with_english(
                 ),
             },
             "keywords_en": ["Carpal tunnel", "Median nerve", "Numbness", "Wrist", "Hand", "Splint"],
+        },
+    },
+)
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Osteoporose",
+            "doc_type": "Diagnose",
+            "expected_category": "Orthopädie",
+            "term_en": "Osteoporosis",
+            "icd11_code": "FB83.1",
+            "medications": ["alendronate", "calcium", "vitamin D"],
+            "sections": {
+                "definition": (
+                    "Bei der Osteoporose (Knochenschwund) nimmt die Knochenmasse ab und die "
+                    "Knochenstruktur wird brüchig, sodass das Risiko für Knochenbrüche steigt."
+                ),
+                "symptoms": (
+                    "Lange bleibt sie unbemerkt. Später treten Rückenschmerzen, eine "
+                    "abnehmende Körpergröße, ein Rundrücken und Knochenbrüche nach geringer "
+                    "Belastung auf, etwa an Wirbelsäule, Handgelenk oder Hüfte."
+                ),
+                "causes": (
+                    "Häufig sind Frauen nach den Wechseljahren betroffen. Weitere "
+                    "Faktoren sind höheres Alter, Bewegungsmangel, Rauchen, Alkohol, "
+                    "Kortisontherapie, Vitamin-D-Mangel und familiäre Veranlagung."
+                ),
+                "diagnostics": (
+                    "Eine Knochendichtemessung (DXA) sichert die Diagnose. Blutuntersuchungen "
+                    "suchen nach Ursachen, etwa Mangel an Vitamin D oder Kalzium."
+                ),
+                "therapy": (
+                    "Wichtig sind Bewegung und Krafttraining, kalziumreiche Ernährung, "
+                    "Vitamin D und der Verzicht auf Rauchen. Medikamente wie Bisphosphonate "
+                    "verlangsamen den Knochenabbau. Stürze sollten vermieden werden."
+                ),
+                "red_flags": (
+                    "Plötzliche starke Rückenschmerzen nach einer kleinen Bewegung können "
+                    "einen Wirbelbruch bedeuten. Nach einem Sturz mit starken Schmerzen in "
+                    "der Hüfte, die kein Aufstehen erlauben, Notruf 144."
+                ),
+            },
+            "further_reading": [
+                medlineplus("osteoporosis", "Osteoporosis"),
+                who("osteoporosis", "Osteoporosis"),
+            ],
+        },
+        {
+            "title": "Tennisellenbogen",
+            "doc_type": "Diagnose",
+            "expected_category": "Orthopädie",
+            "term_en": "Lateral epicondylitis",
+            "icd11_code": "FB55.1",
+            "medications": ["ibuprofen", "diclofenac"],
+            "sections": {
+                "definition": (
+                    "Der Tennisellenbogen ist eine schmerzhafte Reizung der Sehnenansätze "
+                    "der Streckmuskeln der Unterarme an der Außenseite des Ellenbogens."
+                ),
+                "symptoms": (
+                    "Druck- und Belastungsschmerz an der Außenseite des Ellenbogens, der "
+                    "beim Greifen, Heben und Händeschütteln bis in den Unterarm ausstrahlt. "
+                    "Die Kraft in der Hand lässt nach."
+                ),
+                "causes": (
+                    "Wiederholte einseitige Belastung, etwa durch Sport, Computerarbeit oder "
+                    "handwerkliche Tätigkeit, überfordert die Sehnenansätze."
+                ),
+                "diagnostics": (
+                    "Die Orthopädin tastet den Ellenbogen ab und prüft gezielte "
+                    "Bewegungen gegen Widerstand. Ein Ultraschall oder Röntgenbild schließt "
+                    "andere Ursachen aus."
+                ),
+                "therapy": (
+                    "Schonung der überlasteten Bewegung, Kühlen, eine Bandage und "
+                    "Physiotherapie mit Dehnung und Kräftigung. Schmerzmittel helfen "
+                    "kurzzeitig. Die Beschwerden klingen oft nach Monaten ab."
+                ),
+                "red_flags": (
+                    "Taubheit, Kribbeln oder Lähmungserscheinungen in der Hand, ein stark "
+                    "geschwollener, überwärmter Ellenbogen mit Fieber oder Beschwerden "
+                    "nach einem Unfall sollten rasch ärztlich abgeklärt werden."
+                ),
+            },
+            "further_reading": [
+                medlineplus("elbowinjuriesanddisorders", "Elbow injuries and disorders")
+            ],
+        },
+        {
+            "title": "Rheumatoide Arthritis",
+            "doc_type": "Diagnose",
+            "expected_category": "Orthopädie",
+            "term_en": "Rheumatoid arthritis",
+            "icd11_code": "FA20",
+            "medications": ["methotrexate", "prednisone"],
+            "sections": {
+                "definition": (
+                    "Die rheumatoide Arthritis ist eine chronisch-entzündliche "
+                    "Gelenkerkrankung, bei der das Immunsystem die Gelenkinnenhaut angreift."
+                ),
+                "symptoms": (
+                    "Schmerzhafte, geschwollene und überwärmte Gelenke, vor allem an Händen "
+                    "und Füßen, meist beidseitig. Typisch ist eine Morgensteifigkeit von mehr "
+                    "als 30 Minuten sowie Müdigkeit."
+                ),
+                "causes": (
+                    "Die Ursache ist nicht vollständig geklärt. Erbliche Veranlagung, "
+                    "Rauchen und weitere Umweltfaktoren fördern die Entzündung. Frauen sind "
+                    "häufiger betroffen."
+                ),
+                "diagnostics": (
+                    "Die Rheumatologin untersucht die Gelenke, bestimmt Entzündungswerte und "
+                    "Antikörper im Blut und verwendet Ultraschall und Röntgenbilder."
+                ),
+                "therapy": (
+                    "Früh begonnene Basismedikamente bremsen die Erkrankung und schützen die "
+                    "Gelenke. Dazu kommen Schmerzmittel, Kortison im Schub, Bewegungs- und "
+                    "Physiotherapie."
+                ),
+                "red_flags": (
+                    "Ein plötzlich stark geschwollenes, rotes, sehr schmerzhaftes Gelenk "
+                    "mit Fieber kann auf eine Gelenkinfektion hinweisen – dringend ärztliche "
+                    "Hilfe, bei hohem Fieber mit Verwirrtheit Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("rheumatoidarthritis", "Rheumatoid arthritis")],
+        },
+    ],
+    {
+        "Osteoporose": {
+            "title_en": "Osteoporosis",
+            "sections_en": {
+                "definition": (
+                    "In osteoporosis (bone loss) the bone mass decreases and the bone "
+                    "structure becomes brittle, so that the risk of fractures rises."
+                ),
+                "symptoms": (
+                    "For a long time it goes unnoticed. Later, back pain, decreasing "
+                    "height, a rounded back and fractures after slight strain occur, for "
+                    "example at the spine, wrist or hip."
+                ),
+                "causes": (
+                    "Women after the menopause are often affected. Other factors are "
+                    "higher age, lack of exercise, smoking, alcohol, cortisone treatment, "
+                    "vitamin D deficiency and inherited tendency."
+                ),
+                "diagnostics": (
+                    "A bone density measurement (DXA) confirms the diagnosis. Blood tests "
+                    "look for causes, for example a lack of vitamin D or calcium."
+                ),
+                "therapy": (
+                    "Exercise and strength training, a calcium-rich diet, vitamin D and "
+                    "giving up smoking are important. Medicines such as bisphosphonates "
+                    "slow down bone loss. Falls should be avoided."
+                ),
+                "red_flags": (
+                    "Sudden severe back pain after a small movement can mean a vertebral "
+                    "fracture. After a fall with severe pain in the hip that does not "
+                    "allow standing up, call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Osteoporosis",
+                "Bone density",
+                "Fracture",
+                "Calcium",
+                "Vitamin D",
+                "Menopause",
+            ],
+        },
+        "Tennisellenbogen": {
+            "title_en": "Tennis elbow",
+            "sections_en": {
+                "definition": (
+                    "Tennis elbow is a painful irritation of the tendon attachments of "
+                    "the forearm extensor muscles on the outer side of the elbow."
+                ),
+                "symptoms": (
+                    "Pain on pressure and on exertion on the outer side of the elbow, "
+                    "which spreads into the forearm when gripping, lifting and shaking "
+                    "hands. Strength in the hand decreases."
+                ),
+                "causes": (
+                    "Repeated one-sided strain, for example from sport, computer work or "
+                    "manual work, overloads the tendon attachments."
+                ),
+                "diagnostics": (
+                    "The orthopaedic doctor feels the elbow and tests specific movements "
+                    "against resistance. An ultrasound or X-ray rules out other causes."
+                ),
+                "therapy": (
+                    "Resting the overloaded movement, cooling, a brace and physiotherapy "
+                    "with stretching and strengthening. Pain relievers help for a short "
+                    "time. The symptoms often fade after months."
+                ),
+                "red_flags": (
+                    "Numbness, tingling or signs of paralysis in the hand, a markedly "
+                    "swollen, warm elbow with fever or symptoms after an accident should "
+                    "be checked by a doctor promptly."
+                ),
+            },
+            "keywords_en": [
+                "Tennis elbow",
+                "Elbow",
+                "Tendon",
+                "Overuse",
+                "Physiotherapy",
+                "Brace",
+            ],
+        },
+        "Rheumatoide Arthritis": {
+            "title_en": "Rheumatoid arthritis",
+            "sections_en": {
+                "definition": (
+                    "Rheumatoid arthritis is a chronic inflammatory joint disease in "
+                    "which the immune system attacks the lining of the joints."
+                ),
+                "symptoms": (
+                    "Painful, swollen and warm joints, above all in the hands and feet, "
+                    "usually on both sides. Typical are morning stiffness lasting more "
+                    "than 30 minutes and tiredness."
+                ),
+                "causes": (
+                    "The cause is not fully understood. Inherited tendency, smoking and "
+                    "other environmental factors promote the inflammation. Women are "
+                    "affected more often."
+                ),
+                "diagnostics": (
+                    "The rheumatologist examines the joints, determines inflammation "
+                    "markers and antibodies in the blood and uses ultrasound and X-rays."
+                ),
+                "therapy": (
+                    "Disease-modifying medicines started early slow down the disease and "
+                    "protect the joints. In addition there are pain relievers, cortisone "
+                    "in flare-ups, and exercise and physiotherapy."
+                ),
+                "red_flags": (
+                    "A suddenly markedly swollen, red, very painful joint with fever can "
+                    "point to a joint infection – urgent medical help, and for high fever "
+                    "with confusion call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Rheumatoid arthritis",
+                "Joints",
+                "Morning stiffness",
+                "Inflammation",
+                "Rheumatologist",
+                "Immune system",
+            ],
         },
     },
 )

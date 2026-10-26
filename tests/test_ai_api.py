@@ -371,11 +371,11 @@ def test_prewarm_reuses_cache_and_keeps_global_limit(db_session, fake, test_sett
 
     make_doc(client)
     test_settings.ai_client_daily_limit = 1
-    assert asyncio.run(prewarm(db_session, test_settings, fake, limit=1)) == {
+    assert asyncio.run(prewarm(db_session, test_settings, fake, limit=1, lang="de")) == {
         "completed": 8,
         "failed": 0,
     }
-    assert asyncio.run(prewarm(db_session, test_settings, fake, limit=1)) == {
+    assert asyncio.run(prewarm(db_session, test_settings, fake, limit=1, lang="de")) == {
         "completed": 8,
         "failed": 0,
     }
@@ -489,6 +489,30 @@ def test_rare_words_outweigh_common_ones_in_partial_matches(client):
     assert found[0].title == "Sepsis (Blutvergiftung)"
 
 
+def test_english_title_hits_break_ties_in_partial_matches(client):
+    from app.ai.retrieval import find
+    from app.ai.schemas import AskRequest
+    from app.database import SessionLocal
+
+    make_doc(
+        client,
+        title="Neurodermitis",
+        title_en="Neurodermatitis",
+        content="Eine Hautkrankheit.",
+        content_en="A dangerous herpes infection of the skin.",
+    )
+    make_doc(
+        client,
+        title="Sepsis (Blutvergiftung)",
+        title_en="Sepsis (blood poisoning)",
+        content="Eine lebensbedrohliche Reaktion.",
+        content_en="A life-threatening reaction.",
+    )
+    with SessionLocal() as db:
+        found = find(db, AskRequest(question="How dangerous is poisoning?"))
+    assert found[0].title_en == "Sepsis (blood poisoning)"
+
+
 def test_title_hits_break_ties_in_partial_matches(client):
     from app.ai.retrieval import find
     from app.ai.schemas import AskRequest
@@ -532,7 +556,9 @@ def test_prewarm_can_pause_between_calls_for_provider_rate_limits(
         pauses.append(seconds)
 
     monkeypatch.setattr(prewarm_module.asyncio, "sleep", fake_sleep)
-    result = asyncio.run(prewarm_module.prewarm(db_session, test_settings, fake, limit=1, pause=4))
+    result = asyncio.run(
+        prewarm_module.prewarm(db_session, test_settings, fake, limit=1, pause=4, lang="de")
+    )
     assert result == {"completed": 8, "failed": 0}
     assert pauses == [4] * 7  # between the 8 calls, not after the last
 
@@ -654,7 +680,7 @@ def test_german_document_inputs_keep_their_old_shape(client):
         ],
     )
     with SessionLocal() as db:
-        inputs = document_inputs(db.get(Document, doc["id"]))
+        inputs = document_inputs(db.get(Document, doc["id"]), "de")
     assert set(inputs) == {
         "title",
         "content",

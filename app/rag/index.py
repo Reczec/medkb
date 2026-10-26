@@ -103,7 +103,7 @@ def build_index(
         if requests and pause:
             time.sleep(pause)
         batch = missing[start : start + 16]
-        reserve(db, "rag-index", trusted)
+        reserve(db, "rag-index", trusted, "en")
         requests += 1
         try:
             returned = provider.embed([chunk.embedding_text for chunk in batch], "document")

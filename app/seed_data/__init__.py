@@ -51,8 +51,11 @@ _MODULES = (
     allgemeinmedizin,
 )
 
+# The first release's entries (ENTRIES) come first and keep ids 1..47 across resets; entries added
+# later (EXTRA of each module) follow in the same specialty order.
 SEED_DOCUMENTS: list[dict[str, Any]] = [
     {**entry, "content": compose_content(entry["sections"])}
+    for attribute in ("ENTRIES", "EXTRA")
     for module in _MODULES
-    for entry in module.ENTRIES
+    for entry in getattr(module, attribute, [])
 ]

@@ -62,7 +62,8 @@ def find(db: Session, body: AskRequest) -> list[Document]:
     for term in q.split():
         matches, total = search_documents(db, q=term, limit=MAX_ENTRIES)
         for document in matches:
-            in_title = 2 if term in document.title.lower() else 1  # like the search ranking
+            titles = (document.title, document.title_en or "")
+            in_title = 2 if any(term in title.lower() for title in titles) else 1  # like the search
             score[document.id] = score.get(document.id, 0.0) + in_title / total
             by_id.setdefault(document.id, document)
     # sorted() is stable: equal scores keep the search's own ranking order.

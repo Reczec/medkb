@@ -1,6 +1,6 @@
 # MedKB – Digital Medical Knowledge Base
 
-A medical knowledge base organised like a colour-coded record room: 47 structured textbook
+A medical knowledge base organised like a colour-coded record room: 103 structured textbook
 entries in 16 specialties, an explainable rule-based classifier, live data from PubMed, the WHO
 ICD-11 API and openFDA, and AI assistance that stays grounded in the entries. Three roles
 (admin, doctor, patient) see the same knowledge at different depths.
@@ -19,11 +19,11 @@ shadcn/ui, Motion, Recharts, TanStack Query). The UI is in English with a one-cl
 
 ## Azure cloud extension
 
-Azure portfolio extension: Bicep infrastructure, guarded OIDC/GHCR delivery, health verification and
-rollback/cleanup tools support a temporary Container Apps Consumption demo.
-[Azure demo](https://medkb-azure-demo.whiterock-973337bb.northeurope.azurecontainerapps.io) is manually
-deployed and verified, including protected GitHub OIDC delivery and compatible image rollback.
-The trial expires 2026-10-20; Render remains the permanent public demo.
+A time-limited Azure extension is part of the repository: Bicep infrastructure, guarded OIDC/GHCR
+delivery, health verification and rollback/cleanup tools for a Container Apps Consumption demo.
+It was deployed and verified in October 2026 (protected GitHub OIDC delivery and image rollback
+included). The free trial has expired, so the Azure demo is **offline**; it is not needed to run
+the project. Render remains the permanent public demo.
 See the [operator guide](docs/AZURE.md) and [implementation record](docs/reviews/2026-10-13-azure-deployment.md).
 
 ## Background
@@ -38,13 +38,13 @@ a CI setup.
 
 ## Features
 
-- **English and German**: the whole interface, all 47 entries, server messages, ICD-11 and AI
+- **English and German**: the whole interface, all 103 entries, server messages, ICD-11 and AI
   answers follow the chosen language (English by default, remembered per browser). The rule-based
   classifier works on the German text, so German stays the canonical language of an entry; the
   English version is optional per entry and falls back field by field with a visible note
 - **Structured entries**: sections (definition, symptoms, causes, diagnostics, therapy, warning
   signs), English term, ICD-11 code, active ingredients and checked further-reading links
-  (gesundheit.gv.at, WHO, MedlinePlus); 47 example entries across 16 specialties
+  (gesundheit.gv.at, WHO, MedlinePlus); 103 example entries across 16 specialties
 - **Live sources for staff**: newest PubMed articles per entry and per specialty, WHO ICD-11 title
   and definition, openFDA drug labels. Cached for 24 h; an unavailable source shows a retry, never
   an error page
@@ -83,7 +83,8 @@ On 20 frozen bilingual questions, real Gemini retrieval achieved 95% Hit@1 versu
 keyword baseline (both 100% Hit@5), with MRR@5 .975 versus .675. Three prespecified synonym cases
 improved rank. All 20 generated answers passed citation-index validation; human factual-support
 review remains pending. This small curated benchmark is not clinical validation.
-The public demo enables semantic retrieval with a complete Neon index (542 bilingual chunks)
+The public demo enables semantic retrieval with a complete Neon index (rebuilt with
+`python -m app.rag.index_cli` after content changes)
 and threshold 0.60; local settings remain opt-in. See the
 [public activation record](docs/reviews/2026-10-12-rag-public-activation.md).
 See the [frozen evaluation and commands](evaluation/rag/README.md) and
@@ -185,8 +186,8 @@ a retry if a source is unavailable. FDA labels are English US product informatio
 explicitly marked as unsuitable for dosage decisions.
 
 Run `python scripts/check_seed_sources.py` to check the bundled further-reading links and,
-with WHO credentials configured, the ICD codes. Last run (2026-10-12): all 69 links answer and
-all 44 codes resolve to the matching WHO title. See [.env.example](.env.example) for all source
+with WHO credentials configured, the ICD codes. Last run (2026-10-26): all 134 links answer and
+all 97 codes resolve to the matching WHO title. See [.env.example](.env.example) for all source
 variables.
 
 ## Configuration: AI assistance
@@ -228,7 +229,7 @@ Optional explicit cache warmup (never automatic on startup):
 
 ```powershell
 .venv/Scripts/python.exe -m app.ai.prewarm --limit 1
-# Omit --limit for all entries: 47 × 8 role/feature variants = 376 potential calls.
+# Omit --limit for all entries: 103 × 8 role/feature variants = 824 potential calls per language.
 .venv/Scripts/python.exe -m app.ai.prewarm --lang en --pause 4   # the English answers (376 more)
 ```
 
@@ -332,7 +333,7 @@ The README media come from a scripted tour against a running instance with real 
 
 - **The classifier is rule-based, not machine learning.** It does not understand context or
   negation ("kein Fieber"). The example entries were written together with the vocabulary, so
-  their 47/47 result is a regression test, not an accuracy measurement. A real evaluation would
+  their 103/103 result is a regression test, not an accuracy measurement. A real evaluation would
   need a labelled, independent test set.
 - **Search is substring matching**, not PostgreSQL full-text or semantic search. That is fine
   for a prototype; for large data sets use full-text indexes (`tsvector`) or embeddings.

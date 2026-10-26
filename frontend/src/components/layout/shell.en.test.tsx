@@ -31,7 +31,7 @@ it('shows a doctor’s role label in English', () => {
 
 it('switches the whole sidebar to German with the language switch', () => {
   renderWithProviders(<Sidebar />, { ...en, user: TEST_USERS.admin })
-  fireEvent.click(screen.getByRole('button', { name: 'German' }))
+  fireEvent.click(screen.getByRole('button', { name: /German/ }))
   expect(screen.getByRole('navigation', { name: 'Hauptnavigation' })).toHaveTextContent('Startseite')
   expect(screen.getByRole('button', { name: 'Abmelden' })).toBeInTheDocument()
 })
@@ -89,7 +89,7 @@ it('switches the login page to German', async () => {
   mockFetch({ '/api/auth/options': { demo_mode: true } })
   renderWithProviders(<LoginPage />, { ...en, path: '/login', route: '/login', withAuth: true })
   await screen.findByRole('button', { name: /Open as doctor/ })
-  fireEvent.click(screen.getAllByRole('button', { name: 'German' })[0])
+  fireEvent.click(screen.getAllByRole('button', { name: /German/ })[0])
   expect(await screen.findByRole('heading', { level: 1, name: 'Anmelden' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: /Als Ärztin \/ Arzt öffnen/ })).toBeInTheDocument()
 })

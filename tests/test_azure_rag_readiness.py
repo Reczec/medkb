@@ -39,7 +39,11 @@ def test_current_coverage_excludes_stale_signatures(db_session, test_settings):
         ]
     )
     db_session.commit()
-    assert rag_coverage(db_session, test_settings) == {"de": (271, 271), "en": (271, 271)}
+    per_language = len(current) // 2
+    assert rag_coverage(db_session, test_settings) == {
+        "de": (per_language, per_language),
+        "en": (per_language, per_language),
+    }
     db_session.get(Embedding, current[0].key).signature = "obsolete"
     db_session.commit()
     with pytest.raises(ValueError, match="index"):

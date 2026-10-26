@@ -4,12 +4,12 @@ Updated 2026-10-12. All five stages are done; the demo runs at https://medkb.onr
 
 ## Azure portfolio extension
 
-The manual Azure deployment is live and roles, bilingual RAG, reset persistence and quotas passed.
-Cold wake was measured at 22.937 seconds; protected OIDC delivery and rollback/restoration passed.
-Next: manually check delayed costs/remaining credit and clean up before trial expiry. Follow the prerequisites
-and pending live checklist in [the Azure record](reviews/2026-10-13-azure-deployment.md) and
-[operator guide](AZURE.md). Approved credit target EUR 5 (not a hard cap), trial expiry 2026-10-20.
-No personal cash charges, offer upgrade or removed spending limit. Render stays the permanent demo.
+The manual Azure deployment passed its checks (roles, bilingual RAG, reset persistence, quotas, cold
+wake 22.9 s, protected OIDC delivery, rollback). The free trial expired on 2026-10-20, so the demo is
+offline and will not be revived (no paid upgrade). Remaining: in the Azure portal, delete leftover
+resources in the demo resource group, and keep the `Azure demo` workflow disabled
+(`AZURE_DEMO_ENABLED` unset). See [the Azure record](reviews/2026-10-13-azure-deployment.md) and the
+[operator guide](AZURE.md). Render stays the permanent demo.
 
 ## Still to do for the bilingual release
 

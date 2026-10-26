@@ -236,3 +236,277 @@ ENTRIES = with_english(
         },
     },
 )
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Chronische Schlafstörung (Insomnie)",
+            "doc_type": "Diagnose",
+            "expected_category": "Psychiatrie",
+            "term_en": "Chronic insomnia",
+            "icd11_code": "7A00",
+            "medications": ["zolpidem"],
+            "sections": {
+                "definition": (
+                    "Bei der chronischen Insomnie bestehen Ein- oder Durchschlafstörungen "
+                    "mindestens dreimal pro Woche über mehr als drei Monate, mit "
+                    "Beeinträchtigungen am Tag."
+                ),
+                "symptoms": (
+                    "Betroffene liegen lange wach, wachen nachts oder früh am Morgen auf und "
+                    "fühlen sich tagsüber müde, unkonzentriert und gereizt. Oft entsteht eine "
+                    "Angst vor dem Schlafengehen."
+                ),
+                "causes": (
+                    "Stress, Sorgen, Depression, Angststörungen, Schichtarbeit, "
+                    "unregelmäßige Schlafzeiten, Koffein, Alkohol sowie körperliche "
+                    "Erkrankungen und Schmerzen können die Schlafstörung auslösen oder "
+                    "aufrechterhalten."
+                ),
+                "diagnostics": (
+                    "Ein Schlaftagebuch über zwei Wochen und das ärztliche Gespräch ordnen die "
+                    "Beschwerden ein. Körperliche Ursachen wie eine Schlafapnoe oder "
+                    "Schilddrüsenstörung werden ausgeschlossen."
+                ),
+                "therapy": (
+                    "Die erste Wahl ist eine kognitive Verhaltenstherapie bei Insomnie sowie "
+                    "Schlafhygiene: feste Zeiten, ruhiges Schlafzimmer, kein Koffein am Abend. "
+                    "Schlafmittel werden nur kurzzeitig eingesetzt, da sie abhängig machen "
+                    "können."
+                ),
+                "red_flags": (
+                    "Gedanken, sich das Leben zu nehmen, starke Niedergeschlagenheit oder "
+                    "Einschlafen am Steuer erfordern rasche Hilfe: Telefonseelsorge 142, in "
+                    "akuter Gefahr Notruf 144."
+                ),
+            },
+            "further_reading": [
+                medlineplus("insomnia", "Insomnia"),
+                medlineplus("sleepdisorders", "Sleep disorders"),
+            ],
+        },
+        {
+            "title": "Panikstörung",
+            "doc_type": "Diagnose",
+            "expected_category": "Psychiatrie",
+            "term_en": "Panic disorder",
+            "icd11_code": "6B01",
+            "medications": ["sertraline", "paroxetine"],
+            "sections": {
+                "definition": (
+                    "Bei der Panikstörung treten wiederholt plötzliche Angstanfälle "
+                    "(Panikattacken) ohne erkennbaren äußeren Anlass auf, verbunden mit der "
+                    "Sorge vor weiteren Anfällen."
+                ),
+                "symptoms": (
+                    "Herzrasen, Atemnot, Schwindel, Zittern, Schwitzen, Engegefühl in der "
+                    "Brust und Todesangst. Die Attacke erreicht nach wenigen Minuten ihren "
+                    "Höhepunkt und klingt meist innerhalb einer halben Stunde ab."
+                ),
+                "causes": (
+                    "Eine erbliche Veranlagung, belastende Lebensereignisse, anhaltender "
+                    "Stress und erhöhte Körperwahrnehmung wirken zusammen. Die Angst vor den "
+                    "Körperreaktionen verstärkt den Teufelskreis."
+                ),
+                "diagnostics": (
+                    "Zuerst werden körperliche Ursachen wie Herz-, Lungen- oder "
+                    "Schilddrüsenerkrankungen ausgeschlossen. Die Diagnose stellen "
+                    "Fachärzte für Psychiatrie oder Psychotherapeuten im Gespräch."
+                ),
+                "therapy": (
+                    "Die Verhaltenstherapie mit Aufklärung und schrittweiser Konfrontation "
+                    "ist besonders wirksam. Antidepressiva können ergänzend helfen. "
+                    "Entspannungsverfahren und Bewegung unterstützen die Behandlung."
+                ),
+                "red_flags": (
+                    "Erstmalige Brustschmerzen, Atemnot oder Ohnmacht sollten immer "
+                    "körperlich abgeklärt werden, da sie auch von Herz oder Lunge kommen "
+                    "können – im Zweifel Notruf 144. Bei Suizidgedanken Telefonseelsorge 142."
+                ),
+            },
+            "further_reading": [
+                medlineplus("panicdisorder", "Panic disorder"),
+                who("anxiety-disorders", "Anxiety disorders"),
+            ],
+        },
+        {
+            "title": "Posttraumatische Belastungsstörung (PTBS)",
+            "doc_type": "Diagnose",
+            "expected_category": "Psychiatrie",
+            "term_en": "Post-traumatic stress disorder",
+            "icd11_code": "6B40",
+            "medications": ["sertraline"],
+            "sections": {
+                "definition": (
+                    "Eine posttraumatische Belastungsstörung kann nach einem extrem "
+                    "belastenden Ereignis entstehen, etwa nach einem schweren Unfall, Gewalt "
+                    "oder Krieg."
+                ),
+                "symptoms": (
+                    "Wiederkehrende belastende Erinnerungen und Albträume (Flashbacks), "
+                    "Vermeidung von Erinnerungen, Schreckhaftigkeit, Schlafstörungen und ein "
+                    "Gefühl innerer Taubheit. Die Beschwerden dauern Wochen bis Jahre."
+                ),
+                "causes": (
+                    "Ausgelöst wird sie durch ein traumatisches Erlebnis. Ob eine Störung "
+                    "entsteht, hängt von Art und Dauer der Belastung, früheren Erfahrungen "
+                    "und der Unterstützung danach ab."
+                ),
+                "diagnostics": (
+                    "Fachleute für Psychiatrie oder Psychotherapie stellen die Diagnose in "
+                    "einem ausführlichen Gespräch, oft mit Fragebögen. Begleiterkrankungen "
+                    "wie Depression werden miterfasst."
+                ),
+                "therapy": (
+                    "Traumafokussierte Psychotherapie, etwa mit EMDR oder "
+                    "Verhaltenstherapie, ist die wichtigste Behandlung. Medikamente können "
+                    "begleitend eingesetzt werden. Stabilität und Sicherheit stehen am "
+                    "Anfang."
+                ),
+                "red_flags": (
+                    "Suizidgedanken, Selbstverletzung oder das Gefühl, die Kontrolle zu "
+                    "verlieren, sind ein Anlass für sofortige Hilfe: Telefonseelsorge 142, "
+                    "in akuter Gefahr Notruf 144."
+                ),
+            },
+            "further_reading": [
+                medlineplus("posttraumaticstressdisorder", "Post-traumatic stress disorder"),
+                who("post-traumatic-stress-disorder", "Post-traumatic stress disorder"),
+            ],
+        },
+    ],
+    {
+        "Chronische Schlafstörung (Insomnie)": {
+            "title_en": "Chronic sleep disorder (insomnia)",
+            "sections_en": {
+                "definition": (
+                    "In chronic insomnia there are problems falling asleep or staying "
+                    "asleep at least three times a week for more than three months, with "
+                    "impairment during the day."
+                ),
+                "symptoms": (
+                    "People lie awake for a long time, wake up at night or early in the "
+                    "morning and feel tired, unable to concentrate and irritable during "
+                    "the day. A fear of going to bed often develops."
+                ),
+                "causes": (
+                    "Stress, worries, depression, anxiety disorders, shift work, "
+                    "irregular sleep times, caffeine, alcohol, as well as physical "
+                    "illnesses and pain can trigger or maintain the sleep disorder."
+                ),
+                "diagnostics": (
+                    "A sleep diary over two weeks and a conversation with the doctor put "
+                    "the symptoms in context. Physical causes such as sleep apnoea or a "
+                    "thyroid disorder are ruled out."
+                ),
+                "therapy": (
+                    "The first choice is cognitive behavioural therapy for insomnia and "
+                    "sleep hygiene: fixed times, a quiet bedroom, no caffeine in the "
+                    "evening. Sleeping pills are used only for a short time, as they can "
+                    "cause dependence."
+                ),
+                "red_flags": (
+                    "Thoughts of taking one's own life, marked low mood or falling asleep "
+                    "at the wheel need prompt help: telephone counselling 142 (Austria), "
+                    "and in acute danger the emergency number 144."
+                ),
+            },
+            "keywords_en": [
+                "Insomnia",
+                "Sleep disorder",
+                "Sleep hygiene",
+                "Sleep diary",
+                "Behavioural therapy",
+                "Tiredness",
+            ],
+        },
+        "Panikstörung": {
+            "title_en": "Panic disorder",
+            "sections_en": {
+                "definition": (
+                    "In panic disorder, sudden attacks of anxiety (panic attacks) occur "
+                    "repeatedly without an obvious external cause, together with a worry "
+                    "about further attacks."
+                ),
+                "symptoms": (
+                    "Racing heart, breathlessness, dizziness, trembling, sweating, "
+                    "tightness in the chest and fear of death. The attack peaks after a "
+                    "few minutes and usually fades within half an hour."
+                ),
+                "causes": (
+                    "An inherited tendency, stressful life events, lasting stress and "
+                    "heightened awareness of the body work together. The fear of the "
+                    "body's reactions reinforces the vicious circle."
+                ),
+                "diagnostics": (
+                    "First, physical causes such as heart, lung or thyroid diseases are "
+                    "ruled out. Psychiatrists or psychotherapists make the diagnosis in a "
+                    "conversation."
+                ),
+                "therapy": (
+                    "Behavioural therapy with information and step-by-step exposure is "
+                    "particularly effective. Antidepressants can help in addition. "
+                    "Relaxation techniques and exercise support the treatment."
+                ),
+                "red_flags": (
+                    "First-time chest pain, breathlessness or fainting should always be "
+                    "checked physically, since they can also come from the heart or lung "
+                    "– if in doubt call the emergency number 144 (Austria). For suicidal "
+                    "thoughts call the telephone counselling line 142."
+                ),
+            },
+            "keywords_en": [
+                "Panic disorder",
+                "Panic attack",
+                "Anxiety",
+                "Racing heart",
+                "Behavioural therapy",
+                "Antidepressants",
+            ],
+        },
+        "Posttraumatische Belastungsstörung (PTBS)": {
+            "title_en": "Post-traumatic stress disorder (PTSD)",
+            "sections_en": {
+                "definition": (
+                    "Post-traumatic stress disorder can develop after an extremely "
+                    "distressing event, for example after a serious accident, violence or "
+                    "war."
+                ),
+                "symptoms": (
+                    "Recurring distressing memories and nightmares (flashbacks), avoiding "
+                    "reminders, being easily startled, sleep problems and a feeling of "
+                    "inner numbness. The symptoms last weeks to years."
+                ),
+                "causes": (
+                    "It is triggered by a traumatic experience. Whether a disorder "
+                    "develops depends on the type and duration of the stress, earlier "
+                    "experiences and the support afterwards."
+                ),
+                "diagnostics": (
+                    "Psychiatrists or psychotherapists make the diagnosis in a detailed "
+                    "conversation, often with questionnaires. Accompanying illnesses such "
+                    "as depression are also recorded."
+                ),
+                "therapy": (
+                    "Trauma-focused psychotherapy, for example with EMDR or behavioural "
+                    "therapy, is the most important treatment. Medicines can be used "
+                    "alongside it. Stability and safety come first."
+                ),
+                "red_flags": (
+                    "Suicidal thoughts, self-harm or the feeling of losing control are a "
+                    "reason to get help at once: telephone counselling 142 (Austria), and "
+                    "in acute danger the emergency number 144."
+                ),
+            },
+            "keywords_en": [
+                "PTSD",
+                "Trauma",
+                "Flashbacks",
+                "Nightmares",
+                "Psychotherapy",
+                "EMDR",
+            ],
+        },
+    },
+)

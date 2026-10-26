@@ -222,3 +222,433 @@ ENTRIES = with_english(
         },
     },
 )
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Epilepsie",
+            "doc_type": "Diagnose",
+            "expected_category": "Neurologie",
+            "term_en": "Epilepsy",
+            "icd11_code": "8A6Z",
+            "medications": ["levetiracetam", "lamotrigine"],
+            "sections": {
+                "definition": (
+                    "Epilepsie ist eine Erkrankung des Gehirns, bei der es wiederholt zu "
+                    "epileptischen Anfällen kommt, weil Nervenzellen kurzzeitig übermäßig "
+                    "gleichzeitig aktiv sind."
+                ),
+                "symptoms": (
+                    "Die Anfälle sind sehr verschieden: Beim großen Anfall stürzt die Person "
+                    "bewusstlos zu Boden und krampft am ganzen Körper. Andere Anfälle zeigen "
+                    "sich nur als kurzes Starren, Zuckungen eines Arms oder seltsame "
+                    "Empfindungen."
+                ),
+                "causes": (
+                    "Ursachen sind Narben oder Fehlbildungen im Gehirn, Folgen eines "
+                    "Schlaganfalls, einer Verletzung oder Entzündung, aber auch erbliche "
+                    "Faktoren. Bei vielen Menschen bleibt die Ursache unbekannt."
+                ),
+                "diagnostics": (
+                    "Die Neurologin oder der Neurologe erhebt die Krankengeschichte und "
+                    "schreibt die Hirnströme (EEG). Eine Magnetresonanztomografie sucht nach "
+                    "Veränderungen im Gehirn."
+                ),
+                "therapy": (
+                    "Mit Antiepileptika sind viele Betroffene anfallsfrei. Wichtig sind "
+                    "regelmäßige Einnahme, ausreichend Schlaf und der Verzicht auf bekannte "
+                    "Auslöser. In ausgewählten Fällen helfen eine Operation oder ein "
+                    "Nervenstimulator."
+                ),
+                "red_flags": (
+                    "Ein Krampfanfall, der länger als fünf Minuten dauert, mehrere Anfälle "
+                    "hintereinander, ein erster Anfall oder Verletzungen beim Sturz – sofort "
+                    "Notruf 144. Während des Anfalls nichts in den Mund stecken."
+                ),
+            },
+            "further_reading": [
+                medlineplus("epilepsy", "Epilepsy"),
+                who("epilepsy", "Epilepsy"),
+            ],
+        },
+        {
+            "title": "Parkinson-Krankheit",
+            "doc_type": "Diagnose",
+            "expected_category": "Neurologie",
+            "term_en": "Parkinson disease",
+            "icd11_code": "8A00.0",
+            "medications": ["levodopa", "pramipexole"],
+            "sections": {
+                "definition": (
+                    "Die Parkinson-Krankheit ist eine langsam fortschreitende Erkrankung des "
+                    "Gehirns, bei der Nervenzellen absterben, die den Botenstoff Dopamin "
+                    "herstellen."
+                ),
+                "symptoms": (
+                    "Leitsymptome sind verlangsamte Bewegungen, Muskelsteifheit, ein Zittern "
+                    "in Ruhe und eine Haltungsinstabilität. Früh können ein vermindertes "
+                    "Riechen, Schlafstörungen und Verstopfung auftreten."
+                ),
+                "causes": (
+                    "Warum die Zellen absterben, ist nicht vollständig geklärt. Alter, "
+                    "genetische Faktoren und Umwelteinflüsse spielen eine Rolle."
+                ),
+                "diagnostics": (
+                    "Die Diagnose stellt die Neurologin anhand der Beschwerden und der "
+                    "körperlichen Untersuchung. Bildgebung dient vor allem dazu, andere "
+                    "Ursachen auszuschließen."
+                ),
+                "therapy": (
+                    "Medikamente, die Dopamin ersetzen oder nachahmen, lindern die Symptome "
+                    "gut. Bewegung, Physio- und Sprachtherapie ergänzen sie. In ausgewählten "
+                    "Fällen kann eine tiefe Hirnstimulation helfen."
+                ),
+                "red_flags": (
+                    "Neue Stürze, Halluzinationen oder Verwirrtheit, plötzliche starke "
+                    "Verschlechterung der Beweglichkeit oder Schluckstörungen mit Verschlucken "
+                    "sollten rasch ärztlich abgeklärt werden."
+                ),
+            },
+            "further_reading": [
+                medlineplus("parkinsonsdisease", "Parkinson's disease"),
+                who("parkinson-disease", "Parkinson disease"),
+            ],
+        },
+        {
+            "title": "Multiple Sklerose",
+            "doc_type": "Diagnose",
+            "expected_category": "Neurologie",
+            "term_en": "Multiple sclerosis",
+            "icd11_code": "8A40",
+            "medications": ["interferon beta", "methylprednisolone"],
+            "sections": {
+                "definition": (
+                    "Die Multiple Sklerose (MS) ist eine chronisch-entzündliche Erkrankung "
+                    "des Nervensystems, bei der das Immunsystem die Schutzhülle der "
+                    "Nervenfasern in Gehirn und Rückenmark angreift."
+                ),
+                "symptoms": (
+                    "Häufig sind Sehstörungen, Missempfindungen und Taubheitsgefühle, "
+                    "Lähmungen, Gleichgewichtsstörungen und eine ausgeprägte Müdigkeit. Die "
+                    "Beschwerden treten oft in Schüben auf und bilden sich teilweise zurück."
+                ),
+                "causes": (
+                    "Die Ursache ist nicht abschließend geklärt. Vermutet wird ein Zusammenspiel "
+                    "aus erblicher Veranlagung und Umweltfaktoren. Frauen sind häufiger "
+                    "betroffen, die Erkrankung beginnt meist zwischen 20 und 40 Jahren."
+                ),
+                "diagnostics": (
+                    "Die Neurologin stützt sich auf Krankengeschichte, neurologische "
+                    "Untersuchung, Magnetresonanztomografie von Gehirn und Rückenmark und "
+                    "die Untersuchung des Nervenwassers."
+                ),
+                "therapy": (
+                    "Im akuten Schub wird meist hochdosiertes Kortison gegeben. Langfristig "
+                    "verringern Medikamente, die das Immunsystem beeinflussen, die Zahl der "
+                    "Schübe. Physiotherapie und Rehabilitation ergänzen die Behandlung."
+                ),
+                "red_flags": (
+                    "Neu auftretende Lähmungen, ein plötzlicher Sehverlust oder starke "
+                    "Gleichgewichtsstörungen sind ein Grund für eine rasche neurologische "
+                    "Abklärung; bei Schluck- oder Atemproblemen Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("multiplesclerosis", "Multiple sclerosis")],
+        },
+        {
+            "title": "Spannungskopfschmerz",
+            "doc_type": "Diagnose",
+            "expected_category": "Neurologie",
+            "term_en": "Tension-type headache",
+            "icd11_code": "8A81",
+            "medications": ["ibuprofen", "paracetamol"],
+            "sections": {
+                "definition": (
+                    "Der Spannungskopfschmerz ist die häufigste Kopfschmerzform. Er fühlt sich "
+                    "dumpf und drückend an, wie ein Band um den Kopf."
+                ),
+                "symptoms": (
+                    "Der Schmerz betrifft beide Kopfseiten, ist leicht bis mittelstark und "
+                    "verstärkt sich nicht durch körperliche Aktivität. Übelkeit fehlt meist, "
+                    "Licht- oder Lärmempfindlichkeit sind nur schwach ausgeprägt."
+                ),
+                "causes": (
+                    "Verspannte Nacken- und Schultermuskeln, Stress, Schlafmangel, langes "
+                    "Sitzen am Bildschirm und zu wenig Trinken spielen eine Rolle."
+                ),
+                "diagnostics": (
+                    "Die Diagnose ergibt sich aus der Beschreibung der Beschwerden. Ein "
+                    "Kopfschmerzkalender hilft. Weitere Untersuchungen sind nur bei "
+                    "auffälligen Zeichen nötig."
+                ),
+                "therapy": (
+                    "Wärme, Bewegung, Entspannungsverfahren und Pausen helfen. Schmerzmittel "
+                    "sollten an höchstens zehn Tagen im Monat eingenommen werden, um einen "
+                    "Dauerkopfschmerz durch Medikamente zu vermeiden."
+                ),
+                "red_flags": (
+                    "Ein plötzlich einsetzender heftigster Kopfschmerz, Fieber mit "
+                    "Nackensteifigkeit, Lähmungen, Sprach- oder Sehstörungen oder Kopfschmerz "
+                    "nach einem Unfall erfordern sofortige Abklärung – Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("headache", "Headache")],
+        },
+        {
+            "title": "Schwindel",
+            "doc_type": "Symptom",
+            "expected_category": "Neurologie",
+            "term_en": "Dizziness",
+            "icd11_code": "MB48",
+            "medications": ["dimenhydrinate"],
+            "sections": {
+                "definition": (
+                    "Schwindel ist die Empfindung, dass sich die Umgebung oder man selbst "
+                    "dreht, schwankt oder wegzukippen droht. Er hat viele Ursachen."
+                ),
+                "symptoms": (
+                    "Man unterscheidet Drehschwindel, Schwankschwindel und das Gefühl "
+                    "kurz vor einer Ohnmacht. Häufig kommen Übelkeit, Schweißausbrüche "
+                    "und Unsicherheit beim Gehen hinzu."
+                ),
+                "causes": (
+                    "Häufige Ursachen sind Störungen des Gleichgewichtsorgans im "
+                    "Innenohr (zum Beispiel Lagerungsschwindel), niedriger Blutdruck, "
+                    "Flüssigkeitsmangel, Medikamente und Angst. Seltener liegt eine "
+                    "Erkrankung des Gehirns zugrunde."
+                ),
+                "diagnostics": (
+                    "Die Ärztin fragt nach Auslösern und Dauer, misst den Blutdruck im "
+                    "Liegen und Stehen und prüft Augenbewegungen und Gleichgewicht. Bei "
+                    "Bedarf folgen weitere Untersuchungen durch HNO oder Neurologie."
+                ),
+                "therapy": (
+                    "Die Behandlung richtet sich nach der Ursache. Beim "
+                    "Lagerungsschwindel helfen Befreiungsmanöver, bei niedrigem Blutdruck "
+                    "mehr Trinken und langsames Aufstehen. Gleichgewichtstraining stärkt "
+                    "die Anpassung."
+                ),
+                "red_flags": (
+                    "Schwindel mit Lähmung, Sprach- oder Sehstörungen, "
+                    "heftigem Kopfschmerz, Brustschmerz, Atemnot oder Bewusstseinsverlust "
+                    "ist ein Notfall, zum Beispiel bei Schlaganfall – sofort Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("dizzinessandvertigo", "Dizziness and vertigo")],
+        },
+    ],
+    {
+        "Epilepsie": {
+            "title_en": "Epilepsy",
+            "sections_en": {
+                "definition": (
+                    "Epilepsy is a disease of the brain in which epileptic seizures occur "
+                    "repeatedly because nerve cells are briefly overactive at the same time."
+                ),
+                "symptoms": (
+                    "Seizures differ greatly: in a major seizure the person falls "
+                    "unconscious to the ground and convulses all over. Other seizures show "
+                    "up only as a brief stare, twitching of an arm or strange sensations."
+                ),
+                "causes": (
+                    "Causes are scars or malformations in the brain, the consequences of a "
+                    "stroke, injury or inflammation, but also hereditary factors. In many "
+                    "people the cause stays unknown."
+                ),
+                "diagnostics": (
+                    "The neurologist takes the history and records the brain waves (EEG). "
+                    "Magnetic resonance imaging looks for changes in the brain."
+                ),
+                "therapy": (
+                    "With antiseizure medicines many people become seizure-free. Regular "
+                    "intake, enough sleep and avoiding known triggers are important. In "
+                    "selected cases an operation or a nerve stimulator helps."
+                ),
+                "red_flags": (
+                    "A seizure that lasts longer than five minutes, several seizures in a "
+                    "row, a first seizure or injuries from the fall – call the emergency "
+                    "number 144 (Austria) at once. Do not put anything into the mouth "
+                    "during a seizure."
+                ),
+            },
+            "keywords_en": [
+                "Epilepsy",
+                "Seizure",
+                "Convulsions",
+                "EEG",
+                "Antiseizure medicines",
+                "Neurologist",
+            ],
+        },
+        "Parkinson-Krankheit": {
+            "title_en": "Parkinson disease",
+            "sections_en": {
+                "definition": (
+                    "Parkinson disease is a slowly progressing disease of the brain in "
+                    "which the nerve cells that produce the messenger dopamine are lost."
+                ),
+                "symptoms": (
+                    "Main symptoms are slowed movements, muscle stiffness, a tremor at rest "
+                    "and unsteady posture. Early signs can be a reduced sense of smell, "
+                    "sleep problems and constipation."
+                ),
+                "causes": (
+                    "Why the cells are lost is not fully understood. Age, genetic factors "
+                    "and environmental influences play a role."
+                ),
+                "diagnostics": (
+                    "The neurologist makes the diagnosis from the symptoms and the physical "
+                    "examination. Imaging mainly serves to rule out other causes."
+                ),
+                "therapy": (
+                    "Medicines that replace or imitate dopamine relieve the symptoms well. "
+                    "Exercise, physiotherapy and speech therapy complement them. In "
+                    "selected cases deep brain stimulation can help."
+                ),
+                "red_flags": (
+                    "New falls, hallucinations or confusion, a sudden marked worsening of "
+                    "mobility or swallowing problems with choking should be checked by a "
+                    "doctor promptly."
+                ),
+            },
+            "keywords_en": [
+                "Parkinson disease",
+                "Tremor",
+                "Dopamine",
+                "Stiffness",
+                "Levodopa",
+                "Physiotherapy",
+            ],
+        },
+        "Multiple Sklerose": {
+            "title_en": "Multiple sclerosis",
+            "sections_en": {
+                "definition": (
+                    "Multiple sclerosis (MS) is a chronic inflammatory disease of the "
+                    "nervous system in which the immune system attacks the protective "
+                    "sheath of the nerve fibres in the brain and spinal cord."
+                ),
+                "symptoms": (
+                    "Common signs are vision problems, abnormal sensations and numbness, "
+                    "paralysis, balance problems and marked tiredness. The symptoms often "
+                    "come in relapses and partly go away again."
+                ),
+                "causes": (
+                    "The cause has not been fully clarified. A combination of inherited "
+                    "tendency and environmental factors is suspected. Women are affected "
+                    "more often, and the disease usually starts between 20 and 40 years of "
+                    "age."
+                ),
+                "diagnostics": (
+                    "The neurologist relies on the history, a neurological examination, "
+                    "magnetic resonance imaging of brain and spinal cord and an "
+                    "examination of the spinal fluid."
+                ),
+                "therapy": (
+                    "In an acute relapse high-dose cortisone is usually given. In the long "
+                    "term, medicines that act on the immune system reduce the number of "
+                    "relapses. Physiotherapy and rehabilitation complement the treatment."
+                ),
+                "red_flags": (
+                    "Newly occurring paralysis, a sudden loss of vision or severe balance "
+                    "problems are a reason for a prompt neurological examination; for "
+                    "swallowing or breathing problems call the emergency number 144 "
+                    "(Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Multiple sclerosis",
+                "MS",
+                "Relapse",
+                "Myelin",
+                "Immune system",
+                "Rehabilitation",
+            ],
+        },
+        "Spannungskopfschmerz": {
+            "title_en": "Tension-type headache",
+            "sections_en": {
+                "definition": (
+                    "Tension-type headache is the most common form of headache. It feels "
+                    "dull and pressing, like a band around the head."
+                ),
+                "symptoms": (
+                    "The pain affects both sides of the head, is mild to moderate and does "
+                    "not get worse with physical activity. Nausea is usually absent, and "
+                    "sensitivity to light or noise is only slight."
+                ),
+                "causes": (
+                    "Tense neck and shoulder muscles, stress, lack of sleep, sitting at a "
+                    "screen for long periods and drinking too little play a role."
+                ),
+                "diagnostics": (
+                    "The diagnosis follows from the description of the symptoms. A headache "
+                    "diary helps. Further tests are only needed if there are unusual signs."
+                ),
+                "therapy": (
+                    "Heat, exercise, relaxation techniques and breaks help. Pain relievers "
+                    "should be taken on no more than ten days a month, to avoid a constant "
+                    "headache caused by the medicine itself."
+                ),
+                "red_flags": (
+                    "A suddenly starting worst headache, fever with a stiff neck, "
+                    "paralysis, speech or vision problems, or a headache after an accident "
+                    "need to be checked at once – call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Tension-type headache",
+                "Headache",
+                "Neck tension",
+                "Stress",
+                "Pain relievers",
+                "Headache diary",
+            ],
+        },
+        "Schwindel": {
+            "title_en": "Dizziness",
+            "sections_en": {
+                "definition": (
+                    "Dizziness is the sensation that the surroundings or oneself are "
+                    "spinning, swaying or about to topple. It has many causes."
+                ),
+                "symptoms": (
+                    "A distinction is made between spinning vertigo, swaying dizziness "
+                    "and the feeling of being about to faint. Nausea, sweating and "
+                    "unsteadiness when walking are common additions."
+                ),
+                "causes": (
+                    "Common causes are disorders of the balance organ in the inner ear "
+                    "(for example positional vertigo), low blood pressure, lack of "
+                    "fluids, medicines and anxiety. Less often a disease of the brain is "
+                    "the underlying cause."
+                ),
+                "diagnostics": (
+                    "The doctor asks about triggers and duration, measures blood pressure "
+                    "lying and standing and tests eye movements and balance. If needed, "
+                    "further tests by ear, nose and throat or neurology follow."
+                ),
+                "therapy": (
+                    "Treatment depends on the cause. In positional vertigo repositioning "
+                    "manoeuvres help, in low blood pressure drinking more and getting up "
+                    "slowly. Balance training strengthens adaptation."
+                ),
+                "red_flags": (
+                    "Dizziness with paralysis, speech or vision problems, severe "
+                    "headache, chest pain, breathlessness or loss of consciousness is an "
+                    "emergency, for example in a stroke – call the emergency number 144 "
+                    "(Austria) at once."
+                ),
+            },
+            "keywords_en": [
+                "Dizziness",
+                "Vertigo",
+                "Balance",
+                "Inner ear",
+                "Blood pressure",
+                "Nausea",
+            ],
+        },
+    },
+)

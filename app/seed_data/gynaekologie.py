@@ -208,3 +208,261 @@ ENTRIES = with_english(
         },
     },
 )
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Schwangerschaftsdiabetes (Gestationsdiabetes)",
+            "doc_type": "Diagnose",
+            "expected_category": "Endokrinologie",
+            "term_en": "Gestational diabetes",
+            "icd11_code": "JA63.2",
+            "medications": ["insulin", "metformin"],
+            "sections": {
+                "definition": (
+                    "Beim Schwangerschaftsdiabetes tritt erstmals in der Schwangerschaft "
+                    "eine Störung des Zuckerstoffwechsels auf, die sich meist nach der Geburt "
+                    "wieder normalisiert."
+                ),
+                "symptoms": (
+                    "Meist gibt es keine Beschwerden. Gelegentlich kommen verstärkter Durst, "
+                    "häufiges Wasserlassen oder Müdigkeit vor. Deshalb wird in der "
+                    "Schwangerschaft gezielt untersucht."
+                ),
+                "causes": (
+                    "Hormone der Plazenta machen den Körper weniger empfindlich für Insulin. "
+                    "Übergewicht, höheres Alter, Diabetes in der Familie und ein früherer "
+                    "Schwangerschaftsdiabetes erhöhen das Risiko."
+                ),
+                "diagnostics": (
+                    "Zwischen der 24. und 28. Schwangerschaftswoche wird ein oraler "
+                    "Zuckerbelastungstest (Glukosetoleranztest) durchgeführt."
+                ),
+                "therapy": (
+                    "Ernährungsumstellung, Bewegung und regelmäßige Blutzuckermessung "
+                    "reichen oft aus. Gelingt die Einstellung damit nicht, wird Insulin "
+                    "gespritzt. Die Betreuung erfolgt gemeinsam durch Frauenärztin und "
+                    "Diabetesteam."
+                ),
+                "red_flags": (
+                    "Starker Durst mit häufigem Erbrechen, Bauchschmerzen, Verwirrtheit oder "
+                    "verminderte Kindsbewegungen sind Warnzeichen – sofort ärztliche Hilfe, "
+                    "im Zweifel Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("diabetesandpregnancy", "Diabetes and pregnancy")],
+        },
+        {
+            "title": "Gebärmuttermyome",
+            "doc_type": "Diagnose",
+            "expected_category": "Gynäkologie",
+            "term_en": "Uterine fibroids",
+            "icd11_code": "2E86.0",
+            "medications": ["tranexamic acid", "ibuprofen"],
+            "sections": {
+                "definition": (
+                    "Myome sind gutartige Knoten aus Muskelgewebe in der Gebärmutterwand. Sie "
+                    "gehören zu den häufigsten gutartigen Veränderungen bei Frauen im "
+                    "gebärfähigen Alter."
+                ),
+                "symptoms": (
+                    "Viele Frauen haben keine Beschwerden. Möglich sind starke und lange "
+                    "Regelblutungen, Unterbauchschmerzen, Druckgefühl, häufiger Harndrang "
+                    "und Verstopfung. Selten erschweren Myome das Schwangerwerden."
+                ),
+                "causes": (
+                    "Das Wachstum hängt von weiblichen Hormonen ab. Familiäre Häufung, "
+                    "Übergewicht und eine frühe erste Regelblutung begünstigen Myome."
+                ),
+                "diagnostics": (
+                    "Die Frauenärztin tastet den Unterleib ab und erkennt Myome im "
+                    "Ultraschall. Bei Bedarf folgt eine Magnetresonanztomografie."
+                ),
+                "therapy": (
+                    "Ohne Beschwerden genügt Beobachten. Bei starken Blutungen helfen "
+                    "Medikamente, bei großen Myomen kann eine Operation oder eine "
+                    "Embolisation der Gefäße nötig sein. Die Gebärmutter kann oft erhalten "
+                    "bleiben."
+                ),
+                "red_flags": (
+                    "Sehr starke Blutungen mit Schwindel, Kreislaufproblemen oder "
+                    "Blässe, plötzliche heftige Unterbauchschmerzen oder Fieber sollten "
+                    "umgehend untersucht werden, bei Kreislaufkollaps Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("uterinefibroids", "Uterine fibroids")],
+        },
+        {
+            "title": "Regelschmerzen (Dysmenorrhö)",
+            "doc_type": "Diagnose",
+            "expected_category": "Gynäkologie",
+            "term_en": "Dysmenorrhea",
+            "icd11_code": "GA34.3",
+            "medications": ["ibuprofen", "naproxen"],
+            "sections": {
+                "definition": (
+                    "Regelschmerzen sind krampfartige Schmerzen im Unterbauch vor oder "
+                    "während der Menstruation. Man unterscheidet primäre Beschwerden ohne "
+                    "Organerkrankung und sekundäre Beschwerden mit einer Ursache."
+                ),
+                "symptoms": (
+                    "Ziehende oder krampfartige Unterbauchschmerzen, oft mit Rückenschmerzen, "
+                    "Übelkeit, Durchfall oder Kopfschmerzen. Die Beschwerden halten meist "
+                    "ein bis drei Tage an."
+                ),
+                "causes": (
+                    "Bei der primären Form zieht sich die Gebärmutter durch Botenstoffe "
+                    "(Prostaglandine) stark zusammen. Sekundär können Endometriose, Myome "
+                    "oder Entzündungen die Ursache sein."
+                ),
+                "diagnostics": (
+                    "Die Frauenärztin erfragt den Zyklus und untersucht den Unterleib mit "
+                    "Ultraschall. Treten die Schmerzen neu oder zunehmend auf, wird nach "
+                    "Ursachen gesucht."
+                ),
+                "therapy": (
+                    "Wärme, Bewegung und entzündungshemmende Schmerzmittel lindern die "
+                    "Beschwerden. Hormonelle Verhütungsmittel können helfen. Bei einer "
+                    "Ursache wie Endometriose wird diese behandelt."
+                ),
+                "red_flags": (
+                    "Sehr starke, neu aufgetretene Unterleibsschmerzen, Fieber oder "
+                    "Schmerzen mit Ohnmacht und verspäteter Regel (Verdacht auf "
+                    "Eileiterschwangerschaft) sind ein Notfall – Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("menstruation", "Menstruation")],
+        },
+    ],
+    {
+        "Schwangerschaftsdiabetes (Gestationsdiabetes)": {
+            "title_en": "Diabetes in pregnancy (gestational diabetes)",
+            "sections_en": {
+                "definition": (
+                    "In gestational diabetes a disorder of sugar metabolism occurs for "
+                    "the first time during pregnancy, and it usually returns to normal "
+                    "after the birth."
+                ),
+                "symptoms": (
+                    "There are usually no symptoms. Occasionally increased thirst, "
+                    "frequent urination or tiredness occur. That is why targeted testing "
+                    "is done in pregnancy."
+                ),
+                "causes": (
+                    "Hormones from the placenta make the body less sensitive to insulin. "
+                    "Overweight, higher age, diabetes in the family and gestational "
+                    "diabetes in an earlier pregnancy raise the risk."
+                ),
+                "diagnostics": (
+                    "Between the 24th and 28th week of pregnancy an oral sugar load test "
+                    "(glucose tolerance test) is carried out."
+                ),
+                "therapy": (
+                    "Changes to diet, exercise and regular blood sugar measurement are "
+                    "often enough. If this does not achieve control, insulin is injected. "
+                    "Care is shared between the gynaecologist and the diabetes team."
+                ),
+                "red_flags": (
+                    "Severe thirst with frequent vomiting, abdominal pain, confusion or "
+                    "reduced movements of the baby are warning signs – seek medical help "
+                    "at once, and if in doubt call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Gestational diabetes",
+                "Pregnancy",
+                "Blood sugar",
+                "Glucose tolerance test",
+                "Insulin",
+                "Gynaecologist",
+            ],
+        },
+        "Gebärmuttermyome": {
+            "title_en": "Uterine fibroids",
+            "sections_en": {
+                "definition": (
+                    "Fibroids are benign nodules of muscle tissue in the wall of the "
+                    "uterus. They are among the most common benign changes in women of "
+                    "childbearing age."
+                ),
+                "symptoms": (
+                    "Many women have no symptoms. Possible are heavy and long periods, "
+                    "lower abdominal pain, a feeling of pressure, frequent urge to "
+                    "urinate and constipation. Rarely, fibroids make it harder to become "
+                    "pregnant."
+                ),
+                "causes": (
+                    "Growth depends on female hormones. Cases in the family, overweight "
+                    "and an early first period favour fibroids."
+                ),
+                "diagnostics": (
+                    "The gynaecologist feels the abdomen and sees fibroids on an "
+                    "ultrasound. If needed, magnetic resonance imaging follows."
+                ),
+                "therapy": (
+                    "Without symptoms, watching is enough. Medicines help with heavy "
+                    "bleeding; with large fibroids an operation or an embolisation of the "
+                    "vessels can be necessary. The uterus can often be preserved."
+                ),
+                "red_flags": (
+                    "Very heavy bleeding with dizziness, circulation problems or pallor, "
+                    "sudden severe lower abdominal pain or fever should be examined "
+                    "promptly; for a circulatory collapse call the emergency number 144 "
+                    "(Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Uterine fibroids",
+                "Myoma",
+                "Heavy periods",
+                "Uterus",
+                "Ultrasound",
+                "Gynaecologist",
+            ],
+        },
+        "Regelschmerzen (Dysmenorrhö)": {
+            "title_en": "Period pain (dysmenorrhoea)",
+            "sections_en": {
+                "definition": (
+                    "Period pain is cramping pain in the lower abdomen before or during "
+                    "menstruation. A distinction is made between primary pain without an "
+                    "organ disease and secondary pain with a cause."
+                ),
+                "symptoms": (
+                    "Pulling or cramping pain in the lower abdomen, often with back "
+                    "pain, nausea, diarrhoea or headache. The symptoms usually last one "
+                    "to three days."
+                ),
+                "causes": (
+                    "In the primary form the uterus contracts strongly because of "
+                    "messenger substances (prostaglandins). In the secondary form "
+                    "endometriosis, fibroids or inflammation can be the cause."
+                ),
+                "diagnostics": (
+                    "The gynaecologist asks about the cycle and examines the abdomen with "
+                    "an ultrasound. If the pain is new or getting worse, causes are "
+                    "looked for."
+                ),
+                "therapy": (
+                    "Heat, exercise and anti-inflammatory pain relievers ease the "
+                    "symptoms. Hormonal contraceptives can help. If there is a cause such "
+                    "as endometriosis, it is treated."
+                ),
+                "red_flags": (
+                    "Very severe, newly occurring pain in the lower abdomen, fever, or "
+                    "pain with fainting and a late period (suspected ectopic pregnancy) "
+                    "is an emergency – call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Period pain",
+                "Dysmenorrhoea",
+                "Menstruation",
+                "Cramps",
+                "Pain relievers",
+                "Endometriosis",
+            ],
+        },
+    },
+)
