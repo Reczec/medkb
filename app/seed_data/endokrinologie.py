@@ -233,3 +233,267 @@ ENTRIES = with_english(
         },
     },
 )
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Diabetes mellitus Typ 1",
+            "doc_type": "Diagnose",
+            "expected_category": "Endokrinologie",
+            "term_en": "Type 1 diabetes mellitus",
+            "icd11_code": "5A10",
+            "medications": ["insulin"],
+            "sections": {
+                "definition": (
+                    "Beim Typ-1-Diabetes zerstört das eigene Immunsystem die "
+                    "insulinproduzierenden Zellen der Bauchspeicheldrüse, sodass Insulin "
+                    "fehlt und der Blutzucker ansteigt."
+                ),
+                "symptoms": (
+                    "Starker Durst, häufiges Wasserlassen, Gewichtsverlust, Müdigkeit und "
+                    "Leistungsschwäche. Die Beschwerden entwickeln sich meist innerhalb "
+                    "weniger Wochen, oft bei Kindern, Jugendlichen und jungen Erwachsenen."
+                ),
+                "causes": (
+                    "Es handelt sich um eine Autoimmunerkrankung. Erbliche Veranlagung und "
+                    "wahrscheinlich Auslöser wie Virusinfekte spielen eine Rolle. Lebensstil "
+                    "ist nicht die Ursache."
+                ),
+                "diagnostics": (
+                    "Der Blutzucker ist erhöht, der Langzeitwert HbA1c ist erhöht. Der "
+                    "Nachweis bestimmter Antikörper sichert die Diagnose."
+                ),
+                "therapy": (
+                    "Lebenslang ist eine Insulinbehandlung nötig, per Spritze, Pen oder Pumpe. "
+                    "Der Blutzucker wird selbst oder mit einem Sensor gemessen. Schulung zu "
+                    "Ernährung und Insulindosierung ist ein fester Teil der Behandlung."
+                ),
+                "red_flags": (
+                    "Starke Übelkeit, Erbrechen, Bauchschmerzen, tiefe Atmung und "
+                    "Benommenheit mit hohem Blutzucker deuten auf eine Ketoazidose hin; ein "
+                    "zu niedriger Blutzucker mit Verwirrtheit, Zittern oder Bewusstlosigkeit "
+                    "ist ebenso ein Notfall – Notruf 144."
+                ),
+            },
+            "further_reading": [
+                medlineplus("diabetestype1", "Type 1 diabetes"),
+                who("diabetes", "Diabetes"),
+            ],
+        },
+        {
+            "title": "Adipositas (starkes Übergewicht)",
+            "doc_type": "Diagnose",
+            "expected_category": "Endokrinologie",
+            "term_en": "Obesity",
+            "icd11_code": "5B81",
+            "medications": [],
+            "sections": {
+                "definition": (
+                    "Adipositas ist eine chronische Erkrankung mit einem übermäßig hohen "
+                    "Körperfettanteil. Ein Body-Mass-Index ab 30 gilt als Adipositas."
+                ),
+                "symptoms": (
+                    "Betroffene bemerken Atemnot bei Belastung, Gelenkschmerzen, "
+                    "Schnarchen und schnelle Ermüdung. Das Übergewicht erhöht das Risiko für "
+                    "viele Folgeerkrankungen."
+                ),
+                "causes": (
+                    "Mehr Energie wird aufgenommen als verbraucht. Dabei wirken Veranlagung, "
+                    "Ernährung, Bewegungsmangel, Schlafmangel, Stress, Medikamente und "
+                    "hormonelle Erkrankungen zusammen."
+                ),
+                "diagnostics": (
+                    "Gewicht, Größe und Taillenumfang werden gemessen. Blutuntersuchungen "
+                    "prüfen Blutzucker, Blutfette und Schilddrüse, um Folgeerkrankungen und "
+                    "Ursachen zu erkennen."
+                ),
+                "therapy": (
+                    "Grundlage sind eine dauerhafte Ernährungsumstellung, mehr Bewegung und "
+                    "Verhaltenstherapie. Bei hohem Risiko kommen Medikamente oder eine "
+                    "Operation am Magen in Frage. Kleine, aber dauerhafte Gewichtsabnahmen "
+                    "verbessern bereits viele Werte."
+                ),
+                "red_flags": (
+                    "Atemnot in Ruhe, Brustschmerzen oder ein stark geschwollenes Bein sind "
+                    "ein Warnzeichen für Herz- oder Gefäßprobleme – Notruf 144."
+                ),
+            },
+            "further_reading": [
+                medlineplus("obesity", "Obesity"),
+                who("obesity-and-overweight", "Obesity and overweight"),
+            ],
+        },
+        {
+            "title": "Erhöhte Blutfette (Fettstoffwechselstörung)",
+            "doc_type": "Diagnose",
+            "expected_category": "Endokrinologie",
+            "term_en": "Hyperlipidemia",
+            "icd11_code": "5C80",
+            "medications": ["atorvastatin", "ezetimibe"],
+            "sections": {
+                "definition": (
+                    "Bei einer Fettstoffwechselstörung sind Cholesterin oder Triglyzeride im "
+                    "Blut dauerhaft erhöht, insbesondere das LDL-Cholesterin."
+                ),
+                "symptoms": (
+                    "Erhöhte Blutfette verursachen meist keine Beschwerden. Bei sehr hohen "
+                    "Werten oder erblichen Formen können Fettablagerungen an Sehnen oder "
+                    "Augenlidern auftreten."
+                ),
+                "causes": (
+                    "Ernährung mit viel gesättigten Fetten, Übergewicht, Bewegungsmangel, "
+                    "Diabetes, Schilddrüsenunterfunktion und erbliche Veranlagung "
+                    "(familiäre Hypercholesterinämie) erhöhen die Werte."
+                ),
+                "diagnostics": (
+                    "Eine Blutabnahme bestimmt Gesamtcholesterin, LDL, HDL und Triglyzeride, "
+                    "am besten nüchtern. Die Ärztin schätzt zusätzlich das Herz-Kreislauf-"
+                    "Risiko ein."
+                ),
+                "therapy": (
+                    "Ausgewogene Ernährung, Bewegung und Gewichtsabnahme sind die Basis. "
+                    "Reicht das nicht aus, senken Medikamente wie Statine das LDL-"
+                    "Cholesterin und das Risiko für Herzinfarkt und Schlaganfall."
+                ),
+                "red_flags": (
+                    "Druck oder Schmerz in der Brust, plötzliche Lähmungen oder "
+                    "Sprachstörungen können Folgen von Gefäßverengungen sein – sofort "
+                    "Notruf 144. Sehr hohe Triglyzeride können eine Bauchspeicheldrüsen-"
+                    "entzündung auslösen."
+                ),
+            },
+            "further_reading": [medlineplus("cholesterol", "Cholesterol")],
+        },
+    ],
+    {
+        "Diabetes mellitus Typ 1": {
+            "title_en": "Type 1 diabetes mellitus",
+            "sections_en": {
+                "definition": (
+                    "In type 1 diabetes the body's own immune system destroys the "
+                    "insulin-producing cells of the pancreas, so that insulin is missing "
+                    "and the blood sugar rises."
+                ),
+                "symptoms": (
+                    "Strong thirst, frequent urination, weight loss, tiredness and "
+                    "reduced performance. The symptoms usually develop within a few weeks, "
+                    "often in children, adolescents and young adults."
+                ),
+                "causes": (
+                    "It is an autoimmune disease. Inherited tendency and probably "
+                    "triggers such as viral infections play a role. Lifestyle is not the "
+                    "cause."
+                ),
+                "diagnostics": (
+                    "The blood sugar is raised, and so is the long-term value HbA1c. "
+                    "Detecting certain antibodies confirms the diagnosis."
+                ),
+                "therapy": (
+                    "Lifelong insulin treatment is needed, by syringe, pen or pump. Blood "
+                    "sugar is measured by the person or with a sensor. Training in diet "
+                    "and insulin dosing is a fixed part of the treatment."
+                ),
+                "red_flags": (
+                    "Severe nausea, vomiting, abdominal pain, deep breathing and "
+                    "drowsiness with high blood sugar point to ketoacidosis; blood sugar "
+                    "that is too low, with confusion, trembling or loss of consciousness, "
+                    "is an emergency as well – call the emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Type 1 diabetes",
+                "Insulin",
+                "Blood sugar",
+                "HbA1c",
+                "Autoimmune disease",
+                "Ketoacidosis",
+            ],
+        },
+        "Adipositas (starkes Übergewicht)": {
+            "title_en": "Obesity (severe overweight)",
+            "sections_en": {
+                "definition": (
+                    "Obesity is a chronic disease with an excessive amount of body fat. A "
+                    "body mass index of 30 or more counts as obesity."
+                ),
+                "symptoms": (
+                    "People notice breathlessness on exertion, joint pain, snoring and "
+                    "quick tiredness. The excess weight raises the risk of many "
+                    "secondary diseases."
+                ),
+                "causes": (
+                    "More energy is taken in than used. Inherited tendency, diet, lack of "
+                    "exercise, lack of sleep, stress, medicines and hormonal diseases all "
+                    "work together."
+                ),
+                "diagnostics": (
+                    "Weight, height and waist circumference are measured. Blood tests "
+                    "check blood sugar, blood fats and the thyroid, to recognise secondary "
+                    "diseases and causes."
+                ),
+                "therapy": (
+                    "The basis is a lasting change of diet, more exercise and behavioural "
+                    "therapy. In high-risk cases medicines or an operation on the stomach "
+                    "come into question. Small but lasting weight loss already improves "
+                    "many values."
+                ),
+                "red_flags": (
+                    "Breathlessness at rest, chest pain or a markedly swollen leg are "
+                    "warning signs of heart or vessel problems – call the emergency "
+                    "number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Obesity",
+                "Overweight",
+                "Body mass index",
+                "Diet",
+                "Exercise",
+                "Weight loss",
+            ],
+        },
+        "Erhöhte Blutfette (Fettstoffwechselstörung)": {
+            "title_en": "Raised blood fats (lipid disorder)",
+            "sections_en": {
+                "definition": (
+                    "In a lipid disorder, cholesterol or triglycerides in the blood are "
+                    "permanently raised, especially LDL cholesterol."
+                ),
+                "symptoms": (
+                    "Raised blood fats usually cause no symptoms. With very high values "
+                    "or inherited forms, fat deposits can appear on tendons or eyelids."
+                ),
+                "causes": (
+                    "A diet rich in saturated fats, overweight, lack of exercise, "
+                    "diabetes, an underactive thyroid and inherited tendency (familial "
+                    "hypercholesterolaemia) raise the values."
+                ),
+                "diagnostics": (
+                    "A blood sample measures total cholesterol, LDL, HDL and "
+                    "triglycerides, ideally on an empty stomach. The doctor also estimates "
+                    "the cardiovascular risk."
+                ),
+                "therapy": (
+                    "A balanced diet, exercise and weight loss are the basis. If that is "
+                    "not enough, medicines such as statins lower LDL cholesterol and the "
+                    "risk of heart attack and stroke."
+                ),
+                "red_flags": (
+                    "Pressure or pain in the chest, sudden paralysis or speech problems "
+                    "can be consequences of narrowed vessels – call the emergency number "
+                    "144 (Austria) at once. Very high triglycerides can trigger "
+                    "inflammation of the pancreas."
+                ),
+            },
+            "keywords_en": [
+                "Cholesterol",
+                "Blood fats",
+                "LDL",
+                "Triglycerides",
+                "Statins",
+                "Cardiovascular risk",
+            ],
+        },
+    },
+)

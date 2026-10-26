@@ -229,3 +229,257 @@ ENTRIES = with_english(
         },
     },
 )
+
+
+EXTRA = with_english(
+    [
+        {
+            "title": "Lungenembolie",
+            "doc_type": "Diagnose",
+            "expected_category": "Pneumologie",
+            "term_en": "Pulmonary embolism",
+            "icd11_code": "BB00",
+            "medications": ["heparin", "rivaroxaban"],
+            "sections": {
+                "definition": (
+                    "Bei einer Lungenembolie verschließt ein Blutgerinnsel, das meist aus "
+                    "den Beinvenen stammt, eine Schlagader in der Lunge."
+                ),
+                "symptoms": (
+                    "Typisch sind plötzliche Atemnot, stechende Schmerzen beim Einatmen, "
+                    "Herzrasen und Husten, manchmal mit Blut. Bei großen Embolien kommen "
+                    "Schwindel und Ohnmacht hinzu."
+                ),
+                "causes": (
+                    "Das Gerinnsel entsteht meist durch eine Thrombose der tiefen Beinvenen. "
+                    "Risikofaktoren sind lange Bettruhe, Operationen, Krebserkrankungen, "
+                    "Schwangerschaft und hormonelle Verhütung in Kombination mit Rauchen."
+                ),
+                "diagnostics": (
+                    "Im Krankenhaus werden Blutwerte (D-Dimere), die Sauerstoffsättigung und "
+                    "eine Computertomografie der Lungengefäße eingesetzt. Ein Herzultraschall "
+                    "zeigt die Belastung des rechten Herzens."
+                ),
+                "therapy": (
+                    "Gerinnungshemmende Medikamente verhindern, dass das Gerinnsel wächst. "
+                    "Bei lebensbedrohlichen Verläufen wird es medikamentös aufgelöst oder "
+                    "mit einem Katheter entfernt. Danach folgt eine mehrmonatige "
+                    "Blutverdünnung."
+                ),
+                "red_flags": (
+                    "Plötzliche Atemnot, Brustschmerz beim Atmen oder Ohnmacht sind ein "
+                    "Notfall – sofort Notruf 144. Besonders nach einer Operation, einer "
+                    "langen Reise oder bei einem geschwollenen Bein."
+                ),
+            },
+            "further_reading": [medlineplus("pulmonaryembolism", "Pulmonary embolism")],
+        },
+        {
+            "title": "Schlafapnoe",
+            "doc_type": "Diagnose",
+            "expected_category": "Pneumologie",
+            "term_en": "Obstructive sleep apnea",
+            "icd11_code": "7A41",
+            "medications": [],
+            "sections": {
+                "definition": (
+                    "Bei der obstruktiven Schlafapnoe erschlafft im Schlaf die Muskulatur der "
+                    "oberen Atemwege, sodass die Atmung wiederholt für Sekunden aussetzt."
+                ),
+                "symptoms": (
+                    "Laute Schnarchgeräusche mit beobachteten Atempausen, unruhiger Schlaf, "
+                    "Kopfschmerzen am Morgen und ausgeprägte Tagesmüdigkeit bis hin zu "
+                    "Sekundenschlaf."
+                ),
+                "causes": (
+                    "Übergewicht, ein kurzer Hals, vergrößerte Mandeln, Alkohol oder "
+                    "Beruhigungsmittel am Abend sowie das männliche Geschlecht und höheres Alter "
+                    "erhöhen das Risiko."
+                ),
+                "diagnostics": (
+                    "Ein tragbares Messgerät zu Hause und bei Bedarf eine Untersuchung im "
+                    "Schlaflabor erfassen Atmung, Sauerstoffsättigung und Schlaf."
+                ),
+                "therapy": (
+                    "Gewichtsabnahme, Verzicht auf Alkohol am Abend und Schlafen in "
+                    "Seitenlage helfen. Bei ausgeprägter Schlafapnoe hält eine nächtliche "
+                    "Atemmaske (CPAP) die Atemwege offen. Eine Unterkieferschiene oder "
+                    "Operation kommen in ausgewählten Fällen in Frage."
+                ),
+                "red_flags": (
+                    "Einschlafen am Steuer oder bei der Arbeit ist gefährlich: Betroffene "
+                    "sollten bei starker Tagesmüdigkeit nicht Auto fahren und rasch ärztlichen "
+                    "Rat suchen. Nächtliche Atemnot mit Brustschmerz verlangt Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("sleepapnea", "Sleep apnea")],
+        },
+        {
+            "title": "Akute Bronchitis",
+            "doc_type": "Diagnose",
+            "expected_category": "Pneumologie",
+            "term_en": "Acute bronchitis",
+            "icd11_code": "CA42",
+            "medications": ["ambroxol", "paracetamol"],
+            "sections": {
+                "definition": (
+                    "Die akute Bronchitis ist eine Entzündung der Schleimhaut der Bronchien, "
+                    "die meist im Rahmen eines Atemwegsinfekts auftritt."
+                ),
+                "symptoms": (
+                    "Husten, anfangs trocken, später mit Schleim, dazu Brennen hinter dem "
+                    "Brustbein, Abgeschlagenheit und leichtes Fieber. Der Husten kann "
+                    "mehrere Wochen anhalten."
+                ),
+                "causes": (
+                    "In den meisten Fällen lösen Viren die Entzündung aus. Rauchen und "
+                    "Schadstoffe in der Luft reizen die Bronchien zusätzlich."
+                ),
+                "diagnostics": (
+                    "Die Ärztin hört die Lunge ab und erfragt den Verlauf. Eine "
+                    "Röntgenaufnahme der Lunge ist nur bei Verdacht auf eine Lungenentzündung "
+                    "nötig."
+                ),
+                "therapy": (
+                    "Ruhe, viel Trinken und Inhalieren mit Kochsalzlösung lindern die "
+                    "Beschwerden. Antibiotika helfen bei Virusinfekten nicht und sind nur "
+                    "bei bakteriellen Komplikationen sinnvoll."
+                ),
+                "red_flags": (
+                    "Hohes Fieber über mehrere Tage, Atemnot, blutiger Auswurf, "
+                    "Brustschmerz oder ein Husten, der länger als drei Wochen dauert, sollten "
+                    "ärztlich abgeklärt werden. Bei starker Atemnot Notruf 144."
+                ),
+            },
+            "further_reading": [medlineplus("bronchitis", "Bronchitis")],
+        },
+    ],
+    {
+        "Lungenembolie": {
+            "title_en": "Pulmonary embolism",
+            "sections_en": {
+                "definition": (
+                    "In a pulmonary embolism a blood clot, usually coming from the leg "
+                    "veins, blocks an artery in the lung."
+                ),
+                "symptoms": (
+                    "Typical are sudden breathlessness, stabbing pain on breathing in, a "
+                    "racing heart and coughing, sometimes with blood. In large embolisms "
+                    "dizziness and fainting are added."
+                ),
+                "causes": (
+                    "The clot usually arises from a thrombosis of the deep leg veins. Risk "
+                    "factors are long bed rest, operations, cancer, pregnancy and hormonal "
+                    "contraception combined with smoking."
+                ),
+                "diagnostics": (
+                    "In hospital, blood values (D-dimer), oxygen saturation and a "
+                    "computed tomography of the lung vessels are used. An ultrasound of "
+                    "the heart shows the strain on the right side of the heart."
+                ),
+                "therapy": (
+                    "Anticoagulant medicines prevent the clot from growing. In "
+                    "life-threatening cases it is dissolved with medicines or removed with "
+                    "a catheter. Blood-thinning for several months follows."
+                ),
+                "red_flags": (
+                    "Sudden breathlessness, chest pain on breathing or fainting is an "
+                    "emergency – call the emergency number 144 (Austria) at once. This is "
+                    "especially true after an operation, a long journey or with a swollen "
+                    "leg."
+                ),
+            },
+            "keywords_en": [
+                "Pulmonary embolism",
+                "Breathlessness",
+                "Blood clot",
+                "Thrombosis",
+                "Anticoagulation",
+                "Emergency",
+            ],
+        },
+        "Schlafapnoe": {
+            "title_en": "Sleep apnoea",
+            "sections_en": {
+                "definition": (
+                    "In obstructive sleep apnoea the muscles of the upper airway relax "
+                    "during sleep, so that breathing stops repeatedly for seconds."
+                ),
+                "symptoms": (
+                    "Loud snoring with observed pauses in breathing, restless sleep, "
+                    "headaches in the morning and marked daytime sleepiness up to falling "
+                    "asleep for seconds."
+                ),
+                "causes": (
+                    "Overweight, a short neck, enlarged tonsils, alcohol or sedatives in "
+                    "the evening, as well as male sex and higher age raise the risk."
+                ),
+                "diagnostics": (
+                    "A portable measuring device at home and, if needed, an examination in "
+                    "a sleep laboratory record breathing, oxygen saturation and sleep."
+                ),
+                "therapy": (
+                    "Weight loss, no alcohol in the evening and sleeping on the side help. "
+                    "In marked sleep apnoea a night-time breathing mask (CPAP) keeps the "
+                    "airway open. A lower jaw splint or an operation come into question "
+                    "in selected cases."
+                ),
+                "red_flags": (
+                    "Falling asleep at the wheel or at work is dangerous: with marked "
+                    "daytime sleepiness people should not drive and should seek medical "
+                    "advice promptly. Breathlessness at night with chest pain needs the "
+                    "emergency number 144 (Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Sleep apnoea",
+                "Snoring",
+                "Daytime sleepiness",
+                "CPAP",
+                "Sleep laboratory",
+                "Overweight",
+            ],
+        },
+        "Akute Bronchitis": {
+            "title_en": "Acute bronchitis",
+            "sections_en": {
+                "definition": (
+                    "Acute bronchitis is an inflammation of the lining of the bronchial "
+                    "tubes, which usually occurs as part of a respiratory infection."
+                ),
+                "symptoms": (
+                    "Cough, dry at first and later with mucus, plus burning behind the "
+                    "breastbone, tiredness and a slight fever. The cough can last several "
+                    "weeks."
+                ),
+                "causes": (
+                    "In most cases viruses trigger the inflammation. Smoking and "
+                    "pollutants in the air irritate the bronchial tubes further."
+                ),
+                "diagnostics": (
+                    "The doctor listens to the lungs and asks about the course. A chest "
+                    "X-ray is only needed if pneumonia is suspected."
+                ),
+                "therapy": (
+                    "Rest, plenty of fluids and inhaling saline solution relieve the "
+                    "symptoms. Antibiotics do not help against viral infections and make "
+                    "sense only for bacterial complications."
+                ),
+                "red_flags": (
+                    "High fever lasting several days, breathlessness, bloody sputum, chest "
+                    "pain or a cough lasting longer than three weeks should be checked by "
+                    "a doctor. For severe breathlessness call the emergency number 144 "
+                    "(Austria)."
+                ),
+            },
+            "keywords_en": [
+                "Bronchitis",
+                "Cough",
+                "Mucus",
+                "Bronchial tubes",
+                "Respiratory infection",
+                "Inhalation",
+            ],
+        },
+    },
+)
